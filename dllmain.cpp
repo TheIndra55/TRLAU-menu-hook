@@ -13,9 +13,16 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 static LPDIRECT3DDEVICE9 g_pd3dDevice;
 static bool              g_focus = false;
 
-// loads a chapter
+static int               g_gameTracker = 0x838330;
+
+// game function pointers
 static char(__cdecl* g_LoadChapter)(char*);
 
+static char(*g_ReloadLevel)();
+
+static char(__cdecl* g_ResetGame)(int);
+
+// orginal function pointers and hooks
 static void(__thiscall* g_cdc_PCRenderContext_Present)(DWORD*, int, int, int);
 
 void __fastcall cdc_PCRenderContext_Present(DWORD* _this, void* _, int a2, int a3, int a4)
@@ -28,15 +35,33 @@ void __fastcall cdc_PCRenderContext_Present(DWORD* _this, void* _, int a2, int a
     ImGui::NewFrame();
 
     static char chapter[32] = "";
+    static char unit[32] = "";
 
-    ImGui::Begin("Menu", NULL);
-    if (ImGui::Button("Load"))
+    ImGui::Begin("Menu", nullptr);
+
+    // show current unit
+    ImGui::Text("Unit: %s", (char*)(g_gameTracker + 204));
+
+    ImGui::InputText("chapter", chapter, 32);
+    ImGui::InputText("unit", unit, 32);
+
+    if (ImGui::Button("Load chapter"))
     {
         // load chapter (chapter0, chapter1..)
         // chapter0 = croft manor
         g_LoadChapter(chapter);
     }
-    ImGui::InputText("chapter", chapter, 32);
+    if (ImGui::Button("Load unit"))
+    {
+        // change current unit
+        strcpy_s((char*)(g_gameTracker + 204), 32, unit);
+        g_ResetGame(4);
+    }
+    if (ImGui::Button("Reload unit"))
+    {
+        g_ReloadLevel();
+    }
+
 
     ImGui::End();
 
@@ -105,6 +130,8 @@ DWORD WINAPI Draw(LPVOID lpParam)
     auto device = *(DWORD*)(address + 0x20);
 
     g_LoadChapter = (char(__cdecl*)(char*))0x422090;
+    g_ReloadLevel = (char(*)())0x4279F0;
+    g_ResetGame = (char(__cdecl*)(int))0x004542B0;
 
     g_pd3dDevice = (IDirect3DDevice9*)device;
 
