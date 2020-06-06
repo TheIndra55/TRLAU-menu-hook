@@ -22,6 +22,18 @@ static char(*g_ReloadLevel)();
 
 static char(__cdecl* g_ResetGame)(int);
 
+void GetPosition(float& x, float& y, float& z)
+{
+    auto base = *(DWORD*)0x83833C;
+
+    // return whenever pointer isn't initialized yet
+    if (base == 0) return;
+
+    x = *(float*)(base + 0x10);
+    y = *(float*)(base + 0x14);
+    z = *(float*)(base + 0x18);
+}
+
 // orginal function pointers and hooks
 static void(__thiscall* g_cdc_PCRenderContext_Present)(DWORD*, int, int, int);
 
@@ -62,6 +74,11 @@ void __fastcall cdc_PCRenderContext_Present(DWORD* _this, void* _, int a2, int a
         g_ReloadLevel();
     }
 
+    float x, y, z;
+    GetPosition(x, y, z);
+
+    // position based on unit?
+    ImGui::Text("Position: %f, %f, %f", x, y, z);
 
     ImGui::End();
 
