@@ -7,6 +7,7 @@ std::function<char __cdecl(int, int)> Game::f_PushScreen = nullptr;
 std::function<int __cdecl()> Game::f_GetTopScreenID = nullptr;
 std::function<int __cdecl(const char*, int, int, int)> Game::f_PushOkDialog = nullptr;
 std::function<int __cdecl()> Game::f_PopScreen = nullptr;
+std::function<int __cdecl(int, int, int)> Game::f_InstancePost = nullptr;
 
 void Game::Initialize()
 {
@@ -17,6 +18,8 @@ void Game::Initialize()
 	f_GetTopScreenID = reinterpret_cast<int(__cdecl*)()>(0x4FC210);
 	f_PushOkDialog = reinterpret_cast<int(__cdecl*)(const char*, int, int, int)>(0x4FD100);
 	f_PopScreen = reinterpret_cast<int(__cdecl*)()>(0x4FCD20);
+
+	f_InstancePost = reinterpret_cast<int(__cdecl*)(int, int, int)>(0x4580B0);
 }
 
 void Game::SwitchChapter(char* chapter)
@@ -47,6 +50,11 @@ void Game::PushOkDialog(const char* text, void(__cdecl* fn)(), int a3, int a4)
 void Game::PopScreen()
 {
 	f_PopScreen();
+}
+
+int Game::InstancePost(int instance, int a2, int a3)
+{
+	return f_InstancePost(instance, a2, a3);
 }
 
 bool Game::CheckChapter(char* chapter)
