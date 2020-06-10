@@ -55,22 +55,28 @@ void Menu::ToggleFlight(bool flight)
 {
     m_flight = flight;
     *reinterpret_cast<int*>(GAMETRACKER + 227) = m_flight ? 256 : 0;
-    // TODO player cannot move after flight (except when fall for example)
+
+    if (!m_flight)
+    {
+        // drop player when flight disabled
+        Game::InstancePost(*reinterpret_cast<DWORD*>(PLAYERINSTANCE), 1048592, 0);
+    }
 }
 
 void Menu::ProcessFlight(UINT msg, WPARAM wparam)
 {
+    auto base = *reinterpret_cast<DWORD*>(0x83833C);
+    auto z = reinterpret_cast<float*>(base + 24);
+
     // TODO azerty?
     if (msg == WM_KEYDOWN && wparam == 0x51/*Q Key*/)
     {
-        // TODO this does nothing
-        Game::InstancePost(*reinterpret_cast<DWORD*>(PLAYERINSTANCE), 1048592, 1);
+        *z += (*z + 0.5);
     }
 
     if (msg == WM_KEYDOWN && wparam == 0x5A/*Z Key*/)
     {
-        // TODO this triggers an action but doesn't lower/drop the player
-        Game::InstancePost(*reinterpret_cast<DWORD*>(PLAYERINSTANCE), 1048592, 0);
+        *z -= (*z + 0.5);
     }
 }
 
