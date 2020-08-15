@@ -1,5 +1,6 @@
 #include "Menu.hpp"
 #include "Game.hpp"
+#include "Hooking.hpp"
 
 #define GAMETRACKER 0x838330
 #define PLAYERINSTANCE 0x83833C
@@ -15,6 +16,8 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
 	ImGui_ImplWin32_Init(m_hwnd);
 	ImGui_ImplDX9_Init(m_pd3dDevice);
+
+    MH_CreateHook(reinterpret_cast<void*>(0x46BF90), hooked_SIGNAL_FindSignal, reinterpret_cast<void**>(&original_SIGNAL_FindSignal));
 }
 
 void Menu::OnPresent()
@@ -129,5 +132,33 @@ void Menu::Draw()
         Game::PushScreen(screen, 0);
     }
 
+    // log window (based on imgui_demo log window)
+    ImGui::BeginChild("LogRegion", ImVec2(), true);
+
+    ImGui::TextUnformatted(this->logBuffer.begin());
+    ImGui::SetScrollHere(1.0f);
+    ImGui::EndChild();
+
+    if (ImGui::Button("Clear")) {
+        this->logBuffer.clear();
+    }
+
     ImGui::End();
+}
+
+void Menu::Log(const char* fmt, ...) IM_FMTARGS(2)
+{
+    va_list args;
+    va_start(args, fmt);
+    this->logBuffer.appendfv(fmt, args);
+    va_end(args);
+}
+
+extern Hooking* g_hooking;
+
+int hooked_SIGNAL_FindSignal(DWORD* level, int signal)
+{
+    g_hooking->menu->Log("signal %d for unit %d\n", signal, *reinterpret_cast<int*>(level + 180));
+
+    return original_SIGNAL_FindSignal(level, signal);
 }

@@ -7,3 +7,8 @@ Reverse engineering Tomb Raider: Anniversary and using that research to create a
 ## How to
 
 Use [Ultimate ASI Loader](https://github.com/ThirteenAG/Ultimate-ASI-Loader/releases) by replacing `binkw32.dll` and drop the compiled .asi in your game folder.
+
+## Todo
+
+- Uses memory addresses (no patterns)
+- Hooks don't work on Steam version

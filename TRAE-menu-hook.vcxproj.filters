@@ -93,5 +93,6 @@
   <ItemGroup>
     <Library Include="d3d9.lib" />
     <Library Include="MinHook.x86.lib" />
+    <Library Include="steam_api.lib" />
   </ItemGroup>
 </Project>

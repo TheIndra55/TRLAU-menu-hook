@@ -14,6 +14,7 @@ public:
 	void Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	void ToggleFlight(bool flight);
 	void ProcessFlight(UINT msg, WPARAM wparam);
+	void Log(const char* fmt, ...);
 
 	// TODO private
 	bool m_focus = false;
@@ -21,7 +22,11 @@ private:
 	void Draw();
 
 	bool m_flight = false;
+	ImGuiTextBuffer logBuffer;
 
 	LPDIRECT3DDEVICE9 m_pd3dDevice;
 	HWND m_hwnd;
 };
+
+static int(__cdecl* original_SIGNAL_FindSignal)(DWORD* level, int signal);
+int hooked_SIGNAL_FindSignal(DWORD* level, int signal);
