@@ -7,6 +7,18 @@
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+static bool shouldInstance = true;
+
+DWORD(__cdecl*trampinstance)();
+
+DWORD newinstance()
+{
+    if (shouldInstance)
+        return trampinstance();
+
+    return 0;
+}
+
 Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 {
 	m_pd3dDevice = pd3dDevice;
@@ -18,6 +30,8 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 	ImGui_ImplDX9_Init(m_pd3dDevice);
 
     MH_CreateHook(reinterpret_cast<void*>(0x46BF90), hooked_SIGNAL_FindSignal, reinterpret_cast<void**>(&original_SIGNAL_FindSignal));
+
+    MH_CreateHook((void*)0x00C62479, newinstance, (void**)&trampinstance);
 }
 
 void Menu::OnPresent()
@@ -89,6 +103,8 @@ void __cdecl DialogFn()
     Game::PopScreen();
 }
 
+void(__cdecl* EVENT_MoveSunPosition)(int, int, int);
+
 void Menu::Draw()
 {
     static char chapter[32] = "";
@@ -97,7 +113,11 @@ void Menu::Draw()
     ImGui::Begin("Menu", nullptr);
 
     // show current unit
+    auto streamUnit = (int)(*(DWORD*)0x83833C) + 178;
     ImGui::Text("Unit = %s, Flight = %s", (char*)(GAMETRACKER + 204), m_flight ? "true" : "false");
+    ImGui::Text("currentStreamUnitID = %d", streamUnit);
+
+    ImGui::Checkbox("should instance?", &shouldInstance);
 
     ImGui::InputText("chapter", chapter, 32);
     ImGui::InputText("unit", unit, 32);
@@ -141,6 +161,56 @@ void Menu::Draw()
 
     if (ImGui::Button("Clear")) {
         this->logBuffer.clear();
+    }
+
+    if (ImGui::Button("List units"))
+    {
+        auto unitList = *(DWORD*)0x8AF44C;
+        auto numUnits = *(int*)unitList;
+        Log("numUnits: %d\n", numUnits);
+
+        int offset = 0;
+        int count = 0;
+        while (true)
+        {
+            Log("%s\n", (char*)(unitList + 4 + offset));
+
+            offset += 20;
+            count++;
+            if (count >= numUnits) break;
+        }
+
+        ImGui::SetClipboardText(this->logBuffer.begin());
+    }
+
+    if (ImGui::Button("List instances"))
+    {
+        auto instance = *(DWORD*)0x817D64;
+        while (1)
+        {
+            auto next = *(DWORD*)(instance + 8);
+            auto object = *(DWORD*)(instance + 0x94);
+            Log("%s - %d\n", (char*)*(DWORD*)(object + 0x48), *(int*)(instance + 0x1D0));
+
+            if (!next)
+                break;
+
+            instance = next;
+        }
+
+        ImGui::SetClipboardText(this->logBuffer.begin());
+    }
+
+    static int rot;
+    static int angle;
+    static int frames;
+    ImGui::InputInt("rot", &rot);
+    ImGui::InputInt("angle", &angle);
+    ImGui::InputInt("frames", &frames);
+
+    if (ImGui::Button("set sun")) {
+        EVENT_MoveSunPosition = (void(__cdecl*)(int, int, int))0x42F8A0;
+        EVENT_MoveSunPosition(rot, angle, frames);
     }
 
     ImGui::End();
