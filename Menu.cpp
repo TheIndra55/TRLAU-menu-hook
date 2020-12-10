@@ -19,6 +19,34 @@ DWORD newinstance()
     return 0;
 }
 
+extern Hooking* g_hooking;
+
+// most of this code is written in 2 minutes to confirm finds
+char* (__cdecl* localstr_get)(int);
+const char* localstr_get_hooked(int a1)
+{
+    return localstr_get(a1);
+    //g_hooking->menu->Log("%d: %s\n", a1, str);
+
+    //return "no";
+}
+
+char(__cdecl* pushscreen)(int, bool);
+
+char pushscreenhooked(int screen, bool unk2)
+{
+    g_hooking->menu->Log("screen pushed: %d\n", screen);
+    return pushscreen(screen, unk2);
+}
+
+static void(__thiscall* orginal_Subtitle_Add)(DWORD*, char* str, int duration);
+void __fastcall hooked_Subtitle_Add(DWORD* _this, void* _, char* str, int duration)
+{
+    g_hooking->menu->Log("%s %d\n", str, duration);
+
+    orginal_Subtitle_Add(_this, str, duration);
+}
+
 Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 {
 	m_pd3dDevice = pd3dDevice;
@@ -32,6 +60,9 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
     MH_CreateHook(reinterpret_cast<void*>(0x46BF90), hooked_SIGNAL_FindSignal, reinterpret_cast<void**>(&original_SIGNAL_FindSignal));
 
     MH_CreateHook((void*)0x00C62479, newinstance, (void**)&trampinstance);
+    MH_CreateHook((void*)0x4E3C80, localstr_get_hooked, (void**)&localstr_get);
+    MH_CreateHook((void*)0x4FCB60, pushscreenhooked, (void**)&pushscreen);
+    MH_CreateHook((void*)0x0046F080, hooked_Subtitle_Add, (void**)&orginal_Subtitle_Add);
 }
 
 void Menu::OnPresent()
@@ -224,11 +255,9 @@ void Menu::Log(const char* fmt, ...) IM_FMTARGS(2)
     va_end(args);
 }
 
-extern Hooking* g_hooking;
-
 int hooked_SIGNAL_FindSignal(DWORD* level, int signal)
 {
-    g_hooking->menu->Log("signal %d for unit %d\n", signal, *reinterpret_cast<int*>(level + 180));
+    //g_hooking->menu->Log("signal %d for unit %d\n", signal, *reinterpret_cast<int*>(level + 180));
 
     return original_SIGNAL_FindSignal(level, signal);
 }
