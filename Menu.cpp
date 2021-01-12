@@ -130,12 +130,12 @@ void Menu::ProcessFlight(UINT msg, WPARAM wparam)
     // TODO azerty?
     if (msg == WM_KEYDOWN && wparam == 0x51/*Q Key*/)
     {
-        *z += (*z + 0.5);
+        *z += m_flightSpeed;
     }
 
     if (msg == WM_KEYDOWN && wparam == 0x5A/*Z Key*/)
     {
-        *z -= (*z + 0.5);
+        *z -= m_flightSpeed;
     }
 }
 
@@ -158,6 +158,8 @@ void Menu::Draw()
     auto streamUnit = (int)(*(DWORD*)0x83833C) + 178;
     ImGui::Text("Unit = %s, Flight = %s", (char*)(GAMETRACKER + 204), m_flight ? "true" : "false");
     ImGui::Text("currentStreamUnitID = %d", streamUnit);
+
+    ImGui::SliderFloat("Z speed", &m_flightSpeed, 0, 500);
 
     ImGui::Checkbox("should instance?", &shouldInstance);
 

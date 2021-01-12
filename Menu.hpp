@@ -24,6 +24,8 @@ private:
 	void Draw();
 
 	bool m_flight = false;
+	float m_flightSpeed = 50.f;
+
 	ImGuiTextBuffer logBuffer;
 
 	LPDIRECT3DDEVICE9 m_pd3dDevice;
