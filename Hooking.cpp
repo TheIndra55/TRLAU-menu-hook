@@ -26,6 +26,31 @@ void Hooking::Uninitialize()
 	MH_Uninitialize();
 }
 
+char(__thiscall* original__PCDeviceManager__CreateDevice)(DWORD* _this, DWORD a2);
+
+char __fastcall PCDeviceManager__CreateDevice(DWORD* _this, DWORD _, DWORD a2)
+{
+	auto val = original__PCDeviceManager__CreateDevice(_this, a2);
+
+	auto address = *reinterpret_cast<DWORD*>(0xA6669C);
+	auto device = *reinterpret_cast<DWORD*>(address + 0x20);
+	pDevice = reinterpret_cast<IDirect3DDevice9*>(device);
+
+	g_hooking->menu->SetDevice(pDevice);
+
+	return val;
+}
+
+void(__thiscall* orginal_PCDeviceManager__ReleaseDevice)(DWORD* _this, int status);
+
+void __fastcall PCDeviceManager__ReleaseDevice(DWORD* _this, DWORD _, int status)
+{
+	g_hooking->menu->OnDeviceReleased();
+	ImGui_ImplDX9_InvalidateDeviceObjects();
+
+	orginal_PCDeviceManager__ReleaseDevice(_this, status);
+}
+
 void Hooking::GotDevice()
 {
 	this->menu = new Menu(pDevice, pHwnd);
@@ -40,6 +65,9 @@ void Hooking::GotDevice()
 		reinterpret_cast<void*>(0x4040B0), 
 		hooked_RegularWndProc, 
 		reinterpret_cast<void**>(&original_RegularWndProc));
+
+	MH_CreateHook((void*)0x00617F50, PCDeviceManager__ReleaseDevice, (void**)&orginal_PCDeviceManager__ReleaseDevice);
+	MH_CreateHook((void*)0x00617BE0, PCDeviceManager__CreateDevice, (void**)&original__PCDeviceManager__CreateDevice);
 
 	// hook SetCursorPos to prevent the game from resetting the cursor position
 	MH_CreateHookApi(L"user32", "SetCursorPos", hooked_SetCursorPos, reinterpret_cast<void**>(&original_SetCursorPos));

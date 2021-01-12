@@ -65,6 +65,17 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
     MH_CreateHook((void*)0x0046F080, hooked_Subtitle_Add, (void**)&orginal_Subtitle_Add);
 }
 
+void Menu::OnDeviceReleased()
+{
+    m_pd3dDevice->Release();
+}
+
+void Menu::SetDevice(LPDIRECT3DDEVICE9 pd3dDevice)
+{
+    m_pd3dDevice = pd3dDevice;
+    ImGui_ImplDX9_Init(m_pd3dDevice);
+}
+
 void Menu::OnPresent()
 {
 	ImGui::GetIO().MouseDrawCursor = m_focus;

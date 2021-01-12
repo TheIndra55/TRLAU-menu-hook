@@ -1,5 +1,3 @@
-#define STEAM 1
-
 #if STEAM
     #define _CRT_SECURE_NO_WARNINGS
 #endif

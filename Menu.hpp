@@ -10,10 +10,12 @@ class Menu
 public:
 	Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd);
 
+	void OnDeviceReleased();
 	void OnPresent();
 	void Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	void ToggleFlight(bool flight);
 	void ProcessFlight(UINT msg, WPARAM wparam);
+	void SetDevice(LPDIRECT3DDEVICE9 pd3dDevice);
 	void Log(const char* fmt, ...);
 
 	// TODO private
