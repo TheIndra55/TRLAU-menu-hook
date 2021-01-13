@@ -51,6 +51,11 @@ void __fastcall PCDeviceManager__ReleaseDevice(DWORD* _this, DWORD _, int status
 	orginal_PCDeviceManager__ReleaseDevice(_this, status);
 }
 
+void __cdecl EVENT_DisplayString(char* str, int time)
+{
+	g_hooking->menu->Log("%s\n", str);
+}
+
 void Hooking::GotDevice()
 {
 	this->menu = new Menu(pDevice, pHwnd);
@@ -68,6 +73,9 @@ void Hooking::GotDevice()
 
 	MH_CreateHook((void*)0x00617F50, PCDeviceManager__ReleaseDevice, (void**)&orginal_PCDeviceManager__ReleaseDevice);
 	MH_CreateHook((void*)0x00617BE0, PCDeviceManager__CreateDevice, (void**)&original__PCDeviceManager__CreateDevice);
+
+	// patch debug print nullsub to our function
+	*(DWORD*)(0x7C8A50 + 0x210) = (DWORD)EVENT_DisplayString;
 
 	// hook SetCursorPos to prevent the game from resetting the cursor position
 	MH_CreateHookApi(L"user32", "SetCursorPos", hooked_SetCursorPos, reinterpret_cast<void**>(&original_SetCursorPos));

@@ -18,6 +18,9 @@ public:
 	static int InstancePost(int a1, int a2, int a3);
 
 	static bool CheckChapter(char* chapter);
+	static void SwitchPlayerCharacter();
+	static DWORD AnimDataSomething(int a1, int a2, int a3);
+	static void InstanceSetEventAnimPlaying(DWORD instance, int a2);
 private:
 	static std::function<char(char* chapter)> f_SwitchChapter;
 	static std::function<char __cdecl(int a1)> f_ResetGame;

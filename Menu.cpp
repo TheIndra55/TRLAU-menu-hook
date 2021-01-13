@@ -39,7 +39,7 @@ char pushscreenhooked(int screen, bool unk2)
     return pushscreen(screen, unk2);
 }
 
-static void(__thiscall* orginal_Subtitle_Add)(DWORD*, char* str, int duration);
+void(__thiscall* orginal_Subtitle_Add)(DWORD*, char* str, int duration);
 void __fastcall hooked_Subtitle_Add(DWORD* _this, void* _, char* str, int duration)
 {
     g_hooking->menu->Log("%s %d\n", str, duration);
@@ -99,6 +99,11 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         ToggleFlight(!m_flight);
     }
 
+    if (msg == WM_KEYUP && wparam == VK_F9)
+    {
+        Game::SwitchPlayerCharacter();
+    }
+
     if (m_flight)
     {
         ProcessFlight(msg, wparam);
@@ -145,8 +150,6 @@ void __cdecl DialogFn()
     Game::PopScreen();
 }
 
-void(__cdecl* EVENT_MoveSunPosition)(int, int, int);
-
 void Menu::Draw()
 {
     static char chapter[32] = "";
@@ -156,8 +159,8 @@ void Menu::Draw()
 
     // show current unit
     auto streamUnit = (int)(*(DWORD*)0x83833C) + 178;
+    ImGui::Text("F2 = Flight, F8 = Toggle menu focus, F9 = Switch player character");
     ImGui::Text("Unit = %s, Flight = %s", (char*)(GAMETRACKER + 204), m_flight ? "true" : "false");
-    ImGui::Text("currentStreamUnitID = %d", streamUnit);
 
     ImGui::SliderFloat("Z speed", &m_flightSpeed, 0, 500);
 
@@ -245,16 +248,16 @@ void Menu::Draw()
         ImGui::SetClipboardText(this->logBuffer.begin());
     }
 
-    static int rot;
-    static int angle;
-    static int frames;
-    ImGui::InputInt("rot", &rot);
-    ImGui::InputInt("angle", &angle);
-    ImGui::InputInt("frames", &frames);
+    if (ImGui::Button("Turn Lara into gold anim")) // TODO find out how to get gold effect
+    {
+        auto player = *reinterpret_cast<DWORD*>(PLAYERINSTANCE);
+        int v11 = 52;
 
-    if (ImGui::Button("set sun")) {
-        EVENT_MoveSunPosition = (void(__cdecl*)(int, int, int))0x42F8A0;
-        EVENT_MoveSunPosition(rot, angle, frames);
+        Game::InstancePost(player, 262158, 1);
+
+        auto anim = Game::AnimDataSomething(player, player, (int)&v11);
+        Game::InstancePost(player, 262147, anim);
+        Game::InstanceSetEventAnimPlaying(player, 0);
     }
 
     ImGui::End();

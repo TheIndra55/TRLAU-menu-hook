@@ -9,6 +9,10 @@ std::function<int __cdecl(const char*, int, int, int)> Game::f_PushOkDialog = nu
 std::function<int __cdecl()> Game::f_PopScreen = nullptr;
 std::function<int __cdecl(int, int, int)> Game::f_InstancePost = nullptr;
 
+void(__cdecl* PLAYER_DebugSwitchPlayerCharacter)();
+DWORD(__cdecl* sub_C64D3F)(int a1, int a2, int a3);
+void(__cdecl* G2EmulationInstanceSetEventAnimPlaying)(DWORD instance, int a2);
+
 void Game::Initialize()
 {
 	f_SwitchChapter = reinterpret_cast<char(__cdecl*)(char*)>(0x422090);
@@ -20,6 +24,10 @@ void Game::Initialize()
 	f_PopScreen = reinterpret_cast<int(__cdecl*)()>(0x4FCD20);
 
 	f_InstancePost = reinterpret_cast<int(__cdecl*)(int, int, int)>(0x4580B0);
+
+	PLAYER_DebugSwitchPlayerCharacter = reinterpret_cast<void(__cdecl*)()>(0x005A39A0);
+	sub_C64D3F = reinterpret_cast<DWORD(__cdecl*)(int, int, int)>(0xC64D3F);
+	G2EmulationInstanceSetEventAnimPlaying = reinterpret_cast<void(__cdecl*)(DWORD, int)>(0x4DE940);
 }
 
 void Game::SwitchChapter(char* chapter)
@@ -78,4 +86,19 @@ bool Game::CheckChapter(char* chapter)
 	}
 
 	return true;
+}
+
+void Game::SwitchPlayerCharacter()
+{
+	PLAYER_DebugSwitchPlayerCharacter();
+}
+
+DWORD Game::AnimDataSomething(int a1, int a2, int a3)
+{
+	return sub_C64D3F(a1, a2, a3);
+}
+
+void Game::InstanceSetEventAnimPlaying(DWORD instance, int a2)
+{
+	G2EmulationInstanceSetEventAnimPlaying(instance, a2);
 }
