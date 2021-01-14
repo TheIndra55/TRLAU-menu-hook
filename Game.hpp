@@ -15,7 +15,9 @@ public:
 	static void PushOkDialog(const char* text, void(__cdecl* fn)(), int a3, int a4);
 	static void PopScreen();
 
-	static int InstancePost(int a1, int a2, int a3);
+	static void InstancePost(int instance, int a2, int data);
+	static int InstanceQuery(int instance, int a2);
+	static int InstanceFind(int intro);
 
 	static bool CheckChapter(char* chapter);
 	static void SwitchPlayerCharacter();
@@ -29,6 +31,4 @@ private:
 	static std::function<int __cdecl()> f_GetTopScreenID;
 	static std::function<int __cdecl(const char* text, int a2, int a3, int a4)> f_PushOkDialog;
 	static std::function<int __cdecl()> f_PopScreen;
-
-	static std::function<int __cdecl(int, int, int)> f_InstancePost;
 };

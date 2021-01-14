@@ -199,13 +199,6 @@ void Menu::Draw()
         Game::PushScreen(screen, 0);
     }
 
-    // log window (based on imgui_demo log window)
-    ImGui::BeginChild("LogRegion", ImVec2(), true);
-
-    ImGui::TextUnformatted(this->logBuffer.begin());
-    ImGui::SetScrollHere(1.0f);
-    ImGui::EndChild();
-
     if (ImGui::Button("Clear")) {
         this->logBuffer.clear();
     }
@@ -259,6 +252,17 @@ void Menu::Draw()
         Game::InstancePost(player, 262147, anim);
         Game::InstanceSetEventAnimPlaying(player, 0);
     }
+
+    ImGui::End();
+
+    ImGui::Begin("Log", nullptr);
+
+    // log window (based on imgui_demo log window)
+    ImGui::BeginChild("LogRegion", ImVec2(), true);
+
+    ImGui::TextUnformatted(this->logBuffer.begin());
+    ImGui::SetScrollHere(1.0f);
+    ImGui::EndChild();
 
     ImGui::End();
 }
