@@ -16,6 +16,9 @@ void(__cdecl* INSTANCE_Post)(DWORD, DWORD, int);
 int(__cdecl* INSTANCE_Query)(int, int);
 int(__cdecl* INSTANCE_Find)(int);
 
+void(__cdecl* IncrHealth)(float amount);
+void(__cdecl* UIFadeGroupTrigger)(int group);
+
 void Game::Initialize()
 {
 	f_SwitchChapter = reinterpret_cast<char(__cdecl*)(char*)>(0x422090);
@@ -33,6 +36,9 @@ void Game::Initialize()
 	PLAYER_DebugSwitchPlayerCharacter = reinterpret_cast<void(__cdecl*)()>(0x005A39A0);
 	sub_C64D3F = reinterpret_cast<DWORD(__cdecl*)(int, int, int)>(0xC64D3F);
 	G2EmulationInstanceSetEventAnimPlaying = reinterpret_cast<void(__cdecl*)(DWORD, int)>(0x4DE940);
+
+	IncrHealth = reinterpret_cast<void(__cdecl*)(float)>(0x005715E0);
+	UIFadeGroupTrigger = reinterpret_cast<void(__cdecl*)(int)>(0x004EE580);
 }
 
 void Game::SwitchChapter(char* chapter)
@@ -65,7 +71,7 @@ void Game::PopScreen()
 	f_PopScreen();
 }
 
-// Instance post, query and find are mostly used to interact with instances a level e.g. doors, levers, traps
+// Instance post, query and find are mostly used to interact with instances from a level e.g. doors, levers, traps
 // for example to query a lever Game::InstanceQuery(leverInstance, 233) == 1 // lever is switched on
 // more can be found here https://theindra.eu/projects/TRAE-Research/research.html#_example
 void Game::InstancePost(int instance, int a2, int data)
@@ -119,4 +125,14 @@ DWORD Game::AnimDataSomething(int a1, int a2, int a3)
 void Game::InstanceSetEventAnimPlaying(DWORD instance, int a2)
 {
 	G2EmulationInstanceSetEventAnimPlaying(instance, a2);
+}
+
+void Game::IncreaseHealth(float amount)
+{
+	IncrHealth(amount);
+}
+
+void Game::TriggerUiFadeGroup(int group)
+{
+	UIFadeGroupTrigger(group);
 }

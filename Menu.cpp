@@ -164,6 +164,16 @@ void Menu::Draw()
 
     ImGui::SliderFloat("Z speed", &m_flightSpeed, 0, 500);
 
+    if (ImGui::Button("Fill 'er Up"))
+    {
+        // pointers everywhere!
+        auto missingHealth = *(float*)(*(DWORD*)((*(DWORD*)PLAYERINSTANCE) + 448) + 164);
+
+        Game::IncreaseHealth(missingHealth);
+        Game::TriggerUiFadeGroup(1);
+        // TODO ammo
+    }
+
     ImGui::Checkbox("should instance?", &shouldInstance);
 
     ImGui::InputText("chapter", chapter, 32);
