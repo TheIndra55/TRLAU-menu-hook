@@ -18,6 +18,7 @@ int(__cdecl* INSTANCE_Find)(int);
 
 void(__cdecl* IncrHealth)(float amount);
 void(__cdecl* UIFadeGroupTrigger)(int group);
+void(__cdecl* game_SetGameValue)(int a1, float a2, char a3);
 
 void Game::Initialize()
 {
@@ -39,6 +40,7 @@ void Game::Initialize()
 
 	IncrHealth = reinterpret_cast<void(__cdecl*)(float)>(0x005715E0);
 	UIFadeGroupTrigger = reinterpret_cast<void(__cdecl*)(int)>(0x004EE580);
+	game_SetGameValue = reinterpret_cast<void(__cdecl*)(int, float, char)>(0x004551A0);
 }
 
 void Game::SwitchChapter(char* chapter)
@@ -135,4 +137,9 @@ void Game::IncreaseHealth(float amount)
 void Game::TriggerUiFadeGroup(int group)
 {
 	UIFadeGroupTrigger(group);
+}
+
+void Game::SetGameValue(int key, float val, bool apply)
+{
+	game_SetGameValue(key, val, apply);
 }

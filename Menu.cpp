@@ -251,6 +251,16 @@ void Menu::Draw()
         ImGui::SetClipboardText(this->logBuffer.begin());
     }
 
+    if (ImGui::Button("Trigger All Fade Groups"))
+    {
+        for (int i = 0; i <= 28; i++)
+        {
+            Game::TriggerUiFadeGroup(i);
+        }
+
+        Game::SetGameValue(126, 10.0, 1);
+    }
+
     if (ImGui::Button("Turn Lara into gold anim")) // TODO find out how to get gold effect
     {
         auto player = *reinterpret_cast<DWORD*>(PLAYERINSTANCE);

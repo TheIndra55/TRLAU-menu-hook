@@ -26,6 +26,7 @@ public:
 
 	static void IncreaseHealth(float amount);
 	static void TriggerUiFadeGroup(int group);
+	static void SetGameValue(int key, float val, bool apply);
 private:
 	static std::function<char(char* chapter)> f_SwitchChapter;
 	static std::function<char __cdecl(int a1)> f_ResetGame;
