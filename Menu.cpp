@@ -174,7 +174,13 @@ void Menu::Draw()
         // TODO ammo
     }
 
-    ImGui::Checkbox("should instance?", &shouldInstance);
+    ImGui::Checkbox("Should instance?", &shouldInstance);
+    ImGui::Checkbox("Draw instances", &m_drawSettings.draw);
+    if (ImGui::CollapsingHeader("Draw settings"))
+    {
+        ImGui::Checkbox("Filter", &m_drawSettings.filter);
+        ImGui::Checkbox("Draw intro id", &m_drawSettings.drawIntro);
+    }
 
     ImGui::InputText("chapter", chapter, 32);
     ImGui::InputText("unit", unit, 32);

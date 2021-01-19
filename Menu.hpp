@@ -5,6 +5,13 @@
 #include "imgui_impl_dx9.h"
 #include "imgui_impl_win32.h"
 
+struct DrawSettings
+{
+	bool draw = false;
+	bool filter = true;
+	bool drawIntro = false;
+};
+
 class Menu
 {
 public:
@@ -20,6 +27,8 @@ public:
 
 	// TODO private
 	bool m_focus = false;
+
+	DrawSettings m_drawSettings;
 private:
 	void Draw();
 

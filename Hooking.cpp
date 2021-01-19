@@ -56,6 +56,69 @@ void __cdecl EVENT_DisplayString(char* str, int time)
 	g_hooking->menu->Log("%s\n", str);
 }
 
+float* (__cdecl* TRANS_RotTransPersVectorf)(DWORD a1, DWORD a2);
+void(__cdecl* Font__Print)(DWORD font, const char* a2, ...);
+void(__cdecl* org_Font__Flush)();
+
+void SetCursor(float x, float y)
+{
+	/* CursorX */ *(float*)0x007D180C = x;
+	/* CursorY */ *(float*)0x007D1810 = y;
+}
+
+void __cdecl Font__Flush()
+{
+	auto instance = *(DWORD*)0x817D64;
+
+	if (g_hooking->menu->m_drawSettings.draw && instance)
+	{
+		auto settings = g_hooking->menu->m_drawSettings;
+
+		// loop trough all instances
+		while (1)
+		{
+			auto next = *(DWORD*)(instance + 8);
+			auto object = *(DWORD*)(instance + 0x94);
+
+			auto instanceObj = (Instance*)instance;
+			auto data = *(DWORD*)(instance + 448);
+
+			// TODO filter only pickups
+			auto show = [](DrawSettings settings, DWORD data)
+			{
+				if (!settings.filter) return true;
+
+				if (!data) return false;
+				auto unk = *(__int16*)data + 4;
+				return unk == 5 || unk == 10005;
+			};
+
+			if (show(settings, data))
+			{
+				auto srcVector = cdc::Vector3{};
+				srcVector = instanceObj->position;
+				TRANS_RotTransPersVectorf((DWORD)&srcVector, (DWORD)&srcVector);
+
+				SetCursor(srcVector.x, srcVector.y);
+				Font__Print(*(DWORD*)0x007D1800, "%s", (char*)*(DWORD*)(object + 0x48));
+
+				if (settings.drawIntro)
+				{
+					SetCursor(srcVector.x, srcVector.y + 15.f);
+					Font__Print(*(DWORD*)0x007D1800, "%d", *(int*)(instance + 0x1D0));
+				}
+			}
+
+			if (!next)
+				break;
+
+			instance = next;
+		}
+	}
+
+	org_Font__Flush();
+}
+
 void Hooking::GotDevice()
 {
 	this->menu = new Menu(pDevice, pHwnd);
@@ -79,6 +142,10 @@ void Hooking::GotDevice()
 
 	// hook SetCursorPos to prevent the game from resetting the cursor position
 	MH_CreateHookApi(L"user32", "SetCursorPos", hooked_SetCursorPos, reinterpret_cast<void**>(&original_SetCursorPos));
+
+	MH_CreateHook((void*)0x00434C40, Font__Flush, (void**)&org_Font__Flush);
+	Font__Print = reinterpret_cast<void(__cdecl*)(DWORD, const char*, ...)>(0x00C5F83D);
+	TRANS_RotTransPersVectorf = reinterpret_cast<float*(__cdecl*)(DWORD, DWORD)>(0x00402B50);
 
 	MH_EnableHook(MH_ALL_HOOKS);
 }
