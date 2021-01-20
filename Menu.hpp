@@ -10,6 +10,8 @@ struct DrawSettings
 	bool draw = false;
 	bool filter = true;
 	bool drawIntro = false;
+	bool drawAddress = false;
+	bool drawFamily = false;
 };
 
 class Menu

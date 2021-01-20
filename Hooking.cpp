@@ -60,6 +60,8 @@ float* (__cdecl* TRANS_RotTransPersVectorf)(DWORD a1, DWORD a2);
 void(__cdecl* Font__Print)(DWORD font, const char* a2, ...);
 void(__cdecl* org_Font__Flush)();
 
+bool(__cdecl* objCheckFamily)(DWORD instance, unsigned __int16 family);
+
 void SetCursor(float x, float y)
 {
 	/* CursorX */ *(float*)0x007D180C = x;
@@ -84,16 +86,14 @@ void __cdecl Font__Flush()
 			auto data = *(DWORD*)(instance + 448);
 
 			// TODO filter only pickups
-			auto show = [](DrawSettings settings, DWORD data)
+			auto show = [](DrawSettings settings, DWORD instance)
 			{
 				if (!settings.filter) return true;
 
-				if (!data) return false;
-				auto unk = *(__int16*)data + 4;
-				return unk == 5 || unk == 10005;
+				return objCheckFamily(instance, 35) /* keys, healthpacks stuff */ || objCheckFamily(instance, 39) /* ammo */;
 			};
 
-			if (show(settings, data))
+			if (show(settings, instance))
 			{
 				auto srcVector = cdc::Vector3{};
 				srcVector = instanceObj->position;
@@ -104,8 +104,23 @@ void __cdecl Font__Flush()
 
 				if (settings.drawIntro)
 				{
-					SetCursor(srcVector.x, srcVector.y + 15.f);
+					srcVector.y += 15.f;
+					SetCursor(srcVector.x, srcVector.y);
 					Font__Print(*(DWORD*)0x007D1800, "%d", *(int*)(instance + 0x1D0));
+				}
+
+				if (settings.drawAddress)
+				{
+					srcVector.y += 15.f;
+					SetCursor(srcVector.x, srcVector.y);
+					Font__Print(*(DWORD*)0x007D1800, "%p", instance);
+				}
+
+				if (settings.drawFamily && data)
+				{
+					srcVector.y += 15.f;
+					SetCursor(srcVector.x, srcVector.y);
+					Font__Print(*(DWORD*)0x007D1800, "%d", *(unsigned __int16*)(data + 2));
 				}
 			}
 
@@ -142,6 +157,8 @@ void Hooking::GotDevice()
 
 	// hook SetCursorPos to prevent the game from resetting the cursor position
 	MH_CreateHookApi(L"user32", "SetCursorPos", hooked_SetCursorPos, reinterpret_cast<void**>(&original_SetCursorPos));
+
+	objCheckFamily = reinterpret_cast<bool(__cdecl*)(DWORD instance, unsigned __int16 family)>(0x534660);
 
 	MH_CreateHook((void*)0x00434C40, Font__Flush, (void**)&org_Font__Flush);
 	Font__Print = reinterpret_cast<void(__cdecl*)(DWORD, const char*, ...)>(0x00C5F83D);

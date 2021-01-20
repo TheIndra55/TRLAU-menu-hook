@@ -180,6 +180,8 @@ void Menu::Draw()
     {
         ImGui::Checkbox("Filter", &m_drawSettings.filter);
         ImGui::Checkbox("Draw intro id", &m_drawSettings.drawIntro);
+        ImGui::Checkbox("Draw pointer address", &m_drawSettings.drawAddress);
+        ImGui::Checkbox("Draw 'family'", &m_drawSettings.drawFamily);
     }
 
     ImGui::InputText("chapter", chapter, 32);
