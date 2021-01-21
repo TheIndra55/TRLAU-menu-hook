@@ -182,6 +182,7 @@ void Menu::Draw()
         ImGui::Checkbox("Draw intro id", &m_drawSettings.drawIntro);
         ImGui::Checkbox("Draw pointer address", &m_drawSettings.drawAddress);
         ImGui::Checkbox("Draw 'family'", &m_drawSettings.drawFamily);
+        ImGui::Checkbox("Draw enemy health", &m_drawSettings.drawHealth);
     }
 
     ImGui::InputText("chapter", chapter, 32);

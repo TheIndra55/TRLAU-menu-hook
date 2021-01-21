@@ -12,6 +12,7 @@ struct DrawSettings
 	bool drawIntro = false;
 	bool drawAddress = false;
 	bool drawFamily = false;
+	bool drawHealth = false;
 };
 
 class Menu

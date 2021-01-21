@@ -83,24 +83,36 @@ void __cdecl Font__Flush()
 			auto object = *(DWORD*)(instance + 0x94);
 
 			auto instanceObj = (Instance*)instance;
+
 			auto data = *(DWORD*)(instance + 448);
+			auto extraData = *(DWORD*)(instance + 572);
 
 			// TODO filter only pickups
-			auto show = [](DrawSettings settings, DWORD instance)
+			auto show = [](DrawSettings settings, DWORD instance, DWORD data)
 			{
 				if (!settings.filter) return true;
+
+				// if selected 'draw enemy health' and instance is an enemy continue
+				if (settings.drawHealth && data && *(unsigned __int16*)(data + 2) == 56048) return true;
 
 				return objCheckFamily(instance, 35) /* keys, healthpacks stuff */ || objCheckFamily(instance, 39) /* ammo */;
 			};
 
-			if (show(settings, instance))
-			{
-				auto srcVector = cdc::Vector3{};
-				srcVector = instanceObj->position;
-				TRANS_RotTransPersVectorf((DWORD)&srcVector, (DWORD)&srcVector);
+			auto srcVector = cdc::Vector3{};
+			srcVector = instanceObj->position;
+			TRANS_RotTransPersVectorf((DWORD)&srcVector, (DWORD)&srcVector);
 
+			if (show(settings, instance, data) && srcVector.z > 16.f /* only draw when on screen */)
+			{
 				SetCursor(srcVector.x, srcVector.y);
 				Font__Print(*(DWORD*)0x007D1800, "%s", (char*)*(DWORD*)(object + 0x48));
+
+				if (settings.drawHealth && extraData && data && *(unsigned __int16*)(data + 2) == 56048)
+				{
+					srcVector.y += 15.f;
+					SetCursor(srcVector.x, srcVector.y);
+					Font__Print(*(DWORD*)0x007D1800, "%8.2f", *(float*)(extraData + 5280));
+				}
 
 				if (settings.drawIntro)
 				{
