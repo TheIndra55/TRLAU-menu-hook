@@ -46,3 +46,5 @@ private:
 
 static int(__cdecl* original_SIGNAL_FindSignal)(DWORD* level, int signal);
 int hooked_SIGNAL_FindSignal(DWORD* level, int signal);
+
+void DrawInstanceViewer();

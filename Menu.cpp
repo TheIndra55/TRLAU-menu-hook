@@ -155,7 +155,20 @@ void Menu::Draw()
     static char chapter[32] = "";
     static char unit[32] = "";
 
-    ImGui::Begin("Menu", nullptr);
+    static bool show_instance_viewer = false;
+    if (show_instance_viewer) DrawInstanceViewer();
+
+    ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_MenuBar);
+
+    if (ImGui::BeginMenuBar())
+    {
+        if (ImGui::BeginMenu("Tools"))
+        {
+            ImGui::MenuItem("Instance viewer", NULL, &show_instance_viewer);
+            ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
+    }
 
     // show current unit
     auto streamUnit = (int)(*(DWORD*)0x83833C) + 178;
@@ -292,6 +305,93 @@ void Menu::Draw()
     ImGui::TextUnformatted(this->logBuffer.begin());
     ImGui::SetScrollHere(1.0f);
     ImGui::EndChild();
+
+    ImGui::End();
+}
+
+void DrawInstanceViewer()
+{
+    static DWORD clickedInstance;
+
+    ImGui::Begin("Instances");
+
+    ImGui::Columns(2, "instances");
+
+    auto instance = *(DWORD*)0x817D64;
+
+    ImGui::BeginChild("InstanceListTree");
+    if (instance)
+    {
+        while (1)
+        {
+            auto next = *(DWORD*)(instance + 8);
+            auto object = *(DWORD*)(instance + 0x94);
+
+            if (ImGui::TreeNodeEx((void*)object, ImGuiTreeNodeFlags_Leaf, "%d %s", *(int*)(instance + 0x1D0), (char*)*(DWORD*)(object + 0x48)))
+            {
+                if (ImGui::IsItemClicked())
+                {
+                    clickedInstance = instance;
+                }
+
+                ImGui::TreePop();
+            }
+
+            if (!next)
+                break;
+
+            instance = next;
+        }
+    }
+    ImGui::EndChild();
+
+    ImGui::NextColumn();
+
+    if (clickedInstance && *(int*)clickedInstance == 0)
+    {
+        // points to nullptr remove
+        clickedInstance = 0;
+    }
+
+    if (clickedInstance)
+    {
+        auto oInstance = (Instance*)clickedInstance;
+        auto object = *(DWORD*)(clickedInstance + 0x94);
+        auto data = *(DWORD*)(clickedInstance + 448);
+        auto extraData = *(DWORD*)(clickedInstance + 572);
+
+        ImGui::Text("%s", (char*)*(DWORD*)(object + 0x48));
+
+        auto coords = oInstance->position;
+        auto rotation = oInstance->rotation;
+
+        ImGui::Text("Position: %f %f %f", coords.x, coords.y, coords.z);
+        ImGui::Text("Rotation: %f %f %f", rotation.x, rotation.y, rotation.z);
+
+        // pretty sure ImGui has some sort of widget for this
+        if (ImGui::Button("X")) { rotation.x += 0.1f; } ImGui::SameLine();
+        if (ImGui::Button("Y")) { rotation.y += 0.1; } ImGui::SameLine();
+        if (ImGui::Button("Z")) { rotation.z += 0.1; }
+        oInstance->rotation = rotation;
+
+        ImGui::Text("Intro: %d", *(int*)(clickedInstance + 0x1D0));
+
+        if (data)
+        {
+            ImGui::Text("Family %d", *(unsigned __int16*)(data + 2));
+        }
+
+        if (extraData)
+        {
+            ImGui::Text("Health: %8.2f", *(float*)(extraData + 5280));
+        }
+
+        if (ImGui::Button("Toggle switch"))
+        {
+            Game::InstancePost(clickedInstance, 8388753, 1);
+        }
+        ImGui::Text("Switch status: %d", Game::InstanceQuery(clickedInstance, 233));
+    }
 
     ImGui::End();
 }
