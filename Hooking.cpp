@@ -1,5 +1,6 @@
 #include "Hooking.hpp"
 #include "Game.hpp"
+#include "ControlHooks.hpp"
 
 extern Hooking* g_hooking;
 
@@ -16,6 +17,7 @@ void Hooking::Initialize()
 		hooked_Direct3DInit, 
 		reinterpret_cast<void**>(&original_Direct3DInit));
 
+	InstallControlHooks();
 	Game::Initialize();
 
 	MH_EnableHook(MH_ALL_HOOKS);

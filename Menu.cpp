@@ -2,9 +2,6 @@
 #include "Game.hpp"
 #include "Hooking.hpp"
 
-#define GAMETRACKER 0x838330
-#define PLAYERINSTANCE 0x83833C
-
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 static bool shouldInstance = true;
@@ -47,6 +44,12 @@ void __fastcall hooked_Subtitle_Add(DWORD* _this, void* _, char* str, int durati
     orginal_Subtitle_Add(_this, str, duration);
 }
 
+char IsPs2()
+{
+    // somewhat the zoom code for binoculars is inside an 'if IsPs2()' in TRAE so we have to hook that function
+    return Game::m_binoculars;
+}
+
 Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 {
 	m_pd3dDevice = pd3dDevice;
@@ -63,6 +66,8 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
     MH_CreateHook((void*)0x4E3C80, localstr_get_hooked, (void**)&localstr_get);
     MH_CreateHook((void*)0x4FCB60, pushscreenhooked, (void**)&pushscreen);
     MH_CreateHook((void*)0x0046F080, hooked_Subtitle_Add, (void**)&orginal_Subtitle_Add);
+
+    MH_CreateHook((void*)0x004E6EC0, IsPs2, nullptr);
 }
 
 void Menu::OnDeviceReleased()
@@ -102,6 +107,11 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     if (msg == WM_KEYUP && wparam == VK_F9)
     {
         Game::SwitchPlayerCharacter();
+    }
+
+    if (msg == WM_KEYUP && wparam == VK_DELETE)
+    {
+        Game::ToggleBinoculars();
     }
 
     if (m_flight)

@@ -2,6 +2,9 @@
 #include <functional>
 #include "pch.h"
 
+#define GAMETRACKER 0x838330
+#define PLAYERINSTANCE 0x83833C
+
 class Game
 {
 public:
@@ -27,6 +30,9 @@ public:
 	static void IncreaseHealth(float amount);
 	static void TriggerUiFadeGroup(int group);
 	static void SetGameValue(int key, float val, bool apply);
+
+	static bool m_binoculars;
+	static void ToggleBinoculars();
 private:
 	static std::function<char(char* chapter)> f_SwitchChapter;
 	static std::function<char __cdecl(int a1)> f_ResetGame;

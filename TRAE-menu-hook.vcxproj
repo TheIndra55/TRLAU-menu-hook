@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ControlHooks.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="Hooking.hpp" />
@@ -171,6 +172,7 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ControlHooks.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Hooking.cpp" />
