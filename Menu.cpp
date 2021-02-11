@@ -293,7 +293,7 @@ void Menu::Draw()
         Game::SetGameValue(126, 10.0, 1);
     }
 
-    if (ImGui::Button("Turn Lara into gold anim")) // TODO find out how to get gold effect
+    if (ImGui::Button("Turn Lara into gold anim"))
     {
         auto player = *reinterpret_cast<DWORD*>(PLAYERINSTANCE);
         int v11 = 52;
@@ -303,6 +303,12 @@ void Menu::Draw()
         auto anim = Game::AnimDataSomething(player, player, (int)&v11);
         Game::InstancePost(player, 262147, anim);
         Game::InstanceSetEventAnimPlaying(player, 0);
+        Game::PlayerTurnGold();
+    }
+
+    if (ImGui::Button("Real gold lara"))
+    {
+        Game::PlayerTurnGold();
     }
 
     ImGui::End();

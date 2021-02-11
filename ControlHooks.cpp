@@ -47,5 +47,7 @@ void InstallControlHooks()
 	UIDataList__AllocateRunData = reinterpret_cast<char(__thiscall*)(DWORD, int, int, int, int, int)>(0x00C704C2);
 	UIDataList__AddItem = reinterpret_cast<char(__thiscall*)(DWORD, int, void*, int, int, const char*)>(0x00C70577);
 
+	MH_CreateHook((void*)0x004ECCB0, UIControllerConfigDataList, nullptr);
+
 	MH_EnableHook(MH_ALL_HOOKS);
 }

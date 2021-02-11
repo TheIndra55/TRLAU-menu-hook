@@ -27,6 +27,9 @@ int(__cdecl* SteerSwitchMode)(DWORD instance, int mode);
 void(__cdecl* PLAYER_ReSetLookAround)(DWORD instance);
 __int16(__cdecl* CAMERA_ForceEndLookaroundMode)(DWORD camera);
 
+void(__cdecl* sub_456B50)();
+void(__cdecl* EVENT_PlayerTurnGold)();
+
 void Game::Initialize()
 {
 	f_SwitchChapter = reinterpret_cast<char(__cdecl*)(char*)>(0x422090);
@@ -54,6 +57,9 @@ void Game::Initialize()
 	SteerSwitchMode = reinterpret_cast<int(__cdecl*)(DWORD, int)>(0x005BAE60);
 	PLAYER_ReSetLookAround = reinterpret_cast<void(__cdecl*)(DWORD instance)>(0x00C759C7);
 	CAMERA_ForceEndLookaroundMode = reinterpret_cast<__int16(__cdecl*)(DWORD)>(0x0048A5E0);
+
+	sub_456B50 = reinterpret_cast<void(__cdecl*)()>(0x456B50);
+	EVENT_PlayerTurnGold = reinterpret_cast<void(__cdecl*)()>(0x0044E290);
 }
 
 void Game::SwitchChapter(char* chapter)
@@ -172,6 +178,7 @@ void Game::ToggleBinoculars()
 		Game::InstancePost(PLAYERINSTANCE, 262265, 0);
 		Game::InstancePost(PLAYERINSTANCE, 262264, 8);
 		CAMERA_StartLookaroundMode(0x850670);
+		sub_456B50();
 	}
 	else
 	{
@@ -179,8 +186,15 @@ void Game::ToggleBinoculars()
 		*(int*)0x86CD90 = 0;
 
 		PLAYER_ReSetLookAround(PLAYERINSTANCE);
+		Game::InstancePost(PLAYERINSTANCE, 262266, 0);
 		CAMERA_ForceEndLookaroundMode(0x850670);
 	}
 
 	m_binoculars = !m_binoculars;
+}
+
+// Activates the gold wet effect, calling this outside unit gr18 crashes the game
+void Game::PlayerTurnGold()
+{
+	EVENT_PlayerTurnGold();
 }
