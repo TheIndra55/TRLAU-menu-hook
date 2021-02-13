@@ -198,6 +198,7 @@ void Menu::Draw()
     }
 
     ImGui::Checkbox("Should instance?", &shouldInstance);
+    ImGui::Checkbox("Enable debug keypad", (bool*)0x7C8A3C);
     ImGui::Checkbox("Draw instances", &m_drawSettings.draw);
     if (ImGui::CollapsingHeader("Draw settings"))
     {
@@ -311,6 +312,15 @@ void Menu::Draw()
         Game::PlayerTurnGold();
     }
 
+    if (ImGui::Button("Give all weapons"))
+    {
+        auto player = *reinterpret_cast<DWORD*>(PLAYERINSTANCE);
+        for (int i = 0; i < 3; i++)
+        {
+            Game::InstancePost(player, 262256, i);
+        }
+    }
+
     ImGui::End();
 
     ImGui::Begin("Log", nullptr);
@@ -402,9 +412,13 @@ void DrawInstanceViewer()
             ImGui::Text("Health: %8.2f", *(float*)(extraData + 5280));
         }
 
-        if (ImGui::Button("Toggle switch"))
+        if (ImGui::Button("Switch down"))
         {
             Game::InstancePost(clickedInstance, 8388753, 1);
+        }
+        if (ImGui::Button("Switch up"))
+        {
+            Game::InstancePost(clickedInstance, 8388753, 2);
         }
         ImGui::Text("Switch status: %d", Game::InstanceQuery(clickedInstance, 233));
     }

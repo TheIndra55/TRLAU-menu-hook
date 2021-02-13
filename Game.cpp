@@ -29,6 +29,7 @@ __int16(__cdecl* CAMERA_ForceEndLookaroundMode)(DWORD camera);
 
 void(__cdecl* sub_456B50)();
 void(__cdecl* EVENT_PlayerTurnGold)();
+void(__cdecl* INSTANCE_HideUnhideDrawGroup)(int a1, int a2, int a3);
 
 void Game::Initialize()
 {
@@ -60,6 +61,7 @@ void Game::Initialize()
 
 	sub_456B50 = reinterpret_cast<void(__cdecl*)()>(0x456B50);
 	EVENT_PlayerTurnGold = reinterpret_cast<void(__cdecl*)()>(0x0044E290);
+	INSTANCE_HideUnhideDrawGroup = reinterpret_cast<void(__cdecl*)(int, int, int)>(0x004319B0);
 }
 
 void Game::SwitchChapter(char* chapter)
@@ -197,4 +199,9 @@ void Game::ToggleBinoculars()
 void Game::PlayerTurnGold()
 {
 	EVENT_PlayerTurnGold();
+}
+
+void Game::HideUnhideDrawGroup(int instance, int drawGroup, int on)
+{
+	INSTANCE_HideUnhideDrawGroup(instance, drawGroup, on);
 }

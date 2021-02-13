@@ -34,6 +34,7 @@ public:
 	static bool m_binoculars;
 	static void ToggleBinoculars();
 	static void PlayerTurnGold();
+	static void HideUnhideDrawGroup(int instance, int drawGroup, int on);
 private:
 	static std::function<char(char* chapter)> f_SwitchChapter;
 	static std::function<char __cdecl(int a1)> f_ResetGame;
