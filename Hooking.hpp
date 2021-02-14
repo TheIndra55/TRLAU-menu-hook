@@ -24,34 +24,3 @@ static LRESULT hooked_RegularWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 
 static BOOL(WINAPI* original_SetCursorPos)(int, int);
 static BOOL WINAPI hooked_SetCursorPos(int x, int y);
-
-// recycled from another unfinished project of mine, needs more research
-namespace cdc
-{
-	struct Vector3
-	{
-		float x, y, z;
-		float unused;
-	};
-}
-
-struct Instance
-{
-	__int64 unk1;
-	__int32 next;
-	__int32 prev;
-	cdc::Vector3 position;
-	cdc::Vector3 prevPosition;
-	cdc::Vector3 rotation;
-	cdc::Vector3 prevRotation;
-	cdc::Vector3 scale;
-	cdc::Vector3 shadowPosition;
-	cdc::Vector3 unk4;
-	__int32 unk5;
-	__int32 unk6;
-	__int16 unk7;
-	__int8 unk8;
-	__int8 unk9;
-	__int16 unk10;
-	DWORD* object;
-};

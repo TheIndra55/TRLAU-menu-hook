@@ -31,6 +31,10 @@ void(__cdecl* sub_456B50)();
 void(__cdecl* EVENT_PlayerTurnGold)();
 void(__cdecl* INSTANCE_HideUnhideDrawGroup)(int a1, int a2, int a3);
 
+int(__cdecl* INSTANCE_BirthObjectNoParent)(int unitId, cdc::Vector3* position, cdc::Vector3* rotation, DWORD* introData, DWORD* object, int modelnum, int);
+ObjectTracker*(__cdecl* STREAM_GetObjectTrackerByName)(char*);
+bool(__cdecl* STREAM_PollLoadQueue)();
+
 void Game::Initialize()
 {
 	f_SwitchChapter = reinterpret_cast<char(__cdecl*)(char*)>(0x422090);
@@ -62,6 +66,10 @@ void Game::Initialize()
 	sub_456B50 = reinterpret_cast<void(__cdecl*)()>(0x456B50);
 	EVENT_PlayerTurnGold = reinterpret_cast<void(__cdecl*)()>(0x0044E290);
 	INSTANCE_HideUnhideDrawGroup = reinterpret_cast<void(__cdecl*)(int, int, int)>(0x004319B0);
+
+	INSTANCE_BirthObjectNoParent = reinterpret_cast<int(__cdecl*)(int, cdc::Vector3*, cdc::Vector3*, DWORD*, DWORD*, int, int)>(0x0045BA90);
+	STREAM_GetObjectTrackerByName = reinterpret_cast<ObjectTracker*(__cdecl*)(char*)>(0x00C7D67C);
+	STREAM_PollLoadQueue = reinterpret_cast<bool(__cdecl*)()>(0x005DB190);
 }
 
 void Game::SwitchChapter(char* chapter)
@@ -204,4 +212,19 @@ void Game::PlayerTurnGold()
 void Game::HideUnhideDrawGroup(int instance, int drawGroup, int on)
 {
 	INSTANCE_HideUnhideDrawGroup(instance, drawGroup, on);
+}
+
+int Game::BirthObjectNoParent(int unitId, cdc::Vector3* position, cdc::Vector3* rotation, DWORD* introData, DWORD* object, int modelnum, int initEffects)
+{
+	return INSTANCE_BirthObjectNoParent(unitId, position, rotation, introData, object, modelnum, initEffects);
+}
+
+ObjectTracker* Stream::GetObjectTrackerByName(char* name)
+{
+	return STREAM_GetObjectTrackerByName(name);
+}
+
+bool Stream::PollLoadQueue()
+{
+	return STREAM_PollLoadQueue();
 }

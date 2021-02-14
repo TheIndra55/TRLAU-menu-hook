@@ -312,13 +312,34 @@ void Menu::Draw()
         Game::PlayerTurnGold();
     }
 
+    auto player = *reinterpret_cast<DWORD*>(PLAYERINSTANCE);
     if (ImGui::Button("Give all weapons"))
     {
-        auto player = *reinterpret_cast<DWORD*>(PLAYERINSTANCE);
         for (int i = 0; i < 3; i++)
         {
             Game::InstancePost(player, 262256, i);
         }
+    }
+
+    static int item;
+    ImGui::InputInt("itemId", &item);
+    if (ImGui::Button("Give item"))
+    {
+        Game::InstancePost(player, 262256, item );
+    }
+
+    static char name[100] = "";
+    ImGui::InputText("name", name, 100);
+    if (ImGui::Button("Birth instance"))
+    {
+        auto position = (*(Instance**)PLAYERINSTANCE)->position;
+        auto rotation = (*(Instance**)PLAYERINSTANCE)->rotation;
+        auto unitId = *(int*)0x838418;
+
+        auto tracker = Stream::GetObjectTrackerByName(name);
+        while (tracker->status != 2 && Stream::PollLoadQueue());
+
+        Game::BirthObjectNoParent(unitId, &position, &rotation, nullptr, tracker->object, 0, 1);
     }
 
     ImGui::End();
