@@ -50,6 +50,46 @@ char IsPs2()
     return Game::m_binoculars;
 }
 
+static bool isDiskFS = false;
+
+void(__cdecl* origUnitFileName)(char*, char*, char*);
+void unitFileName(char* name, char* unit, char* ext)
+{
+    if (isDiskFS)
+    {
+        sprintf(name, "\\units\\%s.%s", unit, ext);
+        return;
+    }
+
+    return origUnitFileName(name, unit, ext);
+}
+
+int getFS()
+{
+    if (isDiskFS)
+    {
+        return *(int*)0x838890;
+    }
+
+    return *(int*)0x83888C;
+}
+
+int(__cdecl* origSTREAM_LoadLevel)(char* a1, int a2, char a3);
+
+int __cdecl STREAM_LoadLevel(char* a1, int a2, char a3)
+{
+    if (strncmp("fi", a1, 2) == 0)
+    {
+        // load this unit from disk
+        isDiskFS = true;
+    }
+
+    auto unit = origSTREAM_LoadLevel(a1, a2, a3);
+    isDiskFS = false;
+
+    return unit;
+}
+
 Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 {
 	m_pd3dDevice = pd3dDevice;
@@ -68,6 +108,10 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
     MH_CreateHook((void*)0x0046F080, hooked_Subtitle_Add, (void**)&orginal_Subtitle_Add);
 
     MH_CreateHook((void*)0x004E6EC0, IsPs2, nullptr);
+    
+    MH_CreateHook((void*)0x0045F640, getFS, nullptr);
+    MH_CreateHook((void*)0x00C63241, unitFileName, (void**)&origUnitFileName);
+    MH_CreateHook((void*)0x00C7DC5B, STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
 }
 
 void Menu::OnDeviceReleased()
