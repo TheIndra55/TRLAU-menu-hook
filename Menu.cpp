@@ -5,6 +5,7 @@
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 static bool shouldInstance = true;
+static bool shouldReloc = true;
 
 DWORD(__cdecl*trampinstance)();
 
@@ -90,6 +91,18 @@ int __cdecl STREAM_LoadLevel(char* a1, int a2, char a3)
     return unit;
 }
 
+void(__cdecl* origSTREAM_FinishLoad)(StreamUnit* unit);
+void STREAM_FinishLoad(StreamUnit* unit)
+{
+    if (!shouldReloc)
+    {
+        Level* level = unit->level;
+        *(DWORD*)(level + 156) = 0; // set reloc module ptr to 0
+    }
+
+    origSTREAM_FinishLoad(unit);
+}
+
 Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 {
 	m_pd3dDevice = pd3dDevice;
@@ -112,6 +125,8 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
     MH_CreateHook((void*)0x0045F640, getFS, nullptr);
     MH_CreateHook((void*)0x00C63241, unitFileName, (void**)&origUnitFileName);
     MH_CreateHook((void*)0x00C7DC5B, STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
+
+    MH_CreateHook((void*)0x005DB680, STREAM_FinishLoad, (void**)&origSTREAM_FinishLoad);
 }
 
 void Menu::OnDeviceReleased()
@@ -242,6 +257,7 @@ void Menu::Draw()
     }
 
     ImGui::Checkbox("Should instance?", &shouldInstance);
+    ImGui::Checkbox("Load unit script", &shouldReloc);
     ImGui::Checkbox("Enable debug keypad", (bool*)0x7C8A3C);
     ImGui::Checkbox("Draw instances", &m_drawSettings.draw);
     if (ImGui::CollapsingHeader("Draw settings"))
@@ -461,8 +477,8 @@ void DrawInstanceViewer()
 
         // pretty sure ImGui has some sort of widget for this
         if (ImGui::Button("X")) { rotation.x += 0.1f; } ImGui::SameLine();
-        if (ImGui::Button("Y")) { rotation.y += 0.1; } ImGui::SameLine();
-        if (ImGui::Button("Z")) { rotation.z += 0.1; }
+        if (ImGui::Button("Y")) { rotation.y += 0.1f; } ImGui::SameLine();
+        if (ImGui::Button("Z")) { rotation.z += 0.1f; }
         oInstance->rotation = rotation;
 
         ImGui::Text("Intro: %d", *(int*)(clickedInstance + 0x1D0));

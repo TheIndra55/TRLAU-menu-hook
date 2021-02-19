@@ -45,6 +45,19 @@ struct Instance
 	DWORD* object;
 };
 
+struct Level
+{
+};
+
+struct StreamUnit
+{
+	int id;
+	__int8 used;
+	__int8 unitHidden;
+	__int16 flags;
+	Level* level;
+};
+
 class Game
 {
 public:
