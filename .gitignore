@@ -361,3 +361,8 @@ FodyWeavers.xsd
 
 *.lib
 include/steam/
+
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user

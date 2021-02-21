@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "MinHook.h"
+#include "include/MinHook.h"
 #include "Hooking.hpp"
 
 //int GetNumButtons()
