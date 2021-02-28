@@ -12,6 +12,7 @@ project "TRAE-menu-hook"
 		"*.h",
 		"include/**"
 	}
+
     language "C++"
 	links { "MinHook.x86.lib", "d3d9.lib" }
 	
@@ -23,4 +24,4 @@ project "TRAE-menu-hook"
         defines { "NDEBUG" }
         optimize "On"
         symbols "On"
-		linkoptions { "/pdbaltpath:%_PDB%" }
+        linkoptions { "/pdbaltpath:%_PDB%" }

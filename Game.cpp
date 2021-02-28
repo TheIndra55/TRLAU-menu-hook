@@ -2,12 +2,13 @@
 
 // todo ouch
 std::function<char(char*)> Game::f_SwitchChapter = nullptr;
-std::function<char __cdecl(int)> Game::f_ResetGame = nullptr;
 std::function<char __cdecl(int, int)> Game::f_PushScreen = nullptr;
 std::function<int __cdecl()> Game::f_GetTopScreenID = nullptr;
 std::function<int __cdecl(const char*, int, int, int)> Game::f_PushOkDialog = nullptr;
 std::function<int __cdecl()> Game::f_PopScreen = nullptr;
 bool Game::m_binoculars = false;
+
+void(__cdecl* GAMELOOP_ExitGame)(int a1);
 
 void(__cdecl* PLAYER_DebugSwitchPlayerCharacter)();
 DWORD(__cdecl* sub_C64D3F)(int a1, int a2, int a3);
@@ -38,14 +39,24 @@ bool(__cdecl* STREAM_PollLoadQueue)();
 void Game::Initialize()
 {
 	f_SwitchChapter = reinterpret_cast<char(__cdecl*)(char*)>(0x422090);
-	f_ResetGame = reinterpret_cast<char(__cdecl*)(int)>(0x4542B0);
+
+#if TRAE
+	GAMELOOP_ExitGame = reinterpret_cast<void(__cdecl*)(int)>(0x4542B0);
+#elif TR8
+	GAMELOOP_ExitGame = reinterpret_cast<void(__cdecl*)(int)>(0x5DF760);
+#endif
 
 	f_PushScreen = reinterpret_cast<char(__cdecl*)(int, int)>(0x4FCB60);
 	f_GetTopScreenID = reinterpret_cast<int(__cdecl*)()>(0x4FC210);
 	f_PushOkDialog = reinterpret_cast<int(__cdecl*)(const char*, int, int, int)>(0x4FD100);
 	f_PopScreen = reinterpret_cast<int(__cdecl*)()>(0x4FCD20);
 
+#if TRAE
 	INSTANCE_Post = reinterpret_cast<void(__cdecl*)(DWORD, DWORD, int)>(0x004580B0);
+#elif TR8
+	INSTANCE_Post = reinterpret_cast<void(__cdecl*)(DWORD, DWORD, int)>(0x69A670);
+#endif
+
 	INSTANCE_Query = reinterpret_cast<int(__cdecl*)(int, int)>(0x00458060);
 	INSTANCE_Find = reinterpret_cast<int(__cdecl*)(int)>(0x004582D0);
 
@@ -79,7 +90,7 @@ void Game::SwitchChapter(char* chapter)
 
 void Game::ResetGame(int unk1)
 {
-	f_ResetGame(unk1);
+	GAMELOOP_ExitGame(unk1);
 }
 
 void Game::PushScreen(int screenId, int unk2)

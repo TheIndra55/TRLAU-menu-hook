@@ -3,7 +3,18 @@
 #include "pch.h"
 
 #define GAMETRACKER 0x838330
-#define PLAYERINSTANCE 0x83833C
+
+#if TRAE
+	#define GAMETRACKER_BASE_AREA (GAMETRACKER + 204)
+	#define MAX_UNIT_LEN 32
+	#define PLAYERINSTANCE 0x83833C
+#elif TR8
+	#define GAMETRACKER_BASE_AREA 0x00E7F0C0 // TODO find gametracker address
+	#define MAX_UNIT_LEN 128
+	#define PLAYERINSTANCE 0xE7F094
+#else
+	#error "No game specified, set TRAE for Anniversary or TR8 for Underworld"
+#endif
 
 // recycled from another unfinished project of mine, needs more research
 namespace cdc
@@ -91,7 +102,6 @@ public:
 	static int BirthObjectNoParent(int unitId, cdc::Vector3* position, cdc::Vector3* rotation, DWORD* introData, DWORD* object, int modelnum, int initEffects);
 private:
 	static std::function<char(char* chapter)> f_SwitchChapter;
-	static std::function<char __cdecl(int a1)> f_ResetGame;
 
 	static std::function<char __cdecl(int screenId, int a2)> f_PushScreen;
 	static std::function<int __cdecl()> f_GetTopScreenID;

@@ -20,15 +20,6 @@ DWORD newinstance()
 extern Hooking* g_hooking;
 
 // most of this code is written in 2 minutes to confirm finds
-char* (__cdecl* localstr_get)(int);
-const char* localstr_get_hooked(int a1)
-{
-    return localstr_get(a1);
-    //g_hooking->menu->Log("%d: %s\n", a1, str);
-
-    //return "no";
-}
-
 char(__cdecl* pushscreen)(int, bool);
 
 char pushscreenhooked(int screen, bool unk2)
@@ -113,10 +104,8 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 	ImGui_ImplWin32_Init(m_hwnd);
 	ImGui_ImplDX9_Init(m_pd3dDevice);
 
-    MH_CreateHook(reinterpret_cast<void*>(0x46BF90), hooked_SIGNAL_FindSignal, reinterpret_cast<void**>(&original_SIGNAL_FindSignal));
-
+#if TRAE
     MH_CreateHook((void*)0x00C62479, newinstance, (void**)&trampinstance);
-    MH_CreateHook((void*)0x4E3C80, localstr_get_hooked, (void**)&localstr_get);
     MH_CreateHook((void*)0x4FCB60, pushscreenhooked, (void**)&pushscreen);
     MH_CreateHook((void*)0x0046F080, hooked_Subtitle_Add, (void**)&orginal_Subtitle_Add);
 
@@ -127,6 +116,7 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
     MH_CreateHook((void*)0x00C7DC5B, STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
 
     MH_CreateHook((void*)0x005DB680, STREAM_FinishLoad, (void**)&origSTREAM_FinishLoad);
+#endif
 }
 
 void Menu::OnDeviceReleased()
@@ -187,19 +177,39 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 void Menu::ToggleFlight(bool flight)
 {
     m_flight = flight;
-    *reinterpret_cast<int*>(GAMETRACKER + 227) = m_flight ? 256 : 0;
 
-    if (!m_flight)
+#if TRAE
+    auto ptr = reinterpret_cast<int*>(GAMETRACKER + 227);
+#elif TR8
+    auto ptr = reinterpret_cast<int*>(0xE7F143);
+#endif
+
+    if (m_flight)
     {
+        //*ptr |= 256;
+        *ptr |= 256;
+    }
+    else
+    {
+        //*ptr ^= 256;
+        *ptr = 0;
+
         // drop player when flight disabled
+#if TRAE
         Game::InstancePost(*reinterpret_cast<DWORD*>(PLAYERINSTANCE), 1048592, 0);
+#endif
     }
 }
 
 void Menu::ProcessFlight(UINT msg, WPARAM wparam)
 {
-    auto base = *reinterpret_cast<DWORD*>(0x83833C);
+    auto base = *reinterpret_cast<DWORD*>(PLAYERINSTANCE);
+
+#if TRAE
     auto z = reinterpret_cast<float*>(base + 24);
+#elif TR8
+    auto z = reinterpret_cast<float*>(base + 40);
+#endif
 
     // TODO azerty?
     if (msg == WM_KEYDOWN && wparam == 0x51/*Q Key*/)
@@ -229,6 +239,7 @@ void Menu::Draw()
 
     ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_MenuBar);
 
+#if TRAE
     if (ImGui::BeginMenuBar())
     {
         if (ImGui::BeginMenu("Tools"))
@@ -241,10 +252,12 @@ void Menu::Draw()
 
     // show current unit
     auto streamUnit = (int)(*(DWORD*)0x83833C) + 178;
+#endif
     ImGui::Text("F2 = Flight, F8 = Toggle menu focus, F9 = Switch player character");
-    ImGui::Text("Unit = %s, Flight = %s", (char*)(GAMETRACKER + 204), m_flight ? "true" : "false");
+    ImGui::Text("Unit = %s, Flight = %s", (char*)GAMETRACKER_BASE_AREA, m_flight ? "true" : "false");
 
     ImGui::SliderFloat("Z speed", &m_flightSpeed, 0, 500);
+#if TRAE
 
     if (ImGui::Button("Fill 'er Up"))
     {
@@ -270,7 +283,8 @@ void Menu::Draw()
     }
 
     ImGui::InputText("chapter", chapter, 32);
-    ImGui::InputText("unit", unit, 32);
+#endif
+    ImGui::InputText("unit", unit, MAX_UNIT_LEN);
 
     if (ImGui::Button("Load chapter"))
     {
@@ -288,10 +302,11 @@ void Menu::Draw()
     if (ImGui::Button("Load unit"))
     {
         // change current unit
-        strcpy_s((char*)(GAMETRACKER + 204), 32, unit);
+        strcpy_s((char*)GAMETRACKER_BASE_AREA, MAX_UNIT_LEN, unit);
         Game::ResetGame(4);
     }
 
+#if TRAE
     ImGui::Text("screen: %d", Game::GetTopScreenID());
 
     static char screenId[8] = "";
@@ -306,9 +321,14 @@ void Menu::Draw()
         this->logBuffer.clear();
     }
 
+#endif
     if (ImGui::Button("List units"))
     {
+#if TRAE
         auto unitList = *(DWORD*)0x8AF44C;
+#elif TR8
+        auto unitList = *(DWORD*)0xDBA188;
+#endif
         auto numUnits = *(int*)unitList;
         Log("numUnits: %d\n", numUnits);
 
@@ -318,13 +338,18 @@ void Menu::Draw()
         {
             Log("%s\n", (char*)(unitList + 4 + offset));
 
+#if TRAE
             offset += 20;
+#elif TR8
+            offset += 132;
+#endif
             count++;
             if (count >= numUnits) break;
         }
 
         ImGui::SetClipboardText(this->logBuffer.begin());
     }
+#if TRAE
 
     if (ImGui::Button("List instances"))
     {
@@ -401,6 +426,7 @@ void Menu::Draw()
 
         Game::BirthObjectNoParent(unitId, &position, &rotation, nullptr, tracker->object, 0, 1);
     }
+#endif
 
     ImGui::End();
 
@@ -513,11 +539,4 @@ void Menu::Log(const char* fmt, ...) IM_FMTARGS(2)
     va_start(args, fmt);
     this->logBuffer.appendfv(fmt, args);
     va_end(args);
-}
-
-int hooked_SIGNAL_FindSignal(DWORD* level, int signal)
-{
-    //g_hooking->menu->Log("signal %d for unit %d\n", signal, *reinterpret_cast<int*>(level + 180));
-
-    return original_SIGNAL_FindSignal(level, signal);
 }
