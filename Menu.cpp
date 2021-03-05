@@ -153,6 +153,7 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         ToggleFlight(!m_flight);
     }
 
+#if TRAE
     if (msg == WM_KEYUP && wparam == VK_F9)
     {
         Game::SwitchPlayerCharacter();
@@ -162,6 +163,7 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     {
         Game::ToggleBinoculars();
     }
+#endif
 
     if (m_flight)
     {
@@ -314,14 +316,16 @@ void Menu::Draw()
     if (ImGui::Button("Push screen"))
     {
         int screen = std::atoi(screenId);
+
         Game::PushScreen(screen, 0);
     }
+#endif
+
 
     if (ImGui::Button("Clear")) {
         this->logBuffer.clear();
     }
 
-#endif
     if (ImGui::Button("List units"))
     {
 #if TRAE
