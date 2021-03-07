@@ -432,6 +432,13 @@ void Menu::Draw()
     }
 #endif
 
+#if TR8
+    // if my research is right these pointers enable (or were supposed to) some screenshot feature
+    // this might be the cut photo feature, though right not it doesn't seem to change much
+    ImGui::Checkbox("ui", (bool*)0xFAE80C);
+    ImGui::Checkbox("screenshots", (bool*)0xFAE80D);
+#endif
+
     ImGui::End();
 
     ImGui::Begin("Log", nullptr);

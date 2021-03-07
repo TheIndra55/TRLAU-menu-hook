@@ -59,6 +59,18 @@ void __cdecl EVENT_DisplayString(char* str, int time)
 	g_hooking->menu->Log("%s\n", str);
 }
 
+#if TR8
+void __stdcall DisplayString(int a1, int a2, bool newline)
+{
+	g_hooking->menu->Log("%s%s", (char*)*(DWORD*)a1, newline ? "\n" : "");
+}
+
+void __cdecl DisplayInt(int a1, int a2, int a3)
+{
+	g_hooking->menu->Log("%f%s", *(float*)(a3 + 4), *(char*)(a3 + 8) != 0 ? "\n" : "");
+}
+#endif
+
 float* (__cdecl* TRANS_RotTransPersVectorf)(DWORD a1, DWORD a2);
 void(__cdecl* Font__Print)(DWORD font, const char* a2, ...);
 void(__cdecl* org_Font__Flush)();
@@ -179,6 +191,11 @@ void Hooking::GotDevice()
 	MH_CreateHook((void*)0x00434C40, Font__Flush, (void**)&org_Font__Flush);
 	Font__Print = reinterpret_cast<void(__cdecl*)(DWORD, const char*, ...)>(0x00C5F83D);
 	TRANS_RotTransPersVectorf = reinterpret_cast<float*(__cdecl*)(DWORD, DWORD)>(0x00402B50);
+#endif
+#if TR8
+	// debug print nullsub in TR8
+	MH_CreateHook((void*)0x574BE0, DisplayString, nullptr);
+	MH_CreateHook((void*)0x795D50, DisplayInt, nullptr);
 #endif
 
 	MH_EnableHook(MH_ALL_HOOKS);
