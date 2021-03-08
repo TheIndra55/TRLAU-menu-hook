@@ -35,7 +35,11 @@ char __fastcall PCDeviceManager__CreateDevice(DWORD* _this, DWORD _, DWORD a2)
 {
 	auto val = original__PCDeviceManager__CreateDevice(_this, a2);
 
+#if TRAE
 	auto address = *reinterpret_cast<DWORD*>(0xA6669C);
+#elif TR8
+	auto address = *reinterpret_cast<DWORD*>(0xAD75E4);
+#endif
 	auto device = *reinterpret_cast<DWORD*>(address + 0x20);
 	pDevice = reinterpret_cast<IDirect3DDevice9*>(device);
 
@@ -182,7 +186,12 @@ void Hooking::GotDevice()
 #if TRAE
 	MH_CreateHook((void*)0x00617F50, PCDeviceManager__ReleaseDevice, (void**)&orginal_PCDeviceManager__ReleaseDevice);
 	MH_CreateHook((void*)0x00617BE0, PCDeviceManager__CreateDevice, (void**)&original__PCDeviceManager__CreateDevice);
+#elif TR8
+	MH_CreateHook((void*)0x005223F0, PCDeviceManager__ReleaseDevice, (void**)&orginal_PCDeviceManager__ReleaseDevice);
+	MH_CreateHook((void*)0x00522580, PCDeviceManager__CreateDevice, (void**)&original__PCDeviceManager__CreateDevice);
+#endif
 
+#if TRAE
 	// patch debug print nullsub to our function
 	*(DWORD*)(0x7C8A50 + 0x210) = (DWORD)EVENT_DisplayString;
 
