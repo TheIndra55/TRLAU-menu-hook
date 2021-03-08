@@ -288,6 +288,7 @@ void Menu::Draw()
 #endif
     ImGui::InputText("unit", unit, MAX_UNIT_LEN);
 
+#if TRAE
     if (ImGui::Button("Load chapter"))
     {
         // load chapter (chapter0, chapter1..)
@@ -301,6 +302,7 @@ void Menu::Draw()
             Game::PushOkDialog("Chapter does not exist.", DialogFn, 0, 0);
         }
     }
+#endif
     if (ImGui::Button("Load unit"))
     {
         // change current unit

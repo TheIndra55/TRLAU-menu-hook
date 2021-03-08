@@ -251,6 +251,13 @@ LRESULT hooked_RegularWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	if (msg == WM_KEYUP && wparam == VK_F8)
 	{
 		g_hooking->menu->m_focus = !g_hooking->menu->m_focus;
+
+		// disable game input
+#if TRAE
+		*(bool*)0x8551A9 = g_hooking->menu->m_focus;
+#elif TR8
+		*(bool*)0xA02B79 = g_hooking->menu->m_focus;
+#endif
 	}
 
 	// pass input to menu
