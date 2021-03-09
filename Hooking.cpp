@@ -58,10 +58,51 @@ void __fastcall PCDeviceManager__ReleaseDevice(DWORD* _this, DWORD _, int status
 	orginal_PCDeviceManager__ReleaseDevice(_this, status);
 }
 
+float* (__cdecl* TRANS_RotTransPersVectorf)(DWORD a1, DWORD a2);
+void(__cdecl* Font__Print)(DWORD font, const char* a2, ...);
+void(__cdecl* org_Font__Flush)();
+
+void SetCursor(float x, float y)
+{
+	/* CursorX */ *(float*)0x007D180C = x;
+	/* CursorY */ *(float*)0x007D1810 = y;
+}
+
+#if TRAE
 void __cdecl EVENT_DisplayString(char* str, int time)
 {
 	g_hooking->menu->Log("%s\n", str);
 }
+
+void __cdecl EVENT_DisplayStringXY(char* str, int time, int x, int y)
+{
+	if (!g_hooking->menu->m_drawSettings.drawDebug) return;
+
+	SetCursor((float)x, (float)y);
+	Font__Print(*(DWORD*)0x007D1800, str);
+}
+
+void __cdecl EVENT_FontPrint(char* fmt, ...)
+{
+	if (!g_hooking->menu->m_drawSettings.drawDebug) return;
+
+	va_list vl;
+	va_start(vl, fmt);
+	char str[1024]; // size same as game buffer
+	vsprintf(str, fmt, vl);
+
+	Font__Print(*(DWORD*)0x007D1800, str);
+}
+
+void __cdecl EVENT_PrintScalarExpression(int val, int time)
+{
+	if (!g_hooking->menu->m_drawSettings.drawDebug) return;
+
+	char v3[11];
+	sprintf(v3, "%d", val);
+	Font__Print(*(DWORD*)0x007D1800, v3);
+}
+#endif
 
 #if TR8
 void __stdcall DisplayString(int a1, int a2, bool newline)
@@ -75,17 +116,7 @@ void __cdecl DisplayInt(int a1, int a2, int a3)
 }
 #endif
 
-float* (__cdecl* TRANS_RotTransPersVectorf)(DWORD a1, DWORD a2);
-void(__cdecl* Font__Print)(DWORD font, const char* a2, ...);
-void(__cdecl* org_Font__Flush)();
-
 bool(__cdecl* objCheckFamily)(DWORD instance, unsigned __int16 family);
-
-void SetCursor(float x, float y)
-{
-	/* CursorX */ *(float*)0x007D180C = x;
-	/* CursorY */ *(float*)0x007D1810 = y;
-}
 
 void __cdecl Font__Flush()
 {
@@ -192,8 +223,14 @@ void Hooking::GotDevice()
 #endif
 
 #if TRAE
-	// patch debug print nullsub to our function
-	*(DWORD*)(0x7C8A50 + 0x210) = (DWORD)EVENT_DisplayString;
+	// patch debug print nullsubs to our functions
+	*(DWORD*)(0x7C8A50 + 528) = (DWORD)EVENT_DisplayString;
+	*(DWORD*)(0x7C8A50 + 304) = (DWORD)EVENT_DisplayString;
+
+	// draw debug
+	*(DWORD*)(0x7C8A50 + 1400) = (DWORD)EVENT_DisplayStringXY;
+	*(DWORD*)(0x7C8A50 + 464) = (DWORD)EVENT_FontPrint;
+	*(DWORD*)(0x7C8A50 + 1292) = (DWORD)EVENT_PrintScalarExpression;
 
 	objCheckFamily = reinterpret_cast<bool(__cdecl*)(DWORD instance, unsigned __int16 family)>(0x534660);
 

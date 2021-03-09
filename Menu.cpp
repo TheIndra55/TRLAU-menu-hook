@@ -274,6 +274,9 @@ void Menu::Draw()
     ImGui::Checkbox("Should instance?", &shouldInstance);
     ImGui::Checkbox("Load unit script", &shouldReloc);
     ImGui::Checkbox("Enable debug keypad", (bool*)0x7C8A3C);
+    ImGui::Checkbox("Enable debug draw", &m_drawSettings.drawDebug);
+    *(int*)0x838348/*debugFlags2*/ = m_drawSettings.drawDebug ? 0x100 : 0;
+
     ImGui::Checkbox("Draw instances", &m_drawSettings.draw);
     if (ImGui::CollapsingHeader("Draw settings"))
     {
