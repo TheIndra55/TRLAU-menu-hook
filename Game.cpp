@@ -10,7 +10,12 @@ bool Game::m_binoculars = false;
 
 void(__cdecl* GAMELOOP_ExitGame)(int a1);
 
+#if TRAE
 void(__cdecl* PLAYER_DebugSwitchPlayerCharacter)();
+#elif TR8
+int(__cdecl* PLAYER_DebugSwitchPlayerCharacter)(DWORD a1);
+#endif
+
 DWORD(__cdecl* sub_C64D3F)(int a1, int a2, int a3);
 void(__cdecl* G2EmulationInstanceSetEventAnimPlaying)(DWORD instance, int a2);
 
@@ -60,7 +65,11 @@ void Game::Initialize()
 	INSTANCE_Query = reinterpret_cast<int(__cdecl*)(int, int)>(0x00458060);
 	INSTANCE_Find = reinterpret_cast<int(__cdecl*)(int)>(0x004582D0);
 
+#if TRAE
 	PLAYER_DebugSwitchPlayerCharacter = reinterpret_cast<void(__cdecl*)()>(0x005A39A0);
+#elif TR8
+	PLAYER_DebugSwitchPlayerCharacter = reinterpret_cast<int(__cdecl*)(DWORD)>(0x0079DB50);
+#endif
 	sub_C64D3F = reinterpret_cast<DWORD(__cdecl*)(int, int, int)>(0xC64D3F);
 	G2EmulationInstanceSetEventAnimPlaying = reinterpret_cast<void(__cdecl*)(DWORD, int)>(0x4DE940);
 
@@ -156,7 +165,27 @@ bool Game::CheckChapter(char* chapter)
 
 void Game::SwitchPlayerCharacter()
 {
+#if TRAE
 	PLAYER_DebugSwitchPlayerCharacter();
+#elif TR8
+	// patch numPlayerObjects to exclude missing DLC outfits
+	auto ptr = *(int*)0xE7EE50;
+	auto ptr2 = *(int*)(ptr + 4);
+	auto numPlayerObjects = (__int16*)ptr2;
+	*numPlayerObjects = 10;
+
+	auto playerObjects = *(int*)(ptr2 + 4);
+	*(__int16*)(playerObjects + 6) = 12; // patch the entire list to skip lara_doppelganger since that one is missing, dammit square enix
+	*(__int16*)(playerObjects + 8) = 13;
+	*(__int16*)(playerObjects + 10) = 14;
+	*(__int16*)(playerObjects + 12) = 16; // lara_mom_thrall also doesn't exist, skip too
+	*(__int16*)(playerObjects + 14) = 17;
+	*(__int16*)(playerObjects + 16) = 18;
+	*(__int16*)(playerObjects + 18) = 19;
+
+	int a1 = 12; // im not sure what this value is, passing 12 works
+	PLAYER_DebugSwitchPlayerCharacter((DWORD)&a1);
+#endif
 }
 
 DWORD Game::AnimDataSomething(int a1, int a2, int a3)

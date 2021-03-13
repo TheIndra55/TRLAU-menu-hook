@@ -153,12 +153,12 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         ToggleFlight(!m_flight);
     }
 
-#if TRAE
     if (msg == WM_KEYUP && wparam == VK_F9)
     {
         Game::SwitchPlayerCharacter();
     }
 
+#if TRAE
     if (msg == WM_KEYUP && wparam == VK_DELETE)
     {
         Game::ToggleBinoculars();
