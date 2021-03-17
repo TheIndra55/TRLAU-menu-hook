@@ -1,6 +1,7 @@
 #pragma once
+
+#include <Windows.h>
 #include <functional>
-#include "pch.h"
 
 #define GAMETRACKER 0x838330
 
@@ -16,20 +17,18 @@
 	#error "No game specified, set TRAE for Anniversary or TR8 for Underworld"
 #endif
 
-// recycled from another unfinished project of mine, needs more research
 namespace cdc
 {
-	struct Vector3
+	struct Vector
 	{
-		float x, y, z;
-		float unused;
+		float x, y, z, w;
 	};
 }
 
 struct ObjectTracker
 {
-	__int32 unk1;
-	__int32 unk2;
+	__int32 resolveObj;
+	char* objectName;
 	DWORD* object;
 	__int16 id;
 	__int16 status;
@@ -37,22 +36,22 @@ struct ObjectTracker
 
 struct Instance
 {
-	__int64 unk1;
+	__int64 node;
 	__int32 next;
 	__int32 prev;
-	cdc::Vector3 position;
-	cdc::Vector3 prevPosition;
-	cdc::Vector3 rotation;
-	cdc::Vector3 prevRotation;
-	cdc::Vector3 scale;
-	cdc::Vector3 shadowPosition;
-	cdc::Vector3 unk4;
-	__int32 unk5;
-	__int32 unk6;
+	cdc::Vector position;
+	cdc::Vector oldPosition;
+	cdc::Vector rotation;
+	cdc::Vector oldRotation;
+	cdc::Vector scale;
+	cdc::Vector shadowPosition;
+	cdc::Vector centerOfMass;
+	__int32 matrix;
+	__int32 oldMatrix;
 	__int16 unk7;
 	__int8 unk8;
 	__int8 unk9;
-	__int16 unk10;
+	__int16 introNum;
 	DWORD* object;
 };
 
@@ -82,14 +81,14 @@ public:
 	static void PushOkDialog(const char* text, void(__cdecl* fn)(), int a3, int a4);
 	static void PopScreen();
 
-	static void InstancePost(int instance, int a2, int data);
-	static int InstanceQuery(int instance, int a2);
-	static int InstanceFind(int intro);
+	static void InstancePost(Instance* instance, int a2, int data);
+	static int InstanceQuery(Instance* instance, int a2);
+	static Instance* InstanceFind(int intro);
 
 	static bool CheckChapter(char* chapter);
 	static void SwitchPlayerCharacter();
 	static DWORD AnimDataSomething(int a1, int a2, int a3);
-	static void InstanceSetEventAnimPlaying(DWORD instance, int a2);
+	static void InstanceSetEventAnimPlaying(Instance* instance, int a2);
 
 	static void IncreaseHealth(float amount);
 	static void TriggerUiFadeGroup(int group);
@@ -97,16 +96,10 @@ public:
 
 	static bool m_binoculars;
 	static void ToggleBinoculars();
+
 	static void PlayerTurnGold();
 	static void HideUnhideDrawGroup(int instance, int drawGroup, int on);
-	static int BirthObjectNoParent(int unitId, cdc::Vector3* position, cdc::Vector3* rotation, DWORD* introData, DWORD* object, int modelnum, int initEffects);
-private:
-	static std::function<char(char* chapter)> f_SwitchChapter;
-
-	static std::function<char __cdecl(int screenId, int a2)> f_PushScreen;
-	static std::function<int __cdecl()> f_GetTopScreenID;
-	static std::function<int __cdecl(const char* text, int a2, int a3, int a4)> f_PushOkDialog;
-	static std::function<int __cdecl()> f_PopScreen;
+	static Instance* BirthObjectNoParent(int unitId, cdc::Vector* position, cdc::Vector* rotation, DWORD* introData, DWORD* object, int modelnum, int initEffects);
 };
 
 class Stream

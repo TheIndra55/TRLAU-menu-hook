@@ -7,12 +7,12 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 static bool shouldInstance = true;
 static bool shouldReloc = true;
 
-DWORD(__cdecl*trampinstance)();
+Instance*(__cdecl* INSTANCE_NewInstance)();
 
-DWORD newinstance()
+Instance* newinstance()
 {
     if (shouldInstance)
-        return trampinstance();
+        return INSTANCE_NewInstance();
 
     return 0;
 }
@@ -105,7 +105,7 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 	ImGui_ImplDX9_Init(m_pd3dDevice);
 
 #if TRAE
-    MH_CreateHook((void*)0x00C62479, newinstance, (void**)&trampinstance);
+    MH_CreateHook((void*)0x00C62479, newinstance, (void**)&INSTANCE_NewInstance);
     MH_CreateHook((void*)0x4FCB60, pushscreenhooked, (void**)&pushscreen);
     MH_CreateHook((void*)0x0046F080, hooked_Subtitle_Add, (void**)&orginal_Subtitle_Add);
 
@@ -198,7 +198,7 @@ void Menu::ToggleFlight(bool flight)
 
         // drop player when flight disabled
 #if TRAE
-        Game::InstancePost(*reinterpret_cast<DWORD*>(PLAYERINSTANCE), 1048592, 0);
+        Game::InstancePost(*reinterpret_cast<Instance**>(PLAYERINSTANCE), 1048592, 0);
 #endif
     }
 }
@@ -274,8 +274,11 @@ void Menu::Draw()
     ImGui::Checkbox("Should instance?", &shouldInstance);
     ImGui::Checkbox("Load unit script", &shouldReloc);
     ImGui::Checkbox("Enable debug keypad", (bool*)0x7C8A3C);
-    ImGui::Checkbox("Enable debug draw", &m_drawSettings.drawDebug);
-    *(int*)0x838348/*debugFlags2*/ = m_drawSettings.drawDebug ? 0x100 : 0;
+
+    if (ImGui::Checkbox("Enable debug draw", &m_drawSettings.drawDebug))
+    {
+        *(int*)0x838348/*debugFlags2*/ |= 0x100;
+    }
 
     ImGui::Checkbox("Draw instances", &m_drawSettings.draw);
     if (ImGui::CollapsingHeader("Draw settings"))
@@ -390,12 +393,12 @@ void Menu::Draw()
 
     if (ImGui::Button("Turn Lara into gold anim"))
     {
-        auto player = *reinterpret_cast<DWORD*>(PLAYERINSTANCE);
+        auto player = *reinterpret_cast<Instance**>(PLAYERINSTANCE);
         int v11 = 52;
 
         Game::InstancePost(player, 262158, 1);
 
-        auto anim = Game::AnimDataSomething(player, player, (int)&v11);
+        auto anim = Game::AnimDataSomething((int)player, (int)player, (int)&v11);
         Game::InstancePost(player, 262147, anim);
         Game::InstanceSetEventAnimPlaying(player, 0);
         Game::PlayerTurnGold();
@@ -406,7 +409,7 @@ void Menu::Draw()
         Game::PlayerTurnGold();
     }
 
-    auto player = *reinterpret_cast<DWORD*>(PLAYERINSTANCE);
+    auto player = *reinterpret_cast<Instance**>(PLAYERINSTANCE);
     if (ImGui::Button("Give all weapons"))
     {
         for (int i = 0; i < 3; i++)
@@ -537,13 +540,13 @@ void DrawInstanceViewer()
 
         if (ImGui::Button("Switch down"))
         {
-            Game::InstancePost(clickedInstance, 8388753, 1);
+            Game::InstancePost((Instance*)clickedInstance, 8388753, 1);
         }
         if (ImGui::Button("Switch up"))
         {
-            Game::InstancePost(clickedInstance, 8388753, 2);
+            Game::InstancePost((Instance*)clickedInstance, 8388753, 2);
         }
-        ImGui::Text("Switch status: %d", Game::InstanceQuery(clickedInstance, 233));
+        ImGui::Text("Switch status: %d", Game::InstanceQuery((Instance*)clickedInstance, 233));
     }
 
     ImGui::End();

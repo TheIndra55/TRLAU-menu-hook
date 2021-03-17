@@ -148,7 +148,7 @@ void __cdecl Font__Flush()
 				return objCheckFamily(instance, 35) /* keys, healthpacks stuff */ || objCheckFamily(instance, 39) /* ammo */;
 			};
 
-			auto srcVector = cdc::Vector3{};
+			auto srcVector = cdc::Vector{};
 			srcVector = instanceObj->position;
 			TRANS_RotTransPersVectorf((DWORD)&srcVector, (DWORD)&srcVector);
 

@@ -10,11 +10,28 @@ Reverse engineering project for Tomb Raider LAU games, this repo contains the co
 |----|----|----|----|----|
 | Menu in Underworld | Playtrough with level debug prints | Instance viewer showcase | Brought back Binoculars feature | Menu in Anniversary |
 
+## Features
+
+### Tomb Raider: Anniversary
+
+* Loading of units, chapters and spawning instances (including loading units from a folder)
+* Skew/flight cheat
+* Information about instances, the unit and listing all units
+* See orginal level script debug, and use debug keypad
+* Give items and weapons
+
+### Tomb Raider: Underworld
+
+* Skew/flight cheat
+* Ability to see orginal level script debug
+* Switching units
+* Switch player character
+
 ## How to
 
 Use [Ultimate ASI Loader](https://github.com/ThirteenAG/Ultimate-ASI-Loader/releases) by replacing `binkw32.dll` and drop the compiled .asi in your game folder.
 
-# Build
+## Build
 
 Make sure you have [premake5](https://premake.github.io/) installed and in your PATH then run
 ```
@@ -26,8 +43,10 @@ Make sure to set TRAE or TR8 preprocessor definition for the target game.
 
 ## Todo
 
+Other todo items can be found in the 'Projects' tab on GitHub
+
 - Make use of patterns instead of hardcoded addresses
 - Support Steam version for Anniversary
 
-![image](https://user-images.githubusercontent.com/15322107/105777010-ed28a200-5f69-11eb-9a2b-dfc3f8ec3293.png)
+![image](https://user-images.githubusercontent.com/15322107/111395421-1e496700-86bd-11eb-997b-b73f2a3ec244.png)
 ![image](https://user-images.githubusercontent.com/15322107/110152916-a2a90980-7de2-11eb-8da4-ba28e1f4a258.png)
