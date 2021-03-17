@@ -280,6 +280,7 @@ void Menu::Draw()
         *(int*)0x838348/*debugFlags2*/ |= 0x100;
     }
 
+    ImGui::Checkbox("Wireframe", (bool*)0x7C7CD4);
     ImGui::Checkbox("Draw instances", &m_drawSettings.draw);
     if (ImGui::CollapsingHeader("Draw settings"))
     {

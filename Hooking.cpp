@@ -58,6 +58,30 @@ void __fastcall PCDeviceManager__ReleaseDevice(DWORD* _this, DWORD _, int status
 	orginal_PCDeviceManager__ReleaseDevice(_this, status);
 }
 
+int(__thiscall* origTerrainDrawable_TerrainDrawable)(DWORD _this, int* a2, int a3, int a4, int a5);
+int __fastcall TerrainDrawable_TerrainDrawable(DWORD _this, DWORD _, int* a2, int a3, int a4, int a5)
+{
+	auto ret = origTerrainDrawable_TerrainDrawable(_this, a2, a3, a4, a5);
+
+	if (*(bool*)0x7C7CD4 /* wire frame */)
+	{
+		*(unsigned int*)(_this + 0x1C) |= 0x800;
+	}
+
+	return ret;
+}
+
+int(__cdecl* origGetDrawListByTpageId)(unsigned int tpageid, bool reflect);
+int __cdecl GetDrawListByTpageId(unsigned int tpageid, bool reflect)
+{
+	if (*(bool*)0x7C7CD4 /* wire frame */)
+	{
+		tpageid |= 0x800;
+	}
+
+	return origGetDrawListByTpageId(tpageid, reflect);
+}
+
 float* (__cdecl* TRANS_RotTransPersVectorf)(DWORD a1, DWORD a2);
 void(__cdecl* Font__Print)(DWORD font, const char* a2, ...);
 void(__cdecl* org_Font__Flush)();
@@ -237,6 +261,9 @@ void Hooking::GotDevice()
 	MH_CreateHook((void*)0x00434C40, Font__Flush, (void**)&org_Font__Flush);
 	Font__Print = reinterpret_cast<void(__cdecl*)(DWORD, const char*, ...)>(0x00C5F83D);
 	TRANS_RotTransPersVectorf = reinterpret_cast<float*(__cdecl*)(DWORD, DWORD)>(0x00402B50);
+
+	MH_CreateHook((void*)0xC5B896, TerrainDrawable_TerrainDrawable, (void**)&origTerrainDrawable_TerrainDrawable);
+	MH_CreateHook((void*)0xC5C280, GetDrawListByTpageId, (void**)&origGetDrawListByTpageId);
 #endif
 #if TR8
 	// debug print nullsub in TR8
