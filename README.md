@@ -14,18 +14,36 @@ Reverse engineering project for Tomb Raider LAU games, this repo contains the co
 
 ### Tomb Raider: Anniversary
 
-* Loading of units, chapters and spawning instances (including loading units from a folder)
+**Supported version**: 4.58MB exe, hooks probably don't work with Steam version
+
 * Skew/flight cheat
-* Information about instances, the unit and listing all units
-* See orginal level script debug, and use debug keypad
+* Restore full health
+* Switch player character
+* Binoculars from Legend brought back
+* Disable level script
+* Debug log/draw from levels restored
+* Enable debug keypad to trigger debug input actions (e.g. killing bosses, skipping depending on level)
+* Wireframe rendering
+* Entity ESP to show entities (including intro id, "family", health and pointer address)
+* Switch chapter
+* Switch unit
+* Loading units from a folder outside of bigfile.000
+* List units
+* List instances in a window with properties
+* Turn lara into gold
 * Give items and weapons
+* Spawn instances (entities)
 
 ### Tomb Raider: Underworld
 
+**Supported version**: Steam \
+Progress on Underworld was started later and this is also a newer version of the engine so requires more research, therefore Underworld version is less feature rich.
+
 * Skew/flight cheat
-* Ability to see orginal level script debug
-* Switching units
 * Switch player character
+* Switch unit
+* List units
+* Debug log from level scripts restored
 
 ## How to
 
