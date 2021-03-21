@@ -49,7 +49,7 @@ void unitFileName(char* name, char* unit, char* ext)
 {
     if (isDiskFS)
     {
-        sprintf(name, "\\units\\%s.%s", unit, ext);
+        sprintf(name, "\\units\\%s.drm", unit);
         return;
     }
 
@@ -60,16 +60,26 @@ int getFS()
 {
     if (isDiskFS)
     {
+#if TRAE
         return *(int*)0x838890;
+#elif TR8
+        return *(int*)0x9CE27C;
+#endif
     }
 
+#if TRAE
     return *(int*)0x83888C;
+#elif TR8
+    return *(int*)0x9CE278;
+#endif
 }
 
 int(__cdecl* origSTREAM_LoadLevel)(char* a1, int a2, char a3);
 
 int __cdecl STREAM_LoadLevel(char* a1, int a2, char a3)
 {
+    g_hooking->menu->Log(__FUNCTION__ " Loading %s\n", a1);
+
     if (strncmp("fi", a1, 2) == 0)
     {
         // load this unit from disk
@@ -116,6 +126,10 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
     MH_CreateHook((void*)0x00C7DC5B, STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
 
     MH_CreateHook((void*)0x005DB680, STREAM_FinishLoad, (void**)&origSTREAM_FinishLoad);
+#elif TR8
+    MH_CreateHook((void*)0x00472B50, getFS, nullptr);
+    MH_CreateHook((void*)0x00477970, unitFileName, (void**)&origUnitFileName);
+    MH_CreateHook((void*)0x005D23F0, STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
 #endif
 }
 
