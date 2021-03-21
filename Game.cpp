@@ -36,6 +36,8 @@ void(__cdecl* sub_456B50)();
 void(__cdecl* EVENT_PlayerTurnGold)();
 void(__cdecl* INSTANCE_HideUnhideDrawGroup)(int a1, int a2, int a3);
 
+int(__cdecl* OBTABLE_GetObjectID)(char* name);
+
 Instance* (__cdecl* INSTANCE_BirthObjectNoParent)(int unitId, cdc::Vector* position, cdc::Vector* rotation, DWORD* introData, DWORD* object, int modelnum, int);
 ObjectTracker*(__cdecl* STREAM_GetObjectTrackerByName)(char*);
 bool(__cdecl* STREAM_PollLoadQueue)();
@@ -85,6 +87,8 @@ void Game::Initialize()
 	sub_456B50 = reinterpret_cast<void(__cdecl*)()>(0x456B50);
 	EVENT_PlayerTurnGold = reinterpret_cast<void(__cdecl*)()>(0x0044E290);
 	INSTANCE_HideUnhideDrawGroup = reinterpret_cast<void(__cdecl*)(int, int, int)>(0x004319B0);
+
+	OBTABLE_GetObjectID = reinterpret_cast<int(__cdecl*)(char*)>(0x00C63B7D);
 
 	INSTANCE_BirthObjectNoParent = reinterpret_cast<Instance*(__cdecl*)(int, cdc::Vector*, cdc::Vector*, DWORD*, DWORD*, int, int)>(0x0045BA90);
 	STREAM_GetObjectTrackerByName = reinterpret_cast<ObjectTracker*(__cdecl*)(char*)>(0x00C7D67C);
@@ -268,4 +272,9 @@ ObjectTracker* Stream::GetObjectTrackerByName(char* name)
 bool Stream::PollLoadQueue()
 {
 	return STREAM_PollLoadQueue();
+}
+
+int Game::GetObjectID(char* name)
+{
+	return OBTABLE_GetObjectID(name);
 }

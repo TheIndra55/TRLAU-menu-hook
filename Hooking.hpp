@@ -29,3 +29,5 @@ static LRESULT hooked_RegularWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 
 static BOOL(WINAPI* original_SetCursorPos)(int, int);
 static BOOL WINAPI hooked_SetCursorPos(int x, int y);
+
+extern bool isDiskFS;

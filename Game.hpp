@@ -9,10 +9,14 @@
 	#define GAMETRACKER_BASE_AREA (GAMETRACKER + 204)
 	#define MAX_UNIT_LEN 32
 	#define PLAYERINSTANCE 0x83833C
+
+	#define DISKFS 0x838890
 #elif TR8
 	#define GAMETRACKER_BASE_AREA 0x00E7F0C0 // TODO find gametracker address
 	#define MAX_UNIT_LEN 128
 	#define PLAYERINSTANCE 0xE7F094
+
+	#define DISKFS 0x9CE27C
 #else
 	#error "No game specified, set TRAE for Anniversary or TR8 for Underworld"
 #endif
@@ -100,6 +104,8 @@ public:
 	static void PlayerTurnGold();
 	static void HideUnhideDrawGroup(int instance, int drawGroup, int on);
 	static Instance* BirthObjectNoParent(int unitId, cdc::Vector* position, cdc::Vector* rotation, DWORD* introData, DWORD* object, int modelnum, int initEffects);
+
+	static int GetObjectID(char* name);
 };
 
 class Stream

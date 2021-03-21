@@ -44,6 +44,7 @@ Progress on Underworld was started later and this is also a newer version of the
 * Switch unit
 * List units
 * Debug log from level scripts restored
+* Loading units from a folder outside of bigfile.000
 
 ## How to
 

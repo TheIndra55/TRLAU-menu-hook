@@ -48,6 +48,24 @@ char __fastcall PCDeviceManager__CreateDevice(DWORD* _this, DWORD _, DWORD a2)
 	return val;
 }
 
+int(__cdecl* FSHelper_ReadFile)(const char* file, int a3, int fs);
+
+int(__cdecl* origOBTABLE_Init)(int a1);
+
+int __cdecl OBTABLE_Init(int a1)
+{
+	auto exists = FSHelper_ReadFile("\\TRAE\\pc-w\\objectlist.txt", 0, *(int*)DISKFS);
+	if (exists)
+	{
+		isDiskFS = true;
+	}
+
+	auto ret = origOBTABLE_Init(a1);
+
+	isDiskFS = false;
+	return ret;
+}
+
 void(__thiscall* orginal_PCDeviceManager__ReleaseDevice)(DWORD* _this, int status);
 
 void __fastcall PCDeviceManager__ReleaseDevice(DWORD* _this, DWORD _, int status)
@@ -264,6 +282,9 @@ void Hooking::GotDevice()
 
 	MH_CreateHook((void*)0xC5B896, TerrainDrawable_TerrainDrawable, (void**)&origTerrainDrawable_TerrainDrawable);
 	MH_CreateHook((void*)0xC5C280, GetDrawListByTpageId, (void**)&origGetDrawListByTpageId);
+
+	FSHelper_ReadFile = reinterpret_cast<int(__cdecl*)(const char*, int, int)>(0x45F850);
+	MH_CreateHook((void*)0x465E30, OBTABLE_Init, (void**)&origOBTABLE_Init);
 #endif
 #if TR8
 	// debug print nullsub in TR8

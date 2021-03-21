@@ -42,7 +42,25 @@ char IsPs2()
     return Game::m_binoculars;
 }
 
-static bool isDiskFS = false;
+bool isDiskFS = false;
+bool switchPlayerNextFrame = false;
+
+int(__cdecl* origInsertGlobalObject)(int a1);
+int __cdecl InsertGlobalObject(int a1)
+{
+    auto objects = *(int*)0x842C70;
+    auto name = (char*)*(int*)(objects + 8 * a1 - 4);
+
+    if (strncmp("fi", name, 2) == 0)
+    {
+        isDiskFS = true;
+    }
+
+    auto ret = origInsertGlobalObject(a1);
+    isDiskFS = false;
+
+    return ret;
+}
 
 void(__cdecl* origUnitFileName)(char*, char*, char*);
 void unitFileName(char* name, char* unit, char* ext)
@@ -60,11 +78,7 @@ int getFS()
 {
     if (isDiskFS)
     {
-#if TRAE
-        return *(int*)0x838890;
-#elif TR8
-        return *(int*)0x9CE27C;
-#endif
+        return *(int*)DISKFS;
     }
 
 #if TRAE
@@ -126,6 +140,7 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
     MH_CreateHook((void*)0x00C7DC5B, STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
 
     MH_CreateHook((void*)0x005DB680, STREAM_FinishLoad, (void**)&origSTREAM_FinishLoad);
+    MH_CreateHook((void*)0x00C7D980, InsertGlobalObject, (void**)&origInsertGlobalObject);
 #elif TR8
     MH_CreateHook((void*)0x00472B50, getFS, nullptr);
     MH_CreateHook((void*)0x00477970, unitFileName, (void**)&origUnitFileName);
@@ -176,6 +191,13 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     if (msg == WM_KEYUP && wparam == VK_DELETE)
     {
         Game::ToggleBinoculars();
+    }
+
+    if (switchPlayerNextFrame)
+    {
+        switchPlayerNextFrame = false;
+
+        Game::SwitchPlayerCharacter();
     }
 #endif
 
@@ -452,6 +474,16 @@ void Menu::Draw()
         while (tracker->status != 2 && Stream::PollLoadQueue());
 
         Game::BirthObjectNoParent(unitId, &position, &rotation, nullptr, tracker->object, 0, 1);
+    }
+
+    static char outfit[100] = "";
+    ImGui::InputText("outfit", outfit, 100);
+    if (ImGui::Button("Load outfit"))
+    {
+        switchPlayerNextFrame = true;
+
+        auto obj = Game::GetObjectID(outfit);
+        *(int*)0x838768 /* alt player object */ = obj;
     }
 #endif
 
