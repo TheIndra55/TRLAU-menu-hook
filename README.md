@@ -33,6 +33,8 @@ Reverse engineering project for Tomb Raider LAU games, this repo contains the co
 * Turn lara into gold
 * Give items and weapons
 * Spawn instances (entities)
+* Load replacement or new objects outside bigfile.000
+* Load objectlist.txt outside bigfile.000
 
 ### Tomb Raider: Underworld
 
@@ -66,6 +68,17 @@ Other todo items can be found in the 'Projects' tab on GitHub
 
 - Make use of patterns instead of hardcoded addresses
 - Support Steam version for Anniversary
+
+## Faq
+
+### How to load new objects?
+
+First browse to the root of the disk where your game is installed, for example D:\
+
+Add a folder D:\units here your will put the replacement or new .drm files \
+If you are also adding new files copy the game's existing objectlist.txt to D:\TRAE\pc-w\objectlist.txt, higher the first number by one and add another line with your id and name.
+
+**Note** objectlist.txt must always end with a line ending (empty line) else the game will crash on start.
 
 ![image](https://user-images.githubusercontent.com/15322107/111395421-1e496700-86bd-11eb-997b-b73f2a3ec244.png)
 ![image](https://user-images.githubusercontent.com/15322107/110152916-a2a90980-7de2-11eb-8da4-ba28e1f4a258.png)
