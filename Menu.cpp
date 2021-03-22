@@ -45,14 +45,20 @@ char IsPs2()
 bool isDiskFS = false;
 bool switchPlayerNextFrame = false;
 
+int(__thiscall* MSFileSystem_FileExists)(int _this, const char* file);
+
 int(__cdecl* origInsertGlobalObject)(int a1);
 int __cdecl InsertGlobalObject(int a1)
 {
     auto objects = *(int*)0x842C70;
     auto name = (char*)*(int*)(objects + 8 * a1 - 4);
 
-    if (strncmp("fi", name, 2) == 0)
+    char string[256];
+    sprintf_s(string, "\\units\\%s.drm", name);
+
+    if (MSFileSystem_FileExists(*(int*)DISKFS, string))
     {
+        g_hooking->menu->Log("%s exists, loading that one instead\n", string);
         isDiskFS = true;
     }
 
@@ -141,6 +147,8 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
     MH_CreateHook((void*)0x005DB680, STREAM_FinishLoad, (void**)&origSTREAM_FinishLoad);
     MH_CreateHook((void*)0x00C7D980, InsertGlobalObject, (void**)&origInsertGlobalObject);
+
+    MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(0x005E52C0);
 #elif TR8
     MH_CreateHook((void*)0x00472B50, getFS, nullptr);
     MH_CreateHook((void*)0x00477970, unitFileName, (void**)&origUnitFileName);
