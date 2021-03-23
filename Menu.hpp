@@ -41,6 +41,8 @@ private:
 	bool m_flight = false;
 	float m_flightSpeed = 50.f;
 
+	bool m_visible = true;
+
 	ImGuiTextBuffer logBuffer;
 
 	LPDIRECT3DDEVICE9 m_pd3dDevice;

@@ -194,7 +194,12 @@ void Menu::OnPresent()
 
 	ImGui::NewFrame();
 	// draw menu
-	this->Draw();
+
+    if (m_visible)
+    {
+        this->Draw();
+    }
+
 	ImGui::EndFrame();
 
 	ImGui::Render();
@@ -211,6 +216,11 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     if (msg == WM_KEYUP && wparam == VK_F9)
     {
         Game::SwitchPlayerCharacter();
+    }
+
+    if (msg == WM_KEYUP && wparam == VK_F7)
+    {
+        m_visible = !m_visible;
     }
 
 #if TRAE
