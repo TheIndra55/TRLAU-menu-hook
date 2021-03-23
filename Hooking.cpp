@@ -15,7 +15,9 @@ void Hooking::Initialize()
 #if TRAE
 	MH_CreateHook(reinterpret_cast<void*>(0xC5C175), hooked_Direct3DInit, reinterpret_cast<void**>(&original_Direct3DInit));
 #elif TR8
-	MH_CreateHook(reinterpret_cast<void*>(0x00478640), hooked_Direct3DInit, reinterpret_cast<void**>(&original_Direct3DInit));
+	MH_CreateHook(reinterpret_cast<void*>(0x478640), hooked_Direct3DInit, reinterpret_cast<void**>(&original_Direct3DInit));
+#elif TR7
+	MH_CreateHook(reinterpret_cast<void*>(0x4143E0), hooked_Direct3DInit, reinterpret_cast<void**>(&original_Direct3DInit));
 #endif
 
 	InstallControlHooks();
@@ -39,6 +41,8 @@ char __fastcall PCDeviceManager__CreateDevice(DWORD* _this, DWORD _, DWORD a2)
 	auto address = *reinterpret_cast<DWORD*>(0xA6669C);
 #elif TR8
 	auto address = *reinterpret_cast<DWORD*>(0xAD75E4);
+#elif TR7
+	auto address = *reinterpret_cast<DWORD*>(0x139C758);
 #endif
 	auto device = *reinterpret_cast<DWORD*>(address + 0x20);
 	pDevice = reinterpret_cast<IDirect3DDevice9*>(device);
@@ -251,6 +255,10 @@ void Hooking::GotDevice()
 	MH_CreateHook(reinterpret_cast<void*>(0x519360), hooked_PCRenderContext_Present, reinterpret_cast<void**>(&original_PCRenderContext_Present));
 
 	MH_CreateHook(reinterpret_cast<void*>(0x478BC0), hooked_RegularWndProc, reinterpret_cast<void**>(&original_RegularWndProc));
+#elif TR7
+	MH_CreateHook(reinterpret_cast<void*>(0xED0990), hooked_PCRenderContext_Present, reinterpret_cast<void**>(&original_PCRenderContext_Present));
+
+	MH_CreateHook(reinterpret_cast<void*>(0x405380), hooked_RegularWndProc, reinterpret_cast<void**>(&original_RegularWndProc));
 #endif
 
 	// hook SetCursorPos to prevent the game from resetting the cursor position
@@ -262,6 +270,9 @@ void Hooking::GotDevice()
 #elif TR8
 	MH_CreateHook((void*)0x005223F0, PCDeviceManager__ReleaseDevice, (void**)&orginal_PCDeviceManager__ReleaseDevice);
 	MH_CreateHook((void*)0x00522580, PCDeviceManager__CreateDevice, (void**)&original__PCDeviceManager__CreateDevice);
+#elif TR7
+	MH_CreateHook((void*)0x00ECCC20, PCDeviceManager__ReleaseDevice, (void**)&orginal_PCDeviceManager__ReleaseDevice);
+	MH_CreateHook((void*)0x00ECC8F0, PCDeviceManager__CreateDevice, (void**)&original__PCDeviceManager__CreateDevice);
 #endif
 
 #if TRAE
@@ -282,10 +293,13 @@ void Hooking::GotDevice()
 
 	MH_CreateHook((void*)0xC5B896, TerrainDrawable_TerrainDrawable, (void**)&origTerrainDrawable_TerrainDrawable);
 	MH_CreateHook((void*)0xC5C280, GetDrawListByTpageId, (void**)&origGetDrawListByTpageId);
+#endif
 
+#if TRAE
 	FSHelper_ReadFile = reinterpret_cast<int(__cdecl*)(const char*, int, int)>(0x45F850);
 	MH_CreateHook((void*)0x465E30, OBTABLE_Init, (void**)&origOBTABLE_Init);
 #endif
+
 #if TR8
 	// debug print nullsub in TR8
 	MH_CreateHook((void*)0x574BE0, DisplayString, nullptr);
@@ -305,6 +319,8 @@ int hooked_Direct3DInit()
 	pHwnd = *reinterpret_cast<HWND*>(0x6926C8);
 #elif TR8
 	pHwnd = *reinterpret_cast<HWND*>(0x9EEDE8);
+#elif TR7
+	pHwnd = *reinterpret_cast<HWND*>(0xF48FB8);
 #endif
 
 	// (IDirect3DDevice*)devicemanager->d3device
@@ -312,6 +328,8 @@ int hooked_Direct3DInit()
 	auto address = *reinterpret_cast<DWORD*>(0xA6669C);
 #elif TR8
 	auto address = *reinterpret_cast<DWORD*>(0xAD75E4);
+#elif TR7
+	auto address = *reinterpret_cast<DWORD*>(0x139C758);
 #endif
 	auto device = *reinterpret_cast<DWORD*>(address + 0x20);
 	pDevice = reinterpret_cast<IDirect3DDevice9*>(device);
@@ -321,7 +339,7 @@ int hooked_Direct3DInit()
 	return val;
 }
 
-#if TRAE
+#if TRAE || TR7
 void __fastcall hooked_PCRenderContext_Present(DWORD* _this, void* _, int a2, int a3, int a4)
 {
 	g_hooking->menu->OnPresent();
@@ -351,6 +369,8 @@ LRESULT hooked_RegularWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		*(bool*)0x8551A9 = g_hooking->menu->m_focus;
 #elif TR8
 		*(bool*)0xA02B79 = g_hooking->menu->m_focus;
+#elif TR7
+		*(bool*)0x110AF09 = g_hooking->menu->m_focus;
 #endif
 	}
 

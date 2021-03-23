@@ -9,7 +9,7 @@ int(__cdecl* UIScreenManager_GetTopScreenID)();
 int(__cdecl* UIScreenManager_PushOkDialog)(const char* text, int a2, int a3, int a4);
 int(__cdecl* UIScreenManager_PopScreen)();
 
-#if TRAE
+#if TRAE || TR7
 void(__cdecl* PLAYER_DebugSwitchPlayerCharacter)();
 #elif TR8
 int(__cdecl* PLAYER_DebugSwitchPlayerCharacter)(DWORD a1);
@@ -50,6 +50,8 @@ void Game::Initialize()
 	GAMELOOP_ExitGame = reinterpret_cast<void(__cdecl*)(int)>(0x4542B0);
 #elif TR8
 	GAMELOOP_ExitGame = reinterpret_cast<void(__cdecl*)(int)>(0x5DF760);
+#elif TR7
+	GAMELOOP_ExitGame = reinterpret_cast<void(__cdecl*)(int)>(0x454550);
 #endif
 
 	UIScreenManager_PushScreen = reinterpret_cast<char(__cdecl*)(int, int)>(0x4FCB60);
@@ -58,9 +60,11 @@ void Game::Initialize()
 	UIScreenManager_PopScreen = reinterpret_cast<int(__cdecl*)()>(0x4FCD20);
 
 #if TRAE
-	INSTANCE_Post = reinterpret_cast<void(__cdecl*)(Instance*, DWORD, int)>(0x004580B0);
+	INSTANCE_Post = reinterpret_cast<void(__cdecl*)(Instance*, DWORD, int)>(0x4580B0);
 #elif TR8
 	INSTANCE_Post = reinterpret_cast<void(__cdecl*)(Instance*, DWORD, int)>(0x69A670);
+#elif TR7
+	INSTANCE_Post = reinterpret_cast<void(__cdecl*)(Instance*, DWORD, int)>(0x458250);
 #endif
 
 	INSTANCE_Query = reinterpret_cast<int(__cdecl*)(Instance*, int)>(0x00458060);
@@ -70,6 +74,8 @@ void Game::Initialize()
 	PLAYER_DebugSwitchPlayerCharacter = reinterpret_cast<void(__cdecl*)()>(0x005A39A0);
 #elif TR8
 	PLAYER_DebugSwitchPlayerCharacter = reinterpret_cast<int(__cdecl*)(DWORD)>(0x0079DB50);
+#elif TR7
+	PLAYER_DebugSwitchPlayerCharacter = reinterpret_cast<void(__cdecl*)()>(0x005A9A90);
 #endif
 	sub_C64D3F = reinterpret_cast<DWORD(__cdecl*)(int, int, int)>(0xC64D3F);
 	G2EmulationInstanceSetEventAnimPlaying = reinterpret_cast<void(__cdecl*)(Instance*, int)>(0x4DE940);
@@ -168,7 +174,7 @@ bool Game::CheckChapter(char* chapter)
 
 void Game::SwitchPlayerCharacter()
 {
-#if TRAE
+#if TRAE || TR7
 	PLAYER_DebugSwitchPlayerCharacter();
 #elif TR8
 	// patch numPlayerObjects to exclude missing DLC outfits

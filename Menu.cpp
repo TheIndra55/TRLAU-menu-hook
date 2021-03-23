@@ -224,7 +224,7 @@ void Menu::ToggleFlight(bool flight)
 {
     m_flight = flight;
 
-#if TRAE
+#if TRAE || TR7
     auto ptr = reinterpret_cast<int*>(GAMETRACKER + 227);
 #elif TR8
     auto ptr = reinterpret_cast<int*>(0xE7F143);
@@ -241,7 +241,7 @@ void Menu::ToggleFlight(bool flight)
         *ptr = 0;
 
         // drop player when flight disabled
-#if TRAE
+#if TRAE || TR7
         Game::InstancePost(*reinterpret_cast<Instance**>(PLAYERINSTANCE), 1048592, 0);
 #endif
     }
@@ -251,7 +251,7 @@ void Menu::ProcessFlight(UINT msg, WPARAM wparam)
 {
     auto base = *reinterpret_cast<DWORD*>(PLAYERINSTANCE);
 
-#if TRAE
+#if TRAE || TR7
     auto z = reinterpret_cast<float*>(base + 24);
 #elif TR8
     auto z = reinterpret_cast<float*>(base + 40);
@@ -385,6 +385,8 @@ void Menu::Draw()
         auto unitList = *(DWORD*)0x8AF44C;
 #elif TR8
         auto unitList = *(DWORD*)0xDBA188;
+#elif TR7
+        auto unitList = *(DWORD*)0x1162C54;
 #endif
         auto numUnits = *(int*)unitList;
         Log("numUnits: %d\n", numUnits);
@@ -395,7 +397,7 @@ void Menu::Draw()
         {
             Log("%s\n", (char*)(unitList + 4 + offset));
 
-#if TRAE
+#if TRAE || TR7
             offset += 20;
 #elif TR8
             offset += 132;

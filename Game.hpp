@@ -3,22 +3,30 @@
 #include <Windows.h>
 #include <functional>
 
-#define GAMETRACKER 0x838330
-
 #if TRAE
+	#define GAMETRACKER 0x838330
 	#define GAMETRACKER_BASE_AREA (GAMETRACKER + 204)
 	#define MAX_UNIT_LEN 32
 	#define PLAYERINSTANCE 0x83833C
 
 	#define DISKFS 0x838890
 #elif TR8
+	#define GAMETRACKER 0
 	#define GAMETRACKER_BASE_AREA 0x00E7F0C0 // TODO find gametracker address
 	#define MAX_UNIT_LEN 128
 	#define PLAYERINSTANCE 0xE7F094
 
 	#define DISKFS 0x9CE27C
+#elif TR7
+	#define GAMETRACKER 0x010EE730
+	#define GAMETRACKER_BASE_AREA (GAMETRACKER + 204)
+
+	#define MAX_UNIT_LEN 32
+	#define PLAYERINSTANCE (GAMETRACKER + 12)
+
+	#define DISKFS 0x010EEC80
 #else
-	#error "No game specified, set TRAE for Anniversary or TR8 for Underworld"
+	#error "No game specified, set TRAE for Anniversary, TR7 for Legend or TR8 for Underworld"
 #endif
 
 namespace cdc

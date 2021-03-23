@@ -16,7 +16,7 @@ public:
 static int(*original_Direct3DInit)();
 static int hooked_Direct3DInit();
 
-#if TRAE
+#if TRAE || TR7
 static void(__thiscall* original_PCRenderContext_Present)(DWORD*, int, int, int);
 void __fastcall hooked_PCRenderContext_Present(DWORD* _this, void* _, int a2, int a3, int a4);
 #elif TR8

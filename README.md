@@ -1,6 +1,6 @@
 # TRAE-menu-hook
 
-Reverse engineering project for Tomb Raider LAU games, this repo contains the code for TRAE-menu-hook menu for both Tomb Raider Anniversary and Underworld.
+Reverse engineering project for Tomb Raider LAU games, this repo contains the code for TRAE-menu-hook menu for Tomb Raider Anniversary, Legend and Underworld.
 
 ## Videos
 
@@ -48,6 +48,13 @@ Progress on Underworld was started later and this is also a newer version of the
 * Debug log from level scripts restored
 * Loading units from a folder outside of bigfile.000
 
+### Tomb Raider: Legend
+
+* Skew/flight cheat
+* Switch player character
+* Switch unit
+* List units
+
 ## How to
 
 Use [Ultimate ASI Loader](https://github.com/ThirteenAG/Ultimate-ASI-Loader/releases) by replacing `binkw32.dll` and drop the compiled .asi in your game folder.
@@ -60,7 +67,7 @@ premake5 vs2019
 ```
 Open the solution file and build the project. Make sure you have [MinHook.x86.lib](https://github.com/TsudaKageyu/minhook/releases) and d3d9
 
-Make sure to set TRAE or TR8 preprocessor definition for the target game.
+Make sure to set TRAE, TR7 or TR8 preprocessor definition for the target game.
 
 ## Todo
 
