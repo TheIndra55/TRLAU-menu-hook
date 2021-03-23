@@ -45,12 +45,18 @@ char IsPs2()
 bool isDiskFS = false;
 bool switchPlayerNextFrame = false;
 
-int(__thiscall* MSFileSystem_FileExists)(int _this, const char* file);
+extern int(__thiscall* MSFileSystem_FileExists)(int _this, const char* file);
 
 int(__cdecl* origInsertGlobalObject)(int a1);
 int __cdecl InsertGlobalObject(int a1)
 {
+#if TRAE
     auto objects = *(int*)0x842C70;
+#elif TR7
+    auto objects = *(int*)0x10F9110;
+#elif TR8
+    auto objects = 0;
+#endif
     auto name = (char*)*(int*)(objects + 8 * a1 - 4);
 
     char string[256];
@@ -91,6 +97,8 @@ int getFS()
     return *(int*)0x83888C;
 #elif TR8
     return *(int*)0x9CE278;
+#elif TR7
+    return *(int*)0x10EEC7C;
 #endif
 }
 
@@ -141,15 +149,25 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
     MH_CreateHook((void*)0x004E6EC0, IsPs2, nullptr);
     
+    MH_CreateHook((void*)0x00C7DC5B, STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
+    MH_CreateHook((void*)0x005DB680, STREAM_FinishLoad, (void**)&origSTREAM_FinishLoad);
+#endif
+
+#if TRAE
     MH_CreateHook((void*)0x0045F640, getFS, nullptr);
     MH_CreateHook((void*)0x00C63241, unitFileName, (void**)&origUnitFileName);
-    MH_CreateHook((void*)0x00C7DC5B, STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
 
-    MH_CreateHook((void*)0x005DB680, STREAM_FinishLoad, (void**)&origSTREAM_FinishLoad);
     MH_CreateHook((void*)0x00C7D980, InsertGlobalObject, (void**)&origInsertGlobalObject);
-
     MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(0x005E52C0);
-#elif TR8
+#elif TR7
+    MH_CreateHook((void*)0x0045F420, getFS, nullptr);
+    MH_CreateHook((void*)0x0045F4D0, unitFileName, (void**)&origUnitFileName);
+
+    MH_CreateHook((void*)0x005DB550, InsertGlobalObject, (void**)&origInsertGlobalObject);
+    MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(0x0047DC70);
+#endif
+
+#if TR8
     MH_CreateHook((void*)0x00472B50, getFS, nullptr);
     MH_CreateHook((void*)0x00477970, unitFileName, (void**)&origUnitFileName);
     MH_CreateHook((void*)0x005D23F0, STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
@@ -408,11 +426,15 @@ void Menu::Draw()
 
         ImGui::SetClipboardText(this->logBuffer.begin());
     }
-#if TRAE
 
+#if TRAE || TR7
     if (ImGui::Button("List instances"))
     {
+#if TRAE
         auto instance = *(DWORD*)0x817D64;
+#elif TR7
+        auto instance = *(DWORD*)0x10CEE64;
+#endif
         while (1)
         {
             auto next = *(DWORD*)(instance + 8);
@@ -427,7 +449,9 @@ void Menu::Draw()
 
         ImGui::SetClipboardText(this->logBuffer.begin());
     }
+#endif
 
+#if TRAE
     if (ImGui::Button("Trigger All Fade Groups"))
     {
         for (int i = 0; i <= 28; i++)
@@ -471,21 +495,29 @@ void Menu::Draw()
     {
         Game::InstancePost(player, 262256, item );
     }
+#endif
 
+#if TRAE || TR7
     static char name[100] = "";
     ImGui::InputText("name", name, 100);
     if (ImGui::Button("Birth instance"))
     {
         auto position = (*(Instance**)PLAYERINSTANCE)->position;
         auto rotation = (*(Instance**)PLAYERINSTANCE)->rotation;
+#if TRAE
         auto unitId = *(int*)0x838418;
+#elif TR7
+        auto unitId = *(int*)(GAMETRACKER + 0xE8);
+#endif
 
         auto tracker = Stream::GetObjectTrackerByName(name);
         while (tracker->status != 2 && Stream::PollLoadQueue());
 
         Game::BirthObjectNoParent(unitId, &position, &rotation, nullptr, tracker->object, 0, 1);
     }
+#endif
 
+#if TRAE
     static char outfit[100] = "";
     ImGui::InputText("outfit", outfit, 100);
     if (ImGui::Button("Load outfit"))

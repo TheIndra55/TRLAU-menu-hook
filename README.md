@@ -54,6 +54,10 @@ Progress on Underworld was started later and this is also a newer version of the
 * Switch player character
 * Switch unit
 * List units
+* List instances
+* Spawn instances
+* Load replacement or new objects outside bigfile.000
+* Load objectlist.txt outside bigfile.000
 
 ## How to
 

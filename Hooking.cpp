@@ -52,15 +52,16 @@ char __fastcall PCDeviceManager__CreateDevice(DWORD* _this, DWORD _, DWORD a2)
 	return val;
 }
 
-int(__cdecl* FSHelper_ReadFile)(const char* file, int a3, int fs);
+int(__thiscall* MSFileSystem_FileExists)(int _this, const char* file);
 
 int(__cdecl* origOBTABLE_Init)(int a1);
 
 int __cdecl OBTABLE_Init(int a1)
 {
-	auto exists = FSHelper_ReadFile("\\TRAE\\pc-w\\objectlist.txt", 0, *(int*)DISKFS);
+	auto exists = MSFileSystem_FileExists(*(int*)DISKFS, "\\" CONFIGNAME "\\pc-w\\objectlist.txt");
 	if (exists)
 	{
+		g_hooking->menu->Log("objectlist.txt exists outside bigfile, the game will use that one.\n");
 		isDiskFS = true;
 	}
 
@@ -296,8 +297,11 @@ void Hooking::GotDevice()
 #endif
 
 #if TRAE
-	FSHelper_ReadFile = reinterpret_cast<int(__cdecl*)(const char*, int, int)>(0x45F850);
+	MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(0x005E52C0);
 	MH_CreateHook((void*)0x465E30, OBTABLE_Init, (void**)&origOBTABLE_Init);
+#elif TR7
+	MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(0x0047DC70);
+	MH_CreateHook((void*)0x465320, OBTABLE_Init, (void**)&origOBTABLE_Init);
 #endif
 
 #if TR8
