@@ -265,6 +265,25 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         Game::ToggleBinoculars();
     }
 
+    if (msg == WM_KEYUP && wparam == VK_F3)
+    {
+        auto streamFlags = (int*)0x8383F4;
+        if (*streamFlags & 0x1000)
+        {
+            *streamFlags &= 0xFFFFEFFF;
+        }
+        else
+        {
+            *streamFlags |= 0x1000u;
+        }
+    }
+
+    if (msg == WM_KEYUP && wparam == VK_F4)
+    {
+        auto cameraMode = (int*)0x850984;
+        *cameraMode = *cameraMode == 7 ? 2 : 7;
+    }
+
     if (switchPlayerNextFrame)
     {
         switchPlayerNextFrame = false;

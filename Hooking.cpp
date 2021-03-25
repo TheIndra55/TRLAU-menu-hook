@@ -1,6 +1,7 @@
 #include "Hooking.hpp"
 #include "Game.hpp"
 #include "ControlHooks.hpp"
+#include "Camera.hpp"
 
 extern Hooking* g_hooking;
 
@@ -21,6 +22,8 @@ void Hooking::Initialize()
 #endif
 
 	InstallControlHooks();
+	InstallCameraHooks();
+
 	Game::Initialize();
 
 	MH_EnableHook(MH_ALL_HOOKS);
