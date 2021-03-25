@@ -47,6 +47,24 @@ bool switchPlayerNextFrame = false;
 
 extern int(__thiscall* MSFileSystem_FileExists)(int _this, const char* file);
 
+int(__cdecl* origIMAGE_LoadImage)(char* name);
+int __cdecl IMAGE_LoadImage(char* name)
+{
+    char string[256];
+    sprintf_s(string, "\\units\\%s.raw", name);
+
+    if (MSFileSystem_FileExists(*(int*)DISKFS, string))
+    {
+        g_hooking->menu->Log("%s exists, loading that one instead\n", string);
+        isDiskFS = true;
+    }
+
+    auto ret = origIMAGE_LoadImage(name);
+    isDiskFS = false;
+
+    return ret;
+}
+
 int(__cdecl* origInsertGlobalObject)(int a1);
 int __cdecl InsertGlobalObject(int a1)
 {
@@ -83,7 +101,19 @@ void unitFileName(char* name, char* unit, char* ext)
         return;
     }
 
-    return origUnitFileName(name, unit, ext);
+    origUnitFileName(name, unit, ext);
+}
+
+void(__cdecl* origImageFileName)(char*, char*);
+void __cdecl imageFileName(char* name, char* image)
+{
+    if (isDiskFS)
+    {
+        sprintf(name, "\\units\\%s.raw", image);
+        return;
+    }
+
+    origImageFileName(name, image);
 }
 
 int getFS()
@@ -159,12 +189,18 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
     MH_CreateHook((void*)0x00C7D980, InsertGlobalObject, (void**)&origInsertGlobalObject);
     MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(0x005E52C0);
+
+    MH_CreateHook((void*)0x00401480, IMAGE_LoadImage, (void**)&origIMAGE_LoadImage);
+    MH_CreateHook((void*)0x00C63280, imageFileName, (void**)&origImageFileName);
 #elif TR7
     MH_CreateHook((void*)0x0045F420, getFS, nullptr);
     MH_CreateHook((void*)0x0045F4D0, unitFileName, (void**)&origUnitFileName);
 
     MH_CreateHook((void*)0x005DB550, InsertGlobalObject, (void**)&origInsertGlobalObject);
     MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(0x0047DC70);
+
+    MH_CreateHook((void*)0x00401480, IMAGE_LoadImage, (void**)&origIMAGE_LoadImage);
+    MH_CreateHook((void*)0x0045F520, imageFileName, (void**)&origImageFileName);
 #endif
 
 #if TR8
