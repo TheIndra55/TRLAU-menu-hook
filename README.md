@@ -35,6 +35,8 @@ Reverse engineering project for Tomb Raider LAU games, this repo contains the co
 * Spawn instances (entities)
 * Load replacement or new objects outside bigfile.000
 * Load objectlist.txt outside bigfile.000
+* Load .raw files outside bigfile.000
+* Free camera
 
 ### Tomb Raider: Underworld
 
@@ -58,6 +60,7 @@ Progress on Underworld was started later and this is also a newer version of the
 * Spawn instances
 * Load replacement or new objects outside bigfile.000
 * Load objectlist.txt outside bigfile.000
+* Load .raw files outside bigfile.000
 
 ## How to
 
@@ -80,9 +83,9 @@ Other todo items can be found in the 'Projects' tab on GitHub
 - Make use of patterns instead of hardcoded addresses
 - Support Steam version for Anniversary
 
-## Faq
+## FAQ
 
-### How to load new objects?
+### How to load new objects
 
 First browse to the root of the disk where your game is installed, for example D:\
 
@@ -91,5 +94,21 @@ If you are also adding new files copy the game's existing objectlist.txt to D:\T
 
 **Note** objectlist.txt must always end with a line ending (empty line) else the game will crash on start.
 
+### Controls
+
+<kbd>F7</kbd> Hide the menu
+<kbd>F8</kbd> Toggle menu focus, this allows you to interact with the menu
+<kbd>F9</kbd> Switch player character
+
+<kbd>F2</kbd> Toggle skew/flight cheat
+<kbd>F3</kbd> Freeze the game
+<kbd>F4</kbd> Toggle free camera
+
+<kbd>Q</kbd> Flight up
+<kbd>Z</kbd> Flight down
+
+## Screenshots
+
 ![image](https://user-images.githubusercontent.com/15322107/111395421-1e496700-86bd-11eb-997b-b73f2a3ec244.png)
 ![image](https://user-images.githubusercontent.com/15322107/110152916-a2a90980-7de2-11eb-8da4-ba28e1f4a258.png)
+![image](https://user-images.githubusercontent.com/15322107/112666334-5ccce780-8e5c-11eb-8592-4ccc47627dba.png)

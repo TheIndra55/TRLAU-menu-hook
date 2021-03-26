@@ -282,6 +282,8 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     {
         auto cameraMode = (int*)0x850984;
         *cameraMode = *cameraMode == 7 ? 2 : 7;
+
+        *(int*)0x83834C ^= 0x8000; // hide hud
     }
 
     if (switchPlayerNextFrame)
