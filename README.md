@@ -96,15 +96,15 @@ If you are also adding new files copy the game's existing objectlist.txt to D:\T
 
 ### Controls
 
-<kbd>F7</kbd> Hide the menu
-<kbd>F8</kbd> Toggle menu focus, this allows you to interact with the menu
-<kbd>F9</kbd> Switch player character
+<kbd>F7</kbd> Hide the menu \
+<kbd>F8</kbd> Toggle menu focus, this allows you to interact with the menu \
+<kbd>F9</kbd> Switch player character 
 
-<kbd>F2</kbd> Toggle skew/flight cheat
-<kbd>F3</kbd> Freeze the game
-<kbd>F4</kbd> Toggle free camera
+<kbd>F2</kbd> Toggle skew/flight cheat \
+<kbd>F3</kbd> Freeze the game \
+<kbd>F4</kbd> Toggle free camera 
 
-<kbd>Q</kbd> Flight up
+<kbd>Q</kbd> Flight up \
 <kbd>Z</kbd> Flight down
 
 ## Screenshots
