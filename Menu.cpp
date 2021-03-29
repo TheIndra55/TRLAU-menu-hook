@@ -162,6 +162,21 @@ void STREAM_FinishLoad(StreamUnit* unit)
     origSTREAM_FinishLoad(unit);
 }
 
+int(__cdecl* INSTANCE_ReallyRemoveInstance)(Instance* instance, int a2, char a3);
+
+void(__thiscall* origCinematicHandlerImpl_NextFrame)(int _this);
+void __fastcall CinematicHandlerImpl_NextFrame(int _this, int)
+{
+    auto streamFlags = (int*)0x8383F4;
+    if (*streamFlags & 0x1000)
+    {
+        // dont progress cine
+        return;
+    }
+
+    origCinematicHandlerImpl_NextFrame(_this);
+}
+
 Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 {
 	m_pd3dDevice = pd3dDevice;
@@ -181,6 +196,8 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
     
     MH_CreateHook((void*)0x00C7DC5B, STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
     MH_CreateHook((void*)0x005DB680, STREAM_FinishLoad, (void**)&origSTREAM_FinishLoad);
+
+    MH_CreateHook((void*)0x00424FE0, CinematicHandlerImpl_NextFrame, (void**)&origCinematicHandlerImpl_NextFrame);
 #endif
 
 #if TRAE
@@ -192,6 +209,8 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
     MH_CreateHook((void*)0x00401480, IMAGE_LoadImage, (void**)&origIMAGE_LoadImage);
     MH_CreateHook((void*)0x00C63280, imageFileName, (void**)&origImageFileName);
+
+    INSTANCE_ReallyRemoveInstance = reinterpret_cast<int(__cdecl*)(Instance*, int, char)>(0x0045A3A0);
 #elif TR7
     MH_CreateHook((void*)0x0045F420, getFS, nullptr);
     MH_CreateHook((void*)0x0045F4D0, unitFileName, (void**)&origUnitFileName);
@@ -201,6 +220,8 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
     MH_CreateHook((void*)0x00401480, IMAGE_LoadImage, (void**)&origIMAGE_LoadImage);
     MH_CreateHook((void*)0x0045F520, imageFileName, (void**)&origImageFileName);
+
+    INSTANCE_ReallyRemoveInstance = reinterpret_cast<int(__cdecl*)(Instance*, int, char)>(0x0045A330);
 #endif
 
 #if TR8
@@ -259,15 +280,21 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         m_visible = !m_visible;
     }
 
-#if TRAE
-    if (msg == WM_KEYUP && wparam == VK_DELETE)
+#if TRAE || TR7
+    if (msg == WM_KEYUP && wparam == VK_F4)
     {
-        Game::ToggleBinoculars();
+#if TRAE // current legend supported exe (debug exe) has already fly on F4 so only switch the mode on TRAE
+        auto cameraMode = (int*)0x850984;
+        *cameraMode = *cameraMode == 7 ? 2 : 7;
+#endif
+
+        *(int*)(GAMETRACKER + 0x1C) ^= 0x8000; // hide hud
     }
 
+    // pause the game with F3
     if (msg == WM_KEYUP && wparam == VK_F3)
     {
-        auto streamFlags = (int*)0x8383F4;
+        auto streamFlags = (int*)(GAMETRACKER + 0xC4);
         if (*streamFlags & 0x1000)
         {
             *streamFlags &= 0xFFFFEFFF;
@@ -277,13 +304,12 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
             *streamFlags |= 0x1000u;
         }
     }
+#endif
 
-    if (msg == WM_KEYUP && wparam == VK_F4)
+#if TRAE
+    if (msg == WM_KEYUP && wparam == VK_DELETE)
     {
-        auto cameraMode = (int*)0x850984;
-        *cameraMode = *cameraMode == 7 ? 2 : 7;
-
-        *(int*)0x83834C ^= 0x8000; // hide hud
+        Game::ToggleBinoculars();
     }
 
     if (switchPlayerNextFrame)
@@ -370,7 +396,7 @@ void Menu::Draw()
 
     ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_MenuBar);
 
-#if TRAE
+#if TRAE || TR7
     if (ImGui::BeginMenuBar())
     {
         if (ImGui::BeginMenu("Tools"))
@@ -380,10 +406,8 @@ void Menu::Draw()
         }
         ImGui::EndMenuBar();
     }
-
-    // show current unit
-    auto streamUnit = (int)(*(DWORD*)0x83833C) + 178;
 #endif
+
     ImGui::Text("F2 = Flight, F8 = Toggle menu focus, F9 = Switch player character");
     ImGui::Text("Unit = %s, Flight = %s", (char*)GAMETRACKER_BASE_AREA, m_flight ? "true" : "false");
 
@@ -518,6 +542,7 @@ void Menu::Draw()
     }
 #endif
 
+    auto player = *reinterpret_cast<Instance**>(PLAYERINSTANCE);
 #if TRAE
     if (ImGui::Button("Trigger All Fade Groups"))
     {
@@ -547,7 +572,6 @@ void Menu::Draw()
         Game::PlayerTurnGold();
     }
 
-    auto player = *reinterpret_cast<Instance**>(PLAYERINSTANCE);
     if (ImGui::Button("Give all weapons"))
     {
         for (int i = 0; i < 3; i++)
@@ -569,18 +593,26 @@ void Menu::Draw()
     ImGui::InputText("name", name, 100);
     if (ImGui::Button("Birth instance"))
     {
-        auto position = (*(Instance**)PLAYERINSTANCE)->position;
-        auto rotation = (*(Instance**)PLAYERINSTANCE)->rotation;
+        if (Game::GetObjectID(name) == 0)
+        {
+            Log("Failed to load '%s', make sure it exists.\nIf you are trying to birth a new object make sure you added it to objectlist.txt\nSee README FAQ for more info\n", name);
+        }
+        else
+        {
+
+            auto position = player->position;
+            auto rotation = player->rotation;
 #if TRAE
-        auto unitId = *(int*)0x838418;
+            auto unitId = *(int*)0x838418;
 #elif TR7
-        auto unitId = *(int*)(GAMETRACKER + 0xE8);
+            auto unitId = *(int*)(GAMETRACKER + 0xE8);
 #endif
 
-        auto tracker = Stream::GetObjectTrackerByName(name);
-        while (tracker->status != 2 && Stream::PollLoadQueue());
+            auto tracker = Stream::GetObjectTrackerByName(name);
+            while (tracker->status != 2 && Stream::PollLoadQueue());
 
-        Game::BirthObjectNoParent(unitId, &position, &rotation, nullptr, tracker->object, 0, 1);
+            Game::BirthObjectNoParent(unitId, &position, &rotation, nullptr, tracker->object, 0, 1);
+        }
     }
 #endif
 
@@ -594,13 +626,6 @@ void Menu::Draw()
         auto obj = Game::GetObjectID(outfit);
         *(int*)0x838768 /* alt player object */ = obj;
     }
-#endif
-
-#if TR8
-    // if my research is right these pointers enable (or were supposed to) some screenshot feature
-    // this might be the cut photo feature, though right not it doesn't seem to change much
-    ImGui::Checkbox("ui", (bool*)0xFAE80C);
-    ImGui::Checkbox("screenshots", (bool*)0xFAE80D);
 #endif
 
     ImGui::End();
@@ -625,7 +650,13 @@ void DrawInstanceViewer()
 
     ImGui::Columns(2, "instances");
 
+#if TRAE
     auto instance = *(DWORD*)0x817D64;
+#elif TR7
+    auto instance = *(DWORD*)0x10CEE64;
+#elif TR8
+    auto instance = *(DWORD*)0;
+#endif
 
     ImGui::BeginChild("InstanceListTree");
     if (instance)
@@ -676,12 +707,6 @@ void DrawInstanceViewer()
         ImGui::Text("Position: %f %f %f", coords.x, coords.y, coords.z);
         ImGui::Text("Rotation: %f %f %f", rotation.x, rotation.y, rotation.z);
 
-        // pretty sure ImGui has some sort of widget for this
-        if (ImGui::Button("X")) { rotation.x += 0.1f; } ImGui::SameLine();
-        if (ImGui::Button("Y")) { rotation.y += 0.1f; } ImGui::SameLine();
-        if (ImGui::Button("Z")) { rotation.z += 0.1f; }
-        oInstance->rotation = rotation;
-
         ImGui::Text("Intro: %d", *(int*)(clickedInstance + 0x1D0));
 
         if (data)
@@ -691,7 +716,14 @@ void DrawInstanceViewer()
 
         if (extraData)
         {
-            ImGui::Text("Health: %8.2f", *(float*)(extraData + 5280));
+#if TRAE
+            auto health = *(float*)(extraData + 5280);
+#elif TR7
+            auto health = *(float*)(extraData + 5040);
+#elif TR8 
+            auto health = 0.f;
+#endif
+            ImGui::Text("Health: %8.2f", health);
         }
 
         if (ImGui::Button("Switch down"))
@@ -703,6 +735,40 @@ void DrawInstanceViewer()
             Game::InstancePost((Instance*)clickedInstance, 8388753, 2);
         }
         ImGui::Text("Switch status: %d", Game::InstanceQuery((Instance*)clickedInstance, 233));
+
+        if (ImGui::Button("Goto"))
+        {
+            auto player = *(Instance**)PLAYERINSTANCE;
+            player->position = oInstance->position;
+        }
+
+        if (ImGui::Button("Delete"))
+        {
+            INSTANCE_ReallyRemoveInstance((Instance*)clickedInstance, 0, 0);
+        }
+
+        auto numModels = *(__int16*)(object + 0x18);
+        auto modelList = *(int*)(object + 0x20);
+
+        ImGui::Text("numModels %d", numModels);
+
+        for (int i = 0; i < numModels; i++)
+        {
+            auto model = **(Model**)(modelList + (i * 4));
+
+            char label[10];
+            sprintf_s(label, "model %d", i);
+
+            if (ImGui::CollapsingHeader(label))
+            {
+                ImGui::Text("version %d", model.version);
+                ImGui::Text("numSegments %d", model.numSegments);
+                ImGui::Text("numVirtSegments %d", model.numVirtSegments);
+                ImGui::Text("numVertices %d", model.numVertices);
+                ImGui::Text("numNormals %d", model.numNormals);
+                ImGui::Text("numFaces %d", model.numFaces);
+            }
+        }
     }
 
     ImGui::End();

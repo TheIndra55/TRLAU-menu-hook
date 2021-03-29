@@ -33,10 +33,12 @@ Reverse engineering project for Tomb Raider LAU games, this repo contains the co
 * Turn lara into gold
 * Give items and weapons
 * Spawn instances (entities)
+* Delete instances
 * Load replacement or new objects outside bigfile.000
 * Load objectlist.txt outside bigfile.000
 * Load .raw files outside bigfile.000
 * Free camera
+* See info about instance models
 
 ### Tomb Raider: Underworld
 
@@ -52,15 +54,19 @@ Progress on Underworld was started later and this is also a newer version of the
 
 ### Tomb Raider: Legend
 
+**Supported version**: nextgen demo debug exe
+
 * Skew/flight cheat
 * Switch player character
 * Switch unit
 * List units
 * List instances
 * Spawn instances
+* Delete instances
 * Load replacement or new objects outside bigfile.000
 * Load objectlist.txt outside bigfile.000
 * Load .raw files outside bigfile.000
+* See info about instance models
 
 ## How to
 
@@ -80,8 +86,7 @@ Make sure to set TRAE, TR7 or TR8 preprocessor definition for the target game.
 
 Other todo items can be found in the 'Projects' tab on GitHub
 
-- Make use of patterns instead of hardcoded addresses
-- Support Steam version for Anniversary
+- Make use of patterns to support more executables like Steam
 
 ## FAQ
 

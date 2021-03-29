@@ -12,6 +12,7 @@ int(__cdecl* UIScreenManager_PopScreen)();
 #if TRAE || TR7
 void(__cdecl* PLAYER_DebugSwitchPlayerCharacter)();
 #elif TR8
+// has an extra arg in Underworld
 int(__cdecl* PLAYER_DebugSwitchPlayerCharacter)(DWORD a1);
 #endif
 
@@ -61,13 +62,16 @@ void Game::Initialize()
 
 #if TRAE
 	INSTANCE_Post = reinterpret_cast<void(__cdecl*)(Instance*, DWORD, int)>(0x4580B0);
-#elif TR8
-	INSTANCE_Post = reinterpret_cast<void(__cdecl*)(Instance*, DWORD, int)>(0x69A670);
 #elif TR7
 	INSTANCE_Post = reinterpret_cast<void(__cdecl*)(Instance*, DWORD, int)>(0x458250);
 #endif
 
+#if TRAE
 	INSTANCE_Query = reinterpret_cast<int(__cdecl*)(Instance*, int)>(0x00458060);
+#elif TR7
+	INSTANCE_Query = reinterpret_cast<int(__cdecl*)(Instance*, int)>(0x00458200);
+#endif
+
 	INSTANCE_Find = reinterpret_cast<Instance*(__cdecl*)(int)>(0x004582D0);
 
 #if TRAE

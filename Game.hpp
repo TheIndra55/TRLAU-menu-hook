@@ -83,6 +83,21 @@ struct StreamUnit
 	Level* level;
 };
 
+struct Model
+{
+	int version;
+	int numSegments;
+	int numVirtSegments;
+	int segmentList;
+	cdc::Vector modelScale;
+	int numVertices;
+	int vertexList;
+	int numNormals;
+	int normalList;
+	int numFaces;
+	int faceList;
+};
+
 class Game
 {
 public:

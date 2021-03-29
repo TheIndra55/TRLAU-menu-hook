@@ -305,6 +305,9 @@ void Hooking::GotDevice()
 #elif TR7
 	MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(0x0047DC70);
 	MH_CreateHook((void*)0x465320, OBTABLE_Init, (void**)&origOBTABLE_Init);
+
+	// nop out useless F3 mouse toggle to be replaced by our F3
+	NOP((void*)0x405559, 5);
 #endif
 
 #if TR8
@@ -397,4 +400,12 @@ BOOL WINAPI hooked_SetCursorPos(int x, int y)
 	}
 
 	return original_SetCursorPos(x, y);
+}
+
+void NOP(void* address, int num)
+{
+	DWORD lpflOldProtect, _;
+	VirtualProtect(address, num, PAGE_EXECUTE_READWRITE, &lpflOldProtect);
+	memset(address, 0x90, num);
+	VirtualProtect(address, num, lpflOldProtect, &_);
 }
