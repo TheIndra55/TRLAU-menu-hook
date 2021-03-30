@@ -163,6 +163,7 @@ void STREAM_FinishLoad(StreamUnit* unit)
 }
 
 int(__cdecl* INSTANCE_ReallyRemoveInstance)(Instance* instance, int a2, char a3);
+void(__cdecl* INSTANCE_SetModel)(Instance* instance, int model);
 
 void(__thiscall* origCinematicHandlerImpl_NextFrame)(int _this);
 void __fastcall CinematicHandlerImpl_NextFrame(int _this, int)
@@ -211,6 +212,7 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
     MH_CreateHook((void*)0x00C63280, imageFileName, (void**)&origImageFileName);
 
     INSTANCE_ReallyRemoveInstance = reinterpret_cast<int(__cdecl*)(Instance*, int, char)>(0x0045A3A0);
+    INSTANCE_SetModel = reinterpret_cast<void(__cdecl*)(Instance * instance, int model)>(0x00458A90);
 #elif TR7
     MH_CreateHook((void*)0x0045F420, getFS, nullptr);
     MH_CreateHook((void*)0x0045F4D0, unitFileName, (void**)&origUnitFileName);
@@ -222,6 +224,7 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
     MH_CreateHook((void*)0x0045F520, imageFileName, (void**)&origImageFileName);
 
     INSTANCE_ReallyRemoveInstance = reinterpret_cast<int(__cdecl*)(Instance*, int, char)>(0x0045A330);
+    INSTANCE_SetModel = reinterpret_cast<void(__cdecl*)(Instance * instance, int model)>(0x00458C80);
 #endif
 
 #if TR8
@@ -749,6 +752,13 @@ void DrawInstanceViewer()
 
         auto numModels = *(__int16*)(object + 0x18);
         auto modelList = *(int*)(object + 0x20);
+
+        static int model;
+        ImGui::InputInt("model index", &model);
+        if (ImGui::Button("Set model"))
+        {
+            INSTANCE_SetModel(oInstance, model);
+        }
 
         ImGui::Text("numModels %d", numModels);
 
