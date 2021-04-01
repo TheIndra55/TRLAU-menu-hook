@@ -65,28 +65,34 @@ int __cdecl IMAGE_LoadImage(char* name)
     return ret;
 }
 
-int(__cdecl* origInsertGlobalObject)(int a1);
-int __cdecl InsertGlobalObject(int a1)
+int(__cdecl* origInsertGlobalObject)(int a1, char a2);
+int __cdecl InsertGlobalObject(int a1, char a2)
 {
 #if TRAE
     auto objects = *(int*)0x842C70;
 #elif TR7
     auto objects = *(int*)0x10F9110;
 #elif TR8
-    auto objects = 0;
+    auto objects = *(int*)0xDB94D0;
 #endif
+
+#if TRAE || TR7
     auto name = (char*)*(int*)(objects + 8 * a1 - 4);
+#elif TR8
+    auto name = (char*)*(int*)(objects + 8 * a1);
+#endif
 
     char string[256];
     sprintf_s(string, "\\units\\%s.drm", name);
 
+    //g_hooking->menu->Log("InsertGlobalObject: %s\n", name);
     if (MSFileSystem_FileExists(*(int*)DISKFS, string))
     {
         g_hooking->menu->Log("%s exists, loading that one instead\n", string);
         isDiskFS = true;
     }
 
-    auto ret = origInsertGlobalObject(a1);
+    auto ret = origInsertGlobalObject(a1, a2);
     isDiskFS = false;
 
     return ret;
@@ -239,6 +245,10 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 #if TR8
     MH_CreateHook((void*)0x00472B50, getFS, nullptr);
     MH_CreateHook((void*)0x00477970, unitFileName, (void**)&origUnitFileName);
+
+    MH_CreateHook((void*)0x005C1550, InsertGlobalObject, (void**)&origInsertGlobalObject);
+    MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(0x00473FB0);
+
     MH_CreateHook((void*)0x005D23F0, STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
 #endif
 }
@@ -600,7 +610,6 @@ void Menu::Draw()
     }
 #endif
 
-#if TRAE || TR7
     static char name[100] = "";
     ImGui::InputText("name", name, 100);
     if (ImGui::Button("Birth instance"))
@@ -612,12 +621,22 @@ void Menu::Draw()
         else
         {
 
+#if TRAE || TR7
             auto position = player->position;
             auto rotation = player->rotation;
+#endif
+
 #if TRAE
             auto unitId = *(int*)0x838418;
 #elif TR7
             auto unitId = *(int*)(GAMETRACKER + 0xE8);
+#elif TR8
+            // dammit underworld
+            auto base = *reinterpret_cast<DWORD*>(PLAYERINSTANCE);
+
+            auto rotation = *(cdc::Vector*)(base + 48);
+            auto position = *(cdc::Vector*)(base + 32);
+            auto unitId = *(int*)(base + 224);
 #endif
 
             auto tracker = Stream::GetObjectTrackerByName(name);
@@ -626,7 +645,6 @@ void Menu::Draw()
             Game::BirthObjectNoParent(unitId, &position, &rotation, nullptr, tracker->object, 0, 1);
         }
     }
-#endif
 
 #if TRAE
     static char outfit[100] = "";

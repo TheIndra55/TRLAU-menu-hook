@@ -110,6 +110,12 @@ void Game::Initialize()
 	INSTANCE_BirthObjectNoParent = reinterpret_cast<Instance * (__cdecl*)(int, cdc::Vector*, cdc::Vector*, DWORD*, DWORD*, int, int)>(0x0045B710);
 	STREAM_GetObjectTrackerByName = reinterpret_cast<ObjectTracker * (__cdecl*)(char*)>(0x005DA400);
 	STREAM_PollLoadQueue = reinterpret_cast<bool(__cdecl*)()>(0x005DB350);
+#elif TR8
+	OBTABLE_GetObjectID = reinterpret_cast<int(__cdecl*)(char*)>(0x005BF770);
+
+	INSTANCE_BirthObjectNoParent = reinterpret_cast<Instance * (__cdecl*)(int, cdc::Vector*, cdc::Vector*, DWORD*, DWORD*, int, int)>(0x005BD0F0);
+	STREAM_GetObjectTrackerByName = reinterpret_cast<ObjectTracker * (__cdecl*)(char*)>(0x005C17D0);
+	STREAM_PollLoadQueue = reinterpret_cast<bool(__cdecl*)()>(0x005C1DA0);
 #endif
 }
 
