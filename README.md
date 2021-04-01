@@ -39,6 +39,7 @@ Reverse engineering project for Tomb Raider LAU games, this repo contains the co
 * Load .raw files outside bigfile.000
 * Free camera
 * See info about instance models
+* Play animations
 
 ### Tomb Raider: Underworld
 
@@ -67,6 +68,7 @@ Progress on Underworld was started later and this is also a newer version of the
 * Load objectlist.txt outside bigfile.000
 * Load .raw files outside bigfile.000
 * See info about instance models
+* Play animations
 
 ## How to
 

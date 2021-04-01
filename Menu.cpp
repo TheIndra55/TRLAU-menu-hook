@@ -165,6 +165,9 @@ void STREAM_FinishLoad(StreamUnit* unit)
 int(__cdecl* INSTANCE_ReallyRemoveInstance)(Instance* instance, int a2, char a3);
 void(__cdecl* INSTANCE_SetModel)(Instance* instance, int model);
 
+void(__cdecl* G2EmulationInstanceSetAnimation)(Instance* instance, int section, int anim, int frame, int frames);
+void(__cdecl* G2EmulationInstanceSetMode)(Instance* instance, int section, int mode);
+
 void(__thiscall* origCinematicHandlerImpl_NextFrame)(int _this);
 void __fastcall CinematicHandlerImpl_NextFrame(int _this, int)
 {
@@ -213,6 +216,9 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
     INSTANCE_ReallyRemoveInstance = reinterpret_cast<int(__cdecl*)(Instance*, int, char)>(0x0045A3A0);
     INSTANCE_SetModel = reinterpret_cast<void(__cdecl*)(Instance * instance, int model)>(0x00458A90);
+
+    G2EmulationInstanceSetAnimation = reinterpret_cast<void(__cdecl*)(Instance*, int, int, int, int)>(0x004DE690);
+    G2EmulationInstanceSetMode = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x004DE7F0);
 #elif TR7
     MH_CreateHook((void*)0x0045F420, getFS, nullptr);
     MH_CreateHook((void*)0x0045F4D0, unitFileName, (void**)&origUnitFileName);
@@ -225,6 +231,9 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
     INSTANCE_ReallyRemoveInstance = reinterpret_cast<int(__cdecl*)(Instance*, int, char)>(0x0045A330);
     INSTANCE_SetModel = reinterpret_cast<void(__cdecl*)(Instance * instance, int model)>(0x00458C80);
+
+    G2EmulationInstanceSetAnimation = reinterpret_cast<void(__cdecl*)(Instance*, int, int, int, int)>(0x004E1F00);
+    G2EmulationInstanceSetMode = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x004E2060);
 #endif
 
 #if TR8
@@ -739,10 +748,15 @@ void DrawInstanceViewer()
         }
         ImGui::Text("Switch status: %d", Game::InstanceQuery((Instance*)clickedInstance, 233));
 
+        auto player = *(Instance**)PLAYERINSTANCE;
         if (ImGui::Button("Goto"))
         {
-            auto player = *(Instance**)PLAYERINSTANCE;
             player->position = oInstance->position;
+        }
+
+        if (ImGui::Button("Bring"))
+        {
+            oInstance->position = player->position;
         }
 
         if (ImGui::Button("Delete"))
@@ -751,6 +765,8 @@ void DrawInstanceViewer()
         }
 
         auto numModels = *(__int16*)(object + 0x18);
+        auto numAnims = *(__int16*)(object + 0x1A);
+
         auto modelList = *(int*)(object + 0x20);
 
         static int model;
@@ -760,7 +776,16 @@ void DrawInstanceViewer()
             INSTANCE_SetModel(oInstance, model);
         }
 
+        static int anim;
+        ImGui::InputInt("anim", &anim);
+        if (ImGui::Button("Play anim"))
+        {
+            G2EmulationInstanceSetAnimation(oInstance, 0, anim, 0, 0);
+            G2EmulationInstanceSetMode(oInstance, 0, 2);
+        }
+
         ImGui::Text("numModels %d", numModels);
+        ImGui::Text("numAnims %d", numAnims);
 
         for (int i = 0; i < numModels; i++)
         {
