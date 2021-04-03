@@ -52,6 +52,11 @@ Progress on Underworld was started later and this is also a newer version of the
 * List units
 * Debug log from level scripts restored
 * Loading units from a folder outside of bigfile.000
+* List instances
+* Spawn instances
+* Delete instances
+* Load replacement objects outside bigfile.000
+* Play animations
 
 ### Tomb Raider: Legend
 
@@ -89,6 +94,7 @@ Make sure to set TRAE, TR7 or TR8 preprocessor definition for the target game.
 Other todo items can be found in the 'Projects' tab on GitHub
 
 - Make use of patterns to support more executables like Steam
+- Refactor a lot of code to use structs instead of offsets
 
 ## FAQ
 

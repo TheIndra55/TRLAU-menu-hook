@@ -49,6 +49,7 @@ struct ObjectTracker
 	__int16 status;
 };
 
+#if TRAE || TR7
 struct Instance
 {
 	__int64 node;
@@ -69,6 +70,18 @@ struct Instance
 	__int16 introNum;
 	DWORD* object;
 };
+#elif TR8
+struct Instance
+{
+	__int64 node;
+	Instance* next;
+	__int32 prev;
+	DWORD* object;
+	char padding[12];
+	cdc::Vector position;
+	cdc::Vector rotation;
+};
+#endif
 
 struct Level
 {

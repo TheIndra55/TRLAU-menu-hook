@@ -250,6 +250,12 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
     MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(0x00473FB0);
 
     MH_CreateHook((void*)0x005D23F0, STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
+
+    INSTANCE_ReallyRemoveInstance = reinterpret_cast<int(__cdecl*)(Instance*, int, char)>(0x005BC4E0);
+    INSTANCE_SetModel = reinterpret_cast<void(__cdecl*)(Instance * instance, int model)>(0x005B9170);
+
+    G2EmulationInstanceSetAnimation = reinterpret_cast<void(__cdecl*)(Instance*, int, int, int, int)>(0x005B1EA0);
+    G2EmulationInstanceSetMode = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x005B1F50);
 #endif
 }
 
@@ -418,7 +424,6 @@ void Menu::Draw()
 
     ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_MenuBar);
 
-#if TRAE || TR7
     if (ImGui::BeginMenuBar())
     {
         if (ImGui::BeginMenu("Tools"))
@@ -428,7 +433,6 @@ void Menu::Draw()
         }
         ImGui::EndMenuBar();
     }
-#endif
 
     ImGui::Text("F2 = Flight, F8 = Toggle menu focus, F9 = Switch player character");
     ImGui::Text("Unit = %s, Flight = %s", (char*)GAMETRACKER_BASE_AREA, m_flight ? "true" : "false");
@@ -540,19 +544,29 @@ void Menu::Draw()
         ImGui::SetClipboardText(this->logBuffer.begin());
     }
 
-#if TRAE || TR7
     if (ImGui::Button("List instances"))
     {
 #if TRAE
         auto instance = *(DWORD*)0x817D64;
 #elif TR7
         auto instance = *(DWORD*)0x10CEE64;
+#elif TR8
+        auto instance = *(DWORD*)0xD98D54;
 #endif
         while (1)
         {
             auto next = *(DWORD*)(instance + 8);
+
+#if TRAE || TR7
             auto object = *(DWORD*)(instance + 0x94);
-            Log("%s - %d\n", (char*)*(DWORD*)(object + 0x48), *(int*)(instance + 0x1D0));
+            auto name = (char*)*(DWORD*)(object + 0x48);
+            auto intro = *(int*)(instance + 0x1D0);
+#elif TR8
+            auto object = *(DWORD*)(instance + 0x10);
+            auto name = (char*)*(DWORD*)(object + 0x60);
+            auto intro = *(int*)(instance + 0x58);
+#endif
+            Log("%s - %d\n", name, intro);
 
             if (!next)
                 break;
@@ -562,7 +576,6 @@ void Menu::Draw()
 
         ImGui::SetClipboardText(this->logBuffer.begin());
     }
-#endif
 
     auto player = *reinterpret_cast<Instance**>(PLAYERINSTANCE);
 #if TRAE
@@ -620,23 +633,15 @@ void Menu::Draw()
         }
         else
         {
-
-#if TRAE || TR7
             auto position = player->position;
             auto rotation = player->rotation;
-#endif
 
 #if TRAE
             auto unitId = *(int*)0x838418;
 #elif TR7
             auto unitId = *(int*)(GAMETRACKER + 0xE8);
 #elif TR8
-            // dammit underworld
-            auto base = *reinterpret_cast<DWORD*>(PLAYERINSTANCE);
-
-            auto rotation = *(cdc::Vector*)(base + 48);
-            auto position = *(cdc::Vector*)(base + 32);
-            auto unitId = *(int*)(base + 224);
+            auto unitId = *(int*)((*(int*)PLAYERINSTANCE) + 224);
 #endif
 
             auto tracker = Stream::GetObjectTrackerByName(name);
@@ -685,7 +690,7 @@ void DrawInstanceViewer()
 #elif TR7
     auto instance = *(DWORD*)0x10CEE64;
 #elif TR8
-    auto instance = *(DWORD*)0;
+    auto instance = *(DWORD*)0xD98D54;
 #endif
 
     ImGui::BeginChild("InstanceListTree");
@@ -694,9 +699,18 @@ void DrawInstanceViewer()
         while (1)
         {
             auto next = *(DWORD*)(instance + 8);
-            auto object = *(DWORD*)(instance + 0x94);
 
-            if (ImGui::TreeNodeEx((void*)object, ImGuiTreeNodeFlags_Leaf, "%d %s", *(int*)(instance + 0x1D0), (char*)*(DWORD*)(object + 0x48)))
+#if TRAE || TR7
+            auto object = *(DWORD*)(instance + 0x94);
+            auto name = (char*)*(DWORD*)(object + 0x48);
+            auto intro = *(int*)(instance + 0x1D0);
+#elif TR8
+            auto object = *(DWORD*)(instance + 0x10);
+            auto name = (char*)*(DWORD*)(object + 0x60);
+            auto intro = *(int*)(instance + 0x58);
+#endif
+
+            if (ImGui::TreeNodeEx((void*)object, ImGuiTreeNodeFlags_Leaf, "%d %s", intro, name))
             {
                 if (ImGui::IsItemClicked())
                 {
@@ -725,11 +739,29 @@ void DrawInstanceViewer()
     if (clickedInstance)
     {
         auto oInstance = (Instance*)clickedInstance;
+
+#if TRAE || TR7
         auto object = *(DWORD*)(clickedInstance + 0x94);
         auto data = *(DWORD*)(clickedInstance + 448);
         auto extraData = *(DWORD*)(clickedInstance + 572);
 
-        ImGui::Text("%s", (char*)*(DWORD*)(object + 0x48));
+        auto numAnims = *(__int16*)(object + 0x1A);
+        auto numModels = *(__int16*)(object + 0x18);
+
+        auto name = (char*)*(DWORD*)(object + 0x48);
+        auto intro = *(int*)(clickedInstance + 0x1D0);
+#elif TR8
+        auto object = *(DWORD*)(clickedInstance + 0x10);
+        auto data = *(DWORD*)(clickedInstance + 80);
+
+        auto numAnims = *(__int16*)(object + 0x38);
+        auto numModels = *(__int16*)(object + 0x3A);
+
+        auto name = (char*)*(DWORD*)(object + 0x60);
+        auto intro = *(int*)(clickedInstance + 0x58);
+#endif
+
+        ImGui::Text("%s", name);
 
         auto coords = oInstance->position;
         auto rotation = oInstance->rotation;
@@ -737,12 +769,16 @@ void DrawInstanceViewer()
         ImGui::Text("Position: %f %f %f", coords.x, coords.y, coords.z);
         ImGui::Text("Rotation: %f %f %f", rotation.x, rotation.y, rotation.z);
 
-        ImGui::Text("Intro: %d", *(int*)(clickedInstance + 0x1D0));
+        ImGui::Text("Intro: %d", intro);
 
         if (data)
         {
             ImGui::Text("Family %d", *(unsigned __int16*)(data + 2));
         }
+
+        ImGui::Text("Address %p", clickedInstance);
+
+#if TRAE || TR7
 
         if (extraData)
         {
@@ -750,8 +786,6 @@ void DrawInstanceViewer()
             auto health = *(float*)(extraData + 5280);
 #elif TR7
             auto health = *(float*)(extraData + 5040);
-#elif TR8 
-            auto health = 0.f;
 #endif
             ImGui::Text("Health: %8.2f", health);
         }
@@ -765,6 +799,7 @@ void DrawInstanceViewer()
             Game::InstancePost((Instance*)clickedInstance, 8388753, 2);
         }
         ImGui::Text("Switch status: %d", Game::InstanceQuery((Instance*)clickedInstance, 233));
+#endif
 
         auto player = *(Instance**)PLAYERINSTANCE;
         if (ImGui::Button("Goto"))
@@ -782,10 +817,7 @@ void DrawInstanceViewer()
             INSTANCE_ReallyRemoveInstance((Instance*)clickedInstance, 0, 0);
         }
 
-        auto numModels = *(__int16*)(object + 0x18);
-        auto numAnims = *(__int16*)(object + 0x1A);
-
-        auto modelList = *(int*)(object + 0x20);
+        ImGui::Text("numModels %d", numModels);
 
         static int model;
         ImGui::InputInt("model index", &model);
@@ -793,6 +825,8 @@ void DrawInstanceViewer()
         {
             INSTANCE_SetModel(oInstance, model);
         }
+
+        ImGui::Text("numAnims %d", numAnims);
 
         static int anim;
         ImGui::InputInt("anim", &anim);
@@ -802,9 +836,8 @@ void DrawInstanceViewer()
             G2EmulationInstanceSetMode(oInstance, 0, 2);
         }
 
-        ImGui::Text("numModels %d", numModels);
-        ImGui::Text("numAnims %d", numAnims);
-
+#if TRAE || TR7
+        auto modelList = *(int*)(object + 0x20);
         for (int i = 0; i < numModels; i++)
         {
             auto model = **(Model**)(modelList + (i * 4));
@@ -822,6 +855,7 @@ void DrawInstanceViewer()
                 ImGui::Text("numFaces %d", model.numFaces);
             }
         }
+#endif
     }
 
     ImGui::End();

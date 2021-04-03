@@ -16,6 +16,8 @@ INSTANCE_BirthObjectNoParent 005BD0F0
 INSTANCE_DefaultInit 005BA810
 INSTANCE_IntroduceInstance 005BCC30
 INSTANCE_NewInstance 005B2EF0
+INSTANCE_ReallyRemoveInstance 005BC4E0
+INSTANCE_ReallyRemoveAllChildren 005BD3B0
 InsertGlobalObject 005C1550
 MOVIE_DisplayFrame 004A1100
 MovieSubtitles__Process 004A0910
@@ -25,6 +27,7 @@ NtCamera_ScriptType__InitType 007ABE60
 NtHealth_ScriptType__InitType 007AC410
 NtScreenshot_ScriptType__InitType 007ADC40
 NtStdScreenMgr_ScriptType__InitType 007ADCA0
+OBTABLE_Init 005BF330
 OBTABLE_GetObjectID 005BF770
 PCMOUSE_GetButtonState 004828F0
 PLAYER_DebugSwitchPlayerCharacter 0079DB50
@@ -36,6 +39,7 @@ STREAM_GetObjectTrackerByName 005C17D0
 STREAM_Init 005C1270
 STREAM_LoadLevel 005D23F0
 STREAM_PollLoadQueue 005C1DA0
+ObjectInit 006D00E0
 SaveLoad__Init 007744E0
 Screenshots__CaptureAndSaveTask__CaptureAndSaveTask 00774A20
 Screenshots__CaptureAndSaveTask__NotEnoughSpace_Callback 007748A0
@@ -65,3 +69,7 @@ initScripts 007A8650
 localstr_get 0049A7A0
 localstr_reload 0049A800
 unitFileName 00477970
+GEAR_Init 006CDF50
+OBJ_PlayAnimLoop 0069A960
+G2EmulationInstanceSetMode 005B1F50	00000046
+G2EmulationInstanceSetAnimation	005B1EA0
