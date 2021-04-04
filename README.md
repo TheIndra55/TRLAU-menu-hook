@@ -69,6 +69,7 @@ Progress on Underworld was started later and this is also a newer version of the
 * List instances
 * Spawn instances
 * Delete instances
+* Loading units from a folder outside of bigfile.000
 * Load replacement or new objects outside bigfile.000
 * Load objectlist.txt outside bigfile.000
 * Load .raw files outside bigfile.000

@@ -51,7 +51,7 @@ int(__cdecl* origIMAGE_LoadImage)(char* name);
 int __cdecl IMAGE_LoadImage(char* name)
 {
     char string[256];
-    sprintf_s(string, "\\units\\%s.raw", name);
+    sprintf_s(string, "\\" CONFIGNAME "\\units\\%s.raw", name);
 
     if (MSFileSystem_FileExists(*(int*)DISKFS, string))
     {
@@ -83,7 +83,7 @@ int __cdecl InsertGlobalObject(int a1, char a2)
 #endif
 
     char string[256];
-    sprintf_s(string, "\\units\\%s.drm", name);
+    sprintf_s(string, "\\" CONFIGNAME "\\units\\%s.drm", name);
 
     //g_hooking->menu->Log("InsertGlobalObject: %s\n", name);
     if (MSFileSystem_FileExists(*(int*)DISKFS, string))
@@ -103,7 +103,7 @@ void unitFileName(char* name, char* unit, char* ext)
 {
     if (isDiskFS)
     {
-        sprintf(name, "\\units\\%s.drm", unit);
+        sprintf(name, "\\" CONFIGNAME "\\units\\%s.drm", unit);
         return;
     }
 
@@ -115,7 +115,7 @@ void __cdecl imageFileName(char* name, char* image)
 {
     if (isDiskFS)
     {
-        sprintf(name, "\\units\\%s.raw", image);
+        sprintf(name, "\\" CONFIGNAME "\\units\\%s.raw", image);
         return;
     }
 
@@ -144,9 +144,13 @@ int __cdecl STREAM_LoadLevel(char* a1, int a2, char a3)
 {
     g_hooking->menu->Log(__FUNCTION__ " Loading %s\n", a1);
 
-    if (strncmp("fi", a1, 2) == 0)
+    char string[256];
+    sprintf_s(string, "\\" CONFIGNAME "\\units\\%s.drm", a1);
+
+    if (MSFileSystem_FileExists(*(int*)DISKFS, string))
     {
         // load this unit from disk
+        g_hooking->menu->Log("%s exists, loading this unit from disk\n", string);
         isDiskFS = true;
     }
 
@@ -231,6 +235,8 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
     MH_CreateHook((void*)0x005DB550, InsertGlobalObject, (void**)&origInsertGlobalObject);
     MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(0x0047DC70);
+
+    MH_CreateHook((void*)0x005DBD20, STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
 
     MH_CreateHook((void*)0x00401480, IMAGE_LoadImage, (void**)&origIMAGE_LoadImage);
     MH_CreateHook((void*)0x0045F520, imageFileName, (void**)&origImageFileName);
