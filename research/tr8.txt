@@ -50,7 +50,7 @@ Screenshots__SavingTask__Start 00774F70
 Screenshots__TakeScreenshot 00795FE0
 UIControllerConfigGetTextData 006DC5F0
 _getScreenName 0077CB20
-_setCameraMode 005F39F0
+CAMERA_SetMode 005F39F0
 cdcRenderLayer__Create 005CAE70
 cdc__FatalError 00596CB0
 cdc__PCDeviceManager__Create 005239C0
@@ -71,5 +71,11 @@ localstr_reload 0049A800
 unitFileName 00477970
 GEAR_Init 006CDF50
 OBJ_PlayAnimLoop 0069A960
-G2EmulationInstanceSetMode 005B1F50	00000046
+G2EmulationInstanceSetMode 005B1F50
 G2EmulationInstanceSetAnimation	005B1EA0
+CinematicHandlerImpl__TakeControl 004561C0
+CinematicHandlerImpl__NextFrame 00457100
+ArchiveFileSystem__CalculateHash 00472670
+ArchiveFileSystem__Find 004726E0
+ArchiveFileSystem__RequestRead 00472890
+ComputeCRC 004725C0
