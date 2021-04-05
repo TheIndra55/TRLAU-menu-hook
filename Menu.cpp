@@ -842,6 +842,23 @@ void DrawInstanceViewer()
             G2EmulationInstanceSetMode(oInstance, 0, 2);
         }
 
+#if TR8
+        static int maxList;
+
+        if (ImGui::Button("List anims"))
+        {
+            auto animList = *(int*)(object + 0x44);
+            for (int i = 0; i < maxList; i++)
+            {
+                auto anim = *(char**)(animList + (i * 0x0c) + 0x08);
+
+                g_hooking->menu->Log("%d %s\n", i, anim);
+            }
+        }
+        ImGui::SameLine();
+        ImGui::InputInt("num anims", &maxList);
+#endif
+
 #if TRAE || TR7
         auto modelList = *(int*)(object + 0x20);
         for (int i = 0; i < numModels; i++)

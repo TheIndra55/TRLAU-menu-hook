@@ -79,3 +79,10 @@ ArchiveFileSystem__CalculateHash 00472670
 ArchiveFileSystem__Find 004726E0
 ArchiveFileSystem__RequestRead 00472890
 ComputeCRC 004725C0
+STREAM_GetStreamUnitWithID 005C1B50
+STREAM_MoveIntoNewStreamUnit 005C1BF0
+GAMELOOP_GetMainRenderUnit 005D4480
+COLLIDE_CameraWithStreamSignals	005C6DB0
+_cameraGetFocusInstance	005E7920
+_getCameraMode 005E7BC0
+HandleFadingAndLOD 005B5D20
