@@ -99,12 +99,28 @@ Other todo items can be found in the 'Projects' tab on GitHub
 
 ## FAQ
 
-### How to load new objects
+### How to load files outside bigfile.000
 
-First browse to the root of the disk where your game is installed, for example D:\
+Create a folder at the root of your disk \TRAE\units on which the game is installed for example D:\TRAE\units and add the files.
 
-Add a folder D:\units here your will put the replacement or new .drm files \
-If you are also adding new files copy the game's existing objectlist.txt to D:\TRAE\pc-w\objectlist.txt, higher the first number by one and add another line with your id and name.
+|Game         | Folder | Support                                        |
+|-------------|--------|------------------------------------------------|
+| Anniversary | \TRAE\ | .raw, .drm (units and objects), objectlist.txt |
+| Legend      | \TR7\  | .raw, .drm (units and objects), objectlist.txt |
+| Underworld  | \TR8\  | .drm (units and objects)                       |
+
+Objects have to be defined in objectlist.txt to birth them ingame (see below), units don't and can always be loaded.
+
+### How to load custom objectlist.txt
+
+Use the same folder as above but instead of \units create a folder \pc-w and put your objectlist.txt inside, if it finds your objectlist.txt it will tell so in the Log window.
+
+### How to add new objects
+
+Start by adding the .drm file of your object to the units folder (see above), next open your objectlist.txt and add +1 to the number on the first line. Then scroll to the last line and add a new line
+```
+959,yourobjectwithoutdotdrm
+```
 
 **Note** objectlist.txt must always end with a line ending (empty line) else the game will crash on start.
 
@@ -124,5 +140,5 @@ If you are also adding new files copy the game's existing objectlist.txt to D:\T
 ## Screenshots
 
 ![image](https://user-images.githubusercontent.com/15322107/111395421-1e496700-86bd-11eb-997b-b73f2a3ec244.png)
-![image](https://user-images.githubusercontent.com/15322107/110152916-a2a90980-7de2-11eb-8da4-ba28e1f4a258.png)
+![image](https://user-images.githubusercontent.com/15322107/113633351-19992280-966d-11eb-9924-27cb87a3830f.png)
 ![image](https://user-images.githubusercontent.com/15322107/112666334-5ccce780-8e5c-11eb-8592-4ccc47627dba.png)
