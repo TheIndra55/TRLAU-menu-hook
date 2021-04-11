@@ -850,7 +850,7 @@ void DrawInstanceViewer()
             {
                 auto anim = *(char**)(animList + (i * 0x0c) + 0x08);
 
-                g_hooking->GetMenu()->Log("%d %s\n", i, anim);
+                Hooking::GetInstance().GetMenu()->Log("%d %s\n", i, anim);
             }
         }
         ImGui::SameLine();
