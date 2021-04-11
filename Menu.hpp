@@ -31,13 +31,14 @@ public:
 	void SetDevice(LPDIRECT3DDEVICE9 pd3dDevice);
 	void Log(const char* fmt, ...);
 
-	// TODO private
-	bool m_focus = false;
+	bool IsFocus() const noexcept;
+	void SetFocus(bool value) noexcept;
 
 	DrawSettings m_drawSettings;
 private:
 	void Draw();
 
+	bool m_focus = false;
 	bool m_flight = false;
 	float m_flightSpeed = 50.f;
 

@@ -17,21 +17,19 @@ Instance* newinstance()
     return 0;
 }
 
-extern Hooking* g_hooking;
-
 // most of this code is written in 2 minutes to confirm finds
 char(__cdecl* pushscreen)(int, bool);
 
 char pushscreenhooked(int screen, bool unk2)
 {
-    g_hooking->menu->Log("screen pushed: %d\n", screen);
+    Hooking::GetInstance().GetMenu()->Log("screen pushed: %d\n", screen);
     return pushscreen(screen, unk2);
 }
 
 void(__thiscall* orginal_Subtitle_Add)(DWORD*, char* str, int duration);
 void __fastcall hooked_Subtitle_Add(DWORD* _this, void* _, char* str, int duration)
 {
-    g_hooking->menu->Log("%s %d\n", str, duration);
+    Hooking::GetInstance().GetMenu()->Log("%s %d\n", str, duration);
 
     orginal_Subtitle_Add(_this, str, duration);
 }
@@ -55,7 +53,7 @@ int __cdecl IMAGE_LoadImage(char* name)
 
     if (MSFileSystem_FileExists(*(int*)DISKFS, string))
     {
-        g_hooking->menu->Log("%s exists, loading that one instead\n", string);
+        Hooking::GetInstance().GetMenu()->Log("%s exists, loading that one instead\n", string);
         isDiskFS = true;
     }
 
@@ -85,10 +83,10 @@ int __cdecl InsertGlobalObject(int a1, char a2)
     char string[256];
     sprintf_s(string, "\\" CONFIGNAME "\\units\\%s.drm", name);
 
-    //g_hooking->menu->Log("InsertGlobalObject: %s\n", name);
+    //Hooking::GetInstance().GetMenu()->Log("InsertGlobalObject: %s\n", name);
     if (MSFileSystem_FileExists(*(int*)DISKFS, string))
     {
-        g_hooking->menu->Log("%s exists, loading that one instead\n", string);
+        Hooking::GetInstance().GetMenu()->Log("%s exists, loading that one instead\n", string);
         isDiskFS = true;
     }
 
@@ -142,7 +140,7 @@ int(__cdecl* origSTREAM_LoadLevel)(char* a1, int a2, char a3);
 
 int __cdecl STREAM_LoadLevel(char* a1, int a2, char a3)
 {
-    g_hooking->menu->Log(__FUNCTION__ " Loading %s\n", a1);
+    Hooking::GetInstance().GetMenu()->Log(__FUNCTION__ " Loading %s\n", a1);
 
     char string[256];
     sprintf_s(string, "\\" CONFIGNAME "\\units\\%s.drm", a1);
@@ -150,7 +148,7 @@ int __cdecl STREAM_LoadLevel(char* a1, int a2, char a3)
     if (MSFileSystem_FileExists(*(int*)DISKFS, string))
     {
         // load this unit from disk
-        g_hooking->menu->Log("%s exists, loading this unit from disk\n", string);
+        Hooking::GetInstance().GetMenu()->Log("%s exists, loading this unit from disk\n", string);
         isDiskFS = true;
     }
 
@@ -852,7 +850,7 @@ void DrawInstanceViewer()
             {
                 auto anim = *(char**)(animList + (i * 0x0c) + 0x08);
 
-                g_hooking->menu->Log("%d %s\n", i, anim);
+                g_hooking->GetMenu()->Log("%d %s\n", i, anim);
             }
         }
         ImGui::SameLine();
@@ -890,4 +888,14 @@ void Menu::Log(const char* fmt, ...) IM_FMTARGS(2)
     va_start(args, fmt);
     this->logBuffer.appendfv(fmt, args);
     va_end(args);
+}
+
+bool Menu::IsFocus() const noexcept
+{
+    return m_focus;
+}
+
+void Menu::SetFocus(bool value) noexcept
+{
+    m_focus = value;
 }

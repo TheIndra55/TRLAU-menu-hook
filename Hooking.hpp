@@ -1,16 +1,29 @@
 #pragma once
+
+#include <memory>
 #include "include/MinHook.h"
 #include "Menu.hpp"
 
 class Hooking
 {
 public:
-	void Initialize();
-	void Uninitialize();
+	static Hooking& GetInstance()
+	{
+		static Hooking instance;
+		return instance;
+	}
+
+	Hooking();
+	~Hooking();
+
+	Hooking(Hooking const&) = delete;
+	void operator=(Hooking const&) = delete;
 
 	void GotDevice();
+	std::unique_ptr<Menu>& GetMenu() noexcept;
 
-	Menu* menu;
+private:
+	std::unique_ptr<Menu> m_menu;
 };
 
 static int(*original_Direct3DInit)();
