@@ -360,6 +360,7 @@ MigrationBackup/
 FodyWeavers.xsd
 
 *.lib
+*.dll
 include/steam/
 
 *.sln

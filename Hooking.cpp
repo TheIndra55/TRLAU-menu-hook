@@ -8,7 +8,8 @@ extern Hooking* g_hooking;
 LPDIRECT3DDEVICE9 pDevice;
 HWND pHwnd;
 
-void Hooking::Initialize()
+Hooking::Hooking()
+	: m_menu(nullptr)
 {
 	MH_Initialize();
 	
@@ -29,9 +30,14 @@ void Hooking::Initialize()
 	MH_EnableHook(MH_ALL_HOOKS);
 }
 
-void Hooking::Uninitialize()
+Hooking::~Hooking()
 {
 	MH_Uninitialize();
+}
+
+std::unique_ptr<Menu>& Hooking::GetMenu() noexcept
+{
+	return m_menu;
 }
 
 char(__thiscall* original__PCDeviceManager__CreateDevice)(DWORD* _this, DWORD a2);
@@ -50,7 +56,7 @@ char __fastcall PCDeviceManager__CreateDevice(DWORD* _this, DWORD _, DWORD a2)
 	auto device = *reinterpret_cast<DWORD*>(address + 0x20);
 	pDevice = reinterpret_cast<IDirect3DDevice9*>(device);
 
-	g_hooking->menu->SetDevice(pDevice);
+	Hooking::GetInstance().GetMenu()->SetDevice(pDevice);
 
 	return val;
 }
@@ -64,7 +70,7 @@ int __cdecl OBTABLE_Init(int a1)
 	auto exists = MSFileSystem_FileExists(*(int*)DISKFS, "\\" CONFIGNAME "\\pc-w\\objectlist.txt");
 	if (exists)
 	{
-		g_hooking->menu->Log("objectlist.txt exists outside bigfile, the game will use that one.\n");
+		Hooking::GetInstance().GetMenu()->Log("objectlist.txt exists outside bigfile, the game will use that one.\n");
 		isDiskFS = true;
 	}
 
@@ -78,7 +84,7 @@ void(__thiscall* orginal_PCDeviceManager__ReleaseDevice)(DWORD* _this, int statu
 
 void __fastcall PCDeviceManager__ReleaseDevice(DWORD* _this, DWORD _, int status)
 {
-	g_hooking->menu->OnDeviceReleased();
+	Hooking::GetInstance().GetMenu()->OnDeviceReleased();
 	ImGui_ImplDX9_InvalidateDeviceObjects();
 
 	orginal_PCDeviceManager__ReleaseDevice(_this, status);
@@ -121,12 +127,12 @@ void SetCursor(float x, float y)
 #if TRAE
 void __cdecl EVENT_DisplayString(char* str, int time)
 {
-	g_hooking->menu->Log("%s\n", str);
+	Hooking::GetInstance().GetMenu()->Log("%s\n", str);
 }
 
 void __cdecl EVENT_DisplayStringXY(char* str, int time, int x, int y)
 {
-	if (!g_hooking->menu->m_drawSettings.drawDebug) return;
+	if (!Hooking::GetInstance().GetMenu()->m_drawSettings.drawDebug) return;
 
 	SetCursor((float)x, (float)y);
 	Font__Print(*(DWORD*)0x007D1800, str);
@@ -134,7 +140,7 @@ void __cdecl EVENT_DisplayStringXY(char* str, int time, int x, int y)
 
 void __cdecl EVENT_FontPrint(char* fmt, ...)
 {
-	if (!g_hooking->menu->m_drawSettings.drawDebug) return;
+	if (!Hooking::GetInstance().GetMenu()->m_drawSettings.drawDebug) return;
 
 	va_list vl;
 	va_start(vl, fmt);
@@ -146,7 +152,7 @@ void __cdecl EVENT_FontPrint(char* fmt, ...)
 
 void __cdecl EVENT_PrintScalarExpression(int val, int time)
 {
-	if (!g_hooking->menu->m_drawSettings.drawDebug) return;
+	if (!Hooking::GetInstance().GetMenu()->m_drawSettings.drawDebug) return;
 
 	char v3[11];
 	sprintf(v3, "%d", val);
@@ -157,12 +163,12 @@ void __cdecl EVENT_PrintScalarExpression(int val, int time)
 #if TR8
 void __stdcall DisplayString(int a1, int a2, bool newline)
 {
-	g_hooking->menu->Log("%s%s", (char*)*(DWORD*)a1, newline ? "\n" : "");
+	Hooking::GetInstance().GetMenu()->Log("%s%s", (char*)*(DWORD*)a1, newline ? "\n" : "");
 }
 
 void __cdecl DisplayInt(int a1, int a2, int a3)
 {
-	g_hooking->menu->Log("%f%s", *(float*)(a3 + 4), *(char*)(a3 + 8) != 0 ? "\n" : "");
+	Hooking::GetInstance().GetMenu()->Log("%f%s", *(float*)(a3 + 4), *(char*)(a3 + 8) != 0 ? "\n" : "");
 }
 #endif
 
@@ -172,9 +178,9 @@ void __cdecl Font__Flush()
 {
 	auto instance = *(DWORD*)0x817D64;
 
-	if (g_hooking->menu->m_drawSettings.draw && instance)
+	if (Hooking::GetInstance().GetMenu()->m_drawSettings.draw && instance)
 	{
-		auto settings = g_hooking->menu->m_drawSettings;
+		auto settings = Hooking::GetInstance().GetMenu()->m_drawSettings;
 
 		// loop trough all instances
 		while (1)
@@ -248,7 +254,7 @@ void __cdecl Font__Flush()
 
 void Hooking::GotDevice()
 {
-	this->menu = new Menu(pDevice, pHwnd);
+	this->m_menu = std::make_unique<Menu>(pDevice, pHwnd);
 
 	// hook game's d3d9 present function and wndproc function
 #if TRAE
@@ -344,7 +350,7 @@ int hooked_Direct3DInit()
 	auto device = *reinterpret_cast<DWORD*>(address + 0x20);
 	pDevice = reinterpret_cast<IDirect3DDevice9*>(device);
 
-	g_hooking->GotDevice();
+	Hooking::GetInstance().GotDevice();
 
 	return val;
 }
@@ -352,7 +358,7 @@ int hooked_Direct3DInit()
 #if TRAE || TR7
 void __fastcall hooked_PCRenderContext_Present(DWORD* _this, void* _, int a2, int a3, int a4)
 {
-	g_hooking->menu->OnPresent();
+	Hooking::GetInstance().GetMenu()->OnPresent();
 
 	// call orginal game present function to draw on the screen
 	original_PCRenderContext_Present(_this, a2, a3, a4);
@@ -364,7 +370,7 @@ void __fastcall hooked_PCRenderContext_Present(DWORD* _this, void* _, int a2)
 	// call orginal game present function to draw on the screen
 	original_PCRenderContext_Present(_this, a2);
 	
-	g_hooking->menu->OnPresent();
+	Hooking::GetInstance().GetMenu()->OnPresent();
 }
 #endif
 
@@ -372,20 +378,20 @@ LRESULT hooked_RegularWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	if (msg == WM_KEYUP && wparam == VK_F8)
 	{
-		g_hooking->menu->m_focus = !g_hooking->menu->m_focus;
+		Hooking::GetInstance().GetMenu()->SetFocus(!Hooking::GetInstance().GetMenu()->IsFocus());
 
 		// disable game input
 #if TRAE
-		*(bool*)0x8551A9 = g_hooking->menu->m_focus;
+		*(bool*)0x8551A9 = Hooking::GetInstance().GetMenu()->IsFocus();
 #elif TR8
-		*(bool*)0xA02B79 = g_hooking->menu->m_focus;
+		*(bool*)0xA02B79 = Hooking::GetInstance().GetMenu()->IsFocus();
 #elif TR7
-		*(bool*)0x110AF09 = g_hooking->menu->m_focus;
+		*(bool*)0x110AF09 = Hooking::GetInstance().GetMenu()->IsFocus();
 #endif
 	}
 
 	// pass input to menu
-	g_hooking->menu->Process(hwnd, msg, wparam, lparam);
+	Hooking::GetInstance().GetMenu()->Process(hwnd, msg, wparam, lparam);
 
 	// pass input to orginal game wndproc
 	return original_RegularWndProc(hwnd, msg, wparam, lparam);
@@ -394,7 +400,7 @@ LRESULT hooked_RegularWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 BOOL WINAPI hooked_SetCursorPos(int x, int y)
 {
 	// prevent game from reseting cursor position
-	if (g_hooking->menu->m_focus)
+	if (Hooking::GetInstance().GetMenu()->IsFocus())
 	{
 		return 1;
 	}

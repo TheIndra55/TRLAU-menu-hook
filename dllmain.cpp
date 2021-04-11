@@ -1,11 +1,8 @@
 #include "Hooking.hpp"
 
-Hooking* g_hooking;
-
 DWORD WINAPI Hook(LPVOID lpParam)
 {
-    g_hooking = new Hooking();
-    g_hooking->Initialize();
+    Hooking::GetInstance(); // Will call the ctor
 
     while (true) Sleep(0);
     return 0;

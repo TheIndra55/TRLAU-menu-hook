@@ -24,8 +24,8 @@ void CAMERA_Fly(Camera* camera)
 	auto a = InputSystem_GetAxisValue(*(int*)0x008551A0, 17);
 	auto b = InputSystem_GetAxisValue(*(int*)0x008551A0, 16);
 
-	camera->rotation.x -= a;
-	camera->rotation.z -= b;
+	camera->rotation.x -= static_cast<float>(a);
+	camera->rotation.z -= static_cast<float>(b);
 }
 
 void __cdecl CAMERA_Process(Camera* camera)
