@@ -312,6 +312,28 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         m_visible = !m_visible;
     }
 
+    if (msg == WM_KEYUP && wparam == VK_F5)
+    {
+#if TRAE || TR7
+        auto debugTimeMult = (float*)(GAMETRACKER + 0x13C);
+#elif TR8
+        auto debugTimeMult = (float*)0xE7F1D0;
+#endif
+
+        if (*debugTimeMult < 0.06f)
+        {
+            *debugTimeMult = 1.0f;
+        }
+        else if (*debugTimeMult < 0.3f)
+        {
+            *debugTimeMult = 0.05f;
+        }
+        else
+        {
+            *debugTimeMult = 0.2f;
+        }
+    }
+
 #if TRAE || TR7
     if (msg == WM_KEYUP && wparam == VK_F4)
     {
