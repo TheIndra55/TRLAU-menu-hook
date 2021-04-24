@@ -40,6 +40,7 @@ Reverse engineering project for Tomb Raider LAU games, this repo contains the co
 * Free camera
 * See info about instance models
 * Play animations
+* Slow down game (slow motion)
 
 ### Tomb Raider: Underworld
 
@@ -57,6 +58,7 @@ Progress on Underworld was started later and this is also a newer version of the
 * Delete instances
 * Load replacement objects outside bigfile.000
 * Play animations
+* Slow down game (slow motion)
 
 ### Tomb Raider: Legend
 
@@ -75,6 +77,7 @@ Progress on Underworld was started later and this is also a newer version of the
 * Load .raw files outside bigfile.000
 * See info about instance models
 * Play animations
+* Slow down game (slow motion)
 
 ## How to
 

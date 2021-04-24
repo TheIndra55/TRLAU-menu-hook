@@ -15,6 +15,7 @@ project "TRAE-menu-hook"
 
     language "C++"
 	links { "MinHook.x86.lib", "d3d9.lib" }
+	defines { "$(GameConstant)" }
 	
     filter "configurations:Debug"
         defines { "DEBUG", "_DEBUG" }

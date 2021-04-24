@@ -1,0 +1,52 @@
+name: .NET Core
+
+# manually trigger
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    # setup
+    - uses: microsoft/setup-msbuild'
+    - uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Download premake5
+      run: |
+        curl.exe -o premake5.zip -L https://github.com/premake/premake-core/releases/download/v5.0.0-alpha16/premake-5.0.0-alpha16-windows.zip
+        tar -xf premake5.zip
+
+    - name: Download libraries
+      run: |
+        curl -o lib.zip https://files.theindra.eu/files/lib.zip
+        tar -xf lib.zip
+
+    - name: Generate project files
+      run: .\premake5 vs2019
+
+    # compile
+    - name: Build Anniversary
+      run: MSBuild /p:Configuration=Release /p:Platform=Win32 /p:GameConstant=TRAE /p:TargetName=TRAE-Menu-Hook
+
+    - name: Build Underworld
+      run: MSBuild /p:Configuration=Release /p:Platform=Win32 /p:GameConstant=TR8 /p:TargetName=TR8-Menu-Hook
+
+    - name: Build Legend
+      run: MSBuild /p:Configuration=Release /p:Platform=Win32 /p:GameConstant=TR7 /p:TargetName=TR7-Menu-Hook
+
+    # upload
+    - uses: actions/upload-artifact@v1
+      with:
+        name: Anniversary
+        path: bin/Release/TRAE-Menu-Hook.asi
+
+    - uses: actions/upload-artifact@v1
+      with:
+        name: Underworld
+        path: bin/Release/TR8-Menu-Hook.asi
+
+    - uses: actions/upload-artifact@v1
+      with:
+        name: Legend
+        path: bin/Release/TR7-Menu-Hook.asi
