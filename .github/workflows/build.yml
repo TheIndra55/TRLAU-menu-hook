@@ -1,4 +1,4 @@
-name: .NET Core
+name: Build
 
 # manually trigger
 on: workflow_dispatch
@@ -9,7 +9,7 @@ jobs:
     
     steps:
     # setup
-    - uses: microsoft/setup-msbuild'
+    - uses: microsoft/setup-msbuild
     - uses: ilammy/msvc-dev-cmd@v1
 
     - name: Download premake5
