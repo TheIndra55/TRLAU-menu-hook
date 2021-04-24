@@ -9,7 +9,7 @@ jobs:
     
     steps:
     # setup
-    - uses: microsoft/setup-msbuild
+    - uses: microsoft/setup-msbuild@v1.0.2
     - uses: ilammy/msvc-dev-cmd@v1
 
     - name: Download premake5
