@@ -9,6 +9,7 @@ jobs:
     
     steps:
     # setup
+    - uses: actions/checkout@v2
     - uses: microsoft/setup-msbuild@v1.0.2
     - uses: ilammy/msvc-dev-cmd@v1
 
