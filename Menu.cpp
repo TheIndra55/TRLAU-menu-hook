@@ -189,6 +189,10 @@ void __fastcall CinematicHandlerImpl_NextFrame(int _this, int)
     origCinematicHandlerImpl_NextFrame(_this);
 }
 
+#if TR8
+void(__cdecl* CAMERA_SetMode)(int mode);
+#endif
+
 Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 {
 	m_pd3dDevice = pd3dDevice;
@@ -260,6 +264,8 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
     G2EmulationInstanceSetAnimation = reinterpret_cast<void(__cdecl*)(Instance*, int, int, int, int)>(0x005B1EA0);
     G2EmulationInstanceSetMode = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x005B1F50);
+
+    CAMERA_SetMode = reinterpret_cast<void(__cdecl*)(int mode)>(0x005F39F0);
 #endif
 }
 
@@ -334,7 +340,6 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         }
     }
 
-#if TRAE || TR7
     if (msg == WM_KEYUP && wparam == VK_F4)
     {
 #if TRAE // current legend supported exe (debug exe) has already fly on F4 so only switch the mode on TRAE
@@ -342,13 +347,34 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         *cameraMode = *cameraMode == 7 ? 2 : 7;
 #endif
 
+#if TRAE || TR7
         *(int*)(GAMETRACKER + 0x1C) ^= 0x8000; // hide hud
+#endif
+
+#if TR8
+        m_drawSettings.flight = !m_drawSettings.flight;
+        if (m_drawSettings.flight)
+        {
+            CAMERA_SetMode(11);
+
+            auto camera = *(int*)0xE80534;
+            *(cdc::Vector*)(camera + 0x40) = (*(Instance**)PLAYERINSTANCE)->position;
+        }
+        else
+        {
+            Log("TODO switch back to gameplay camera, for now reload a checkpoint/save to return to gameplay camera\n");
+        }
+#endif
     }
 
     // pause the game with F3
     if (msg == WM_KEYUP && wparam == VK_F3)
     {
+#if TRAE || TR7
         auto streamFlags = (int*)(GAMETRACKER + 0xC4);
+#elif TR8
+        auto streamFlags = (int*)0xE7F0B8;
+#endif
         if (*streamFlags & 0x1000)
         {
             *streamFlags &= 0xFFFFEFFF;
@@ -358,7 +384,6 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
             *streamFlags |= 0x1000u;
         }
     }
-#endif
 
 #if TRAE
     if (msg == WM_KEYUP && wparam == VK_DELETE)
@@ -534,7 +559,6 @@ void Menu::Draw()
         Game::PushScreen(screen, 0);
     }
 #endif
-
 
     if (ImGui::Button("Clear")) {
         this->logBuffer.clear();

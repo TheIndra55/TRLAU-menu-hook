@@ -16,6 +16,10 @@ struct DrawSettings
 	bool drawHealth = false;
 
 	bool drawDebug = false;
+
+#if TR8
+	bool flight = false;
+#endif
 };
 
 class Menu

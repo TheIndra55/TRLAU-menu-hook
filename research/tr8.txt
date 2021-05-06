@@ -1,6 +1,8 @@
 addresses from Steam version
 checksum: SHA256          D554EE8BD38985F08092C8A0D0F7192B0AC583B38D93083326901CAE0D1F8507
 
+
+
 D3D_Init 00478640
 FXDRAW_DrawModelParticles 0053DFC0
 GAMELOOP_ChangeMode 005D4870
@@ -87,3 +89,19 @@ COLLIDE_CameraWithStreamSignals	005C6DB0
 _cameraGetFocusInstance	005E7920
 _getCameraMode 005E7BC0
 HandleFadingAndLOD 005B5D20
+InputSystem__Update 00483520
+INPUT_RestoreStatus 00483840
+_setCameraRotation 0049DD70
+cdc__RenderViewport__RenderViewport 0055F400
+cdcRenderLayer__SetupViewport 005CAFF0
+RenderG2_BeginScene 005CEBC0
+InputSystem__GetAxisValue 00480E50
+RazielProcess 007228E0
+cdc__Matrix__Build_XYZOrder 0049D500
+CinematicHandlerImpl__BuildWeightedMatrixFromChannels 00454970
+cdc__Matrix__Build 0049CF90
+GAMELOOP_InitGameTracker 005D3CF0
+
+
+
+INPUT_instances 00A02B68
