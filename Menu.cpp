@@ -191,6 +191,7 @@ void __fastcall CinematicHandlerImpl_NextFrame(int _this, int)
 
 #if TR8
 void(__cdecl* CAMERA_SetMode)(int mode);
+int(__thiscall* _setToGameplayCamera)(int _this);
 #endif
 
 Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
@@ -266,6 +267,7 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
     G2EmulationInstanceSetMode = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x005B1F50);
 
     CAMERA_SetMode = reinterpret_cast<void(__cdecl*)(int mode)>(0x005F39F0);
+    _setToGameplayCamera = reinterpret_cast<int(__thiscall*)(int _this)>(0x5EDF50);
 #endif
 }
 
@@ -362,7 +364,9 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         }
         else
         {
-            Log("TODO switch back to gameplay camera, for now reload a checkpoint/save to return to gameplay camera\n");
+            //*(int*)0xE80534 = 0xE83860 /* AVLaraCameraRewrite */;
+
+            _setToGameplayCamera(0xE804F0 /* AVCameraManager */);
         }
 #endif
     }

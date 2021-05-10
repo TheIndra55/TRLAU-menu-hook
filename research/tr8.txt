@@ -101,6 +101,8 @@ cdc__Matrix__Build_XYZOrder 0049D500
 CinematicHandlerImpl__BuildWeightedMatrixFromChannels 00454970
 cdc__Matrix__Build 0049CF90
 GAMELOOP_InitGameTracker 005D3CF0
+GAMELOOP_ClearGameTracker 005D3DF0
+_setToGameplayCamera 005EDF50
 
 
 
