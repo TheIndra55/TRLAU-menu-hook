@@ -59,6 +59,7 @@ Progress on Underworld was started later and this is also a newer version of the
 * Load replacement objects outside bigfile.000
 * Play animations
 * Slow down game (slow motion)
+* Free camera
 
 ### Tomb Raider: Legend
 
@@ -135,7 +136,9 @@ Start by adding the .drm file of your object to the units folder (see above), ne
 
 <kbd>F2</kbd> Toggle skew/flight cheat \
 <kbd>F3</kbd> Freeze the game \
-<kbd>F4</kbd> Toggle free camera 
+<kbd>Shift</kbd> + <kbd>F3</kbd> Cycle Slow motion \
+<kbd>F4</kbd> Toggle free camera \
+<kbd>F5</kbd> Toggle player control
 
 <kbd>Q</kbd> Flight up \
 <kbd>Z</kbd> Flight down

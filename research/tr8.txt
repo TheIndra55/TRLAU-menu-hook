@@ -103,7 +103,10 @@ cdc__Matrix__Build 0049CF90
 GAMELOOP_InitGameTracker 005D3CF0
 GAMELOOP_ClearGameTracker 005D3DF0
 _setToGameplayCamera 005EDF50
+RazielInit 00721F80
+PLAYERCNTRL_Enable 005D5F40
 
 
 
 INPUT_instances 00A02B68
+gPlayerControl_Enabled 008AB4E6 ; setting this to 0 disables any control of lara like moving and shooting.

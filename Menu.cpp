@@ -305,6 +305,8 @@ void Menu::OnPresent()
 
 void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
+    auto shift = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
+
     if (msg == WM_KEYUP && wparam == VK_F2)
     {
         ToggleFlight(!m_flight);
@@ -321,6 +323,19 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     }
 
     if (msg == WM_KEYUP && wparam == VK_F5)
+    {
+#if TR8
+        auto gPlayerControl_Enabled = (bool*)0x8AB4E6;
+#elif TRAE
+        auto gPlayerControl_Enabled = (bool*)0x666C34;
+#elif TR7
+        auto gPlayerControl_Enabled = (bool*)0xF1E40C;
+#endif
+
+        *gPlayerControl_Enabled = !*gPlayerControl_Enabled;
+    }
+
+    if (msg == WM_KEYUP && wparam == VK_F3 && shift)
     {
 #if TRAE || TR7
         auto debugTimeMult = (float*)(GAMETRACKER + 0x13C);
@@ -372,7 +387,7 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     }
 
     // pause the game with F3
-    if (msg == WM_KEYUP && wparam == VK_F3)
+    if (msg == WM_KEYUP && wparam == VK_F3 && !shift)
     {
 #if TRAE || TR7
         auto streamFlags = (int*)(GAMETRACKER + 0xC4);
