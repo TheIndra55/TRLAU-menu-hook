@@ -6,9 +6,9 @@ Reverse engineering project for Tomb Raider LAU games, this repo contains the co
 
 (screenshots at bottom of readme)
 
-| [![](https://i.imgur.com/S8JnQjP.png)](https://www.youtube.com/watch?v=Bzf8k7LO5uI) | [![](https://i.imgur.com/qgDQuio.png)](https://www.youtube.com/watch?v=k1FIa8Pel3E&t) | [![](https://i.imgur.com/cJe3pYa.png)](https://www.youtube.com/watch?v=RwU80Pj0PR8) | [![](https://i.imgur.com/fiSP0Dp.png)](https://www.youtube.com/watch?v=Ju8Hr8Rfz4k) | [![](https://i.imgur.com/ZzRMr2P.png)](https://www.youtube.com/watch?v=bXgBKVIS9cY) |
+| [![](https://i.imgur.com/RMnCPck.png)](https://www.youtube.com/watch?v=orv2mYjBNhM) | [![](https://i.imgur.com/qgDQuio.png)](https://www.youtube.com/watch?v=k1FIa8Pel3E&t) | [![](https://i.imgur.com/cJe3pYa.png)](https://www.youtube.com/watch?v=RwU80Pj0PR8) | [![](https://i.imgur.com/MEPYZBD.png)](https://www.youtube.com/watch?v=BfUCcC6z1jo) | [![](https://i.imgur.com/8HvLmPG.png)](https://www.youtube.com/watch?v=JvH0RPbaUI0) |
 |----|----|----|----|----|
-| Menu in Underworld | Playtrough with level debug prints | Instance viewer showcase | Brought back Binoculars feature | Menu in Anniversary |
+| Menu in Underworld | Playtrough with level debug prints | Instance viewer showcase | Loading .drm files without bigfile | Menu in Anniversary |
 
 ## Features
 
