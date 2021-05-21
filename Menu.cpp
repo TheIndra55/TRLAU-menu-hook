@@ -531,6 +531,14 @@ void Menu::Draw()
 
     ImGui::Checkbox("Wireframe", (bool*)0x7C7CD4);
     ImGui::Checkbox("Draw instances", &m_drawSettings.draw);
+#endif
+
+#if TRAE || TR7
+    ImGui::Checkbox("Draw markup", &m_drawSettings.drawMarkup);
+#endif
+ 
+#if TRAE
+
     if (ImGui::CollapsingHeader("Draw settings"))
     {
         ImGui::Checkbox("Filter", &m_drawSettings.filter);

@@ -16,6 +16,7 @@ struct DrawSettings
 	bool drawHealth = false;
 
 	bool drawDebug = false;
+	bool drawMarkup = false;
 
 #if TR8
 	bool flight = false;

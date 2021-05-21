@@ -11,6 +11,7 @@
 
 	#define DISKFS 0x838890
 	#define CONFIGNAME "TRAE"
+	#define MAINFONT 0x007D1800
 #elif TR8
 	#define GAMETRACKER 0
 	#define GAMETRACKER_BASE_AREA 0x00E7F0C0 // TODO find gametracker address
@@ -28,6 +29,7 @@
 
 	#define DISKFS 0x010EEC80
 	#define CONFIGNAME "TR7"
+	#define MAINFONT 0x01088A2C
 #else
 	#error "No game specified, set TRAE for Anniversary, TR7 for Legend or TR8 for Underworld"
 #endif
@@ -109,6 +111,80 @@ struct Model
 	int normalList;
 	int numFaces;
 	int faceList;
+};
+
+struct DRAWVERTEX
+{
+	float x;
+	float y;
+	float z;
+	int color;
+	float u;
+	float v;
+	__int64 anPad;
+};
+
+// taken from TRAE.pdb
+// should be compatible with TR7
+enum MUD_FLAGS
+{
+	MUD_FLAG_NONE = 0,
+	MUD_FLAG_POLYLINE = 1,
+	MUD_FLAG_INSTANCE = 2,
+	MUD_FLAG_WRAPS = 4,
+	MUD_FLAG_PATTERN_INTERACT = 0x2000,
+	MUD_FLAG_ENEMY_JUMP_ACROSS = 0x4000,
+	MUD_FLAG_ENEMY_JUMP_DOWN = 0x8000,
+	MUD_FLAG_ENEMY_JUMP_UP = 0x10000,
+	MUD_FLAG_ATTACHPOINTS = 0x20000,
+	MUD_FLAG_PERCH = 0x40000,
+	MUD_FLAG_ROPE = 0x80000,
+	MUD_FLAG_WATER = 0x100000,
+	MUD_FLAG_CLOSEJUMPTARGET = 0x200000,
+	MUD_FLAG_LADDER = 0x400000,
+	MUD_FLAG_MANTLEDOWN = 0x800000,
+	MUD_FLAG_ZIPLINE = 0x1000000,
+	MUD_FLAG_HORIZPOLE = 0x2000000,
+	MUD_FLAG_VERTPOLE = 0x4000000,
+	MUD_FLAG_WALLVERTPOLE = 0x8000000,
+	MUD_FLAG_ENEMYDROPDOWN = 0x10000000,
+	MUD_FLAG_JUMPLANDING = 0x20000000,
+	MUD_FLAG_LEDGEGRAB = 0x40000000,
+	MUD_FLAG_DISABLED = 0x80000000,
+	MUD_FLAG_ALL_TYPES = 0x0FFFDC000,
+	MUD_FLAG_ALL = 0x0FFFFFFFF
+};
+
+struct MudFlag
+{
+	int flag;
+	const char* name;
+};
+
+constexpr MudFlag mudFlags[22]
+{
+	MudFlag { MUD_FLAG_NONE, "NONE | " },
+	MudFlag { MUD_FLAG_INSTANCE, "INSTANCE | " },
+	MudFlag { MUD_FLAG_WRAPS, "WRAPS | " },
+	MudFlag { MUD_FLAG_PATTERN_INTERACT, "PATTERN_INTERACT | " },
+	MudFlag { MUD_FLAG_ENEMY_JUMP_ACROSS, "ENEMY_JUMP_ACROSS | " },
+	MudFlag { MUD_FLAG_ENEMY_JUMP_DOWN, "ENEMY_JUMP_DOWN | " },
+	MudFlag { MUD_FLAG_ENEMY_JUMP_UP, "ENEMY_JUMP_UP | " },
+	MudFlag { MUD_FLAG_ATTACHPOINTS, "ATTACHPOINTS | " },
+	MudFlag { MUD_FLAG_PERCH, "PERCH | " },
+	MudFlag { MUD_FLAG_ROPE, "ROPE | " },
+	MudFlag { MUD_FLAG_WATER, "WATER | " },
+	MudFlag { MUD_FLAG_CLOSEJUMPTARGET, "CLOSEJUMPTARGET | " },
+	MudFlag { MUD_FLAG_LADDER, "LADDER | " },
+	MudFlag { MUD_FLAG_MANTLEDOWN, "MANTLEDOWN | " },
+	MudFlag { MUD_FLAG_ZIPLINE, "ZIPLINE | " },
+	MudFlag { MUD_FLAG_HORIZPOLE, "HORIZPOLE | " },
+	MudFlag { MUD_FLAG_VERTPOLE, "VERTPOLE | " },
+	MudFlag { MUD_FLAG_WALLVERTPOLE, "WALLVERTPOLE | " },
+	MudFlag { MUD_FLAG_ENEMYDROPDOWN, "ENEMYDROPDOWN | " },
+	MudFlag { MUD_FLAG_JUMPLANDING, "JUMPLANDING | " },
+	MudFlag { MUD_FLAG_LEDGEGRAB, "LEDGEGRAB | " },
+	MudFlag { MUD_FLAG_DISABLED, "DISABLED | " },
 };
 
 class Game

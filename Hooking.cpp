@@ -1,3 +1,4 @@
+#include <string>
 #include "Hooking.hpp"
 #include "Game.hpp"
 #include "ControlHooks.hpp"
@@ -120,8 +121,13 @@ void(__cdecl* org_Font__Flush)();
 
 void SetCursor(float x, float y)
 {
+#if TRAE
 	/* CursorX */ *(float*)0x007D180C = x;
 	/* CursorY */ *(float*)0x007D1810 = y;
+#elif TR7
+	/* CursorX */* (float*)0x01088A38 = x;
+	/* CursorY */ *(float*)0x01088A3C = y;
+#endif
 }
 
 #if TRAE
@@ -174,10 +180,139 @@ void __cdecl DisplayInt(int a1, int a2, int a3)
 
 bool(__cdecl* objCheckFamily)(DWORD instance, unsigned __int16 family);
 
+void(__cdecl* TRANS_TransToDrawVertexV4f)(DRAWVERTEX* v, cdc::Vector* vec);
+
+void(__cdecl* DRAW_DrawQuads)(int flags, int tpage, DRAWVERTEX* verts, int numquads);
+
+void DrawQuads(cdc::Vector* v0, cdc::Vector* v1, cdc::Vector* col)
+{
+	DRAWVERTEX vertex[4];
+
+	cdc::Vector v3 = *v1;
+	cdc::Vector v4 = *v0;
+	v3.z += 20.f;
+	v4.z += 20.f;
+
+	TRANS_TransToDrawVertexV4f(vertex, v0);
+	TRANS_TransToDrawVertexV4f(&vertex[1], v1);
+	TRANS_TransToDrawVertexV4f(&vertex[2], &v3);
+	TRANS_TransToDrawVertexV4f(&vertex[3], &v4);
+
+	// 4 bytes integer, each r, g, b, a
+	// e.g. FF 00 00 FF is 255, 0, 0, 255
+	auto color = 4278190335; // red
+
+	vertex[0].color = color;
+	vertex[1].color = color;
+	vertex[2].color = color;
+	vertex[3].color = color;
+
+	DRAW_DrawQuads(2, 0, vertex, 1);
+}
+
+std::string FlagToFlags(int flag) noexcept
+{
+	std::string name;
+
+	for (int i = 0; i < 22; i++)
+	{
+		if (flag & mudFlags[i].flag)
+		{
+			name += mudFlags[i].name;
+		}
+	}
+
+	// somewhat stolen from https://stackoverflow.com/a/37795988/9398242
+	if (name.empty())
+		name = "NONE";
+	else
+		name.erase(name.end() - 3, name.end());
+
+	return name;
+}
+
 void __cdecl Font__Flush()
 {
+	// draw markup
+	if (Hooking::GetInstance().GetMenu()->m_drawSettings.drawMarkup)
+	{
+#if TR7
+		auto markUpManager = *(int*)0x01120DC8;
+#elif TRAE
+		auto markUpManager = *(int*)0x86CD14;
+#endif
+
+		auto box = *(int*)(markUpManager + 0x18);
+		while(1)
+		{
+			auto next = *(int*)(box + 4);
+
+#if TR7
+			auto markup = *(int*)(box + 0x20);
+#elif TRAE
+			auto markup = *(int*)(box + 0xC);
+#endif
+			if (markup)
+			{
+#if TR7
+				auto polyline = *(int*)(markup + 0x2C);
+#elif TRAE
+				auto polyline = *(int*)(markup + 0x48);
+#endif
+
+				auto srcVector = cdc::Vector{};
+#if TR7
+				srcVector = *(cdc::Vector*)(markup + 0x14);
+#elif TRAE
+				srcVector = *(cdc::Vector*)(markup + 0x30);
+#endif
+				TRANS_RotTransPersVectorf((DWORD)&srcVector, (DWORD)&srcVector);
+
+				if (srcVector.z > 16.f)
+				{
+#if TRAE
+					auto flags = *(int*)(box + 0x28);
+#elif TR7
+					auto flags = *(int*)(box + 0x24);
+#endif
+
+					// display the markup flags
+					SetCursor(srcVector.x, srcVector.y);
+					Font__Print(*(DWORD*)MAINFONT, "%s", FlagToFlags(flags).c_str());
+				}
+
+				if (polyline)
+				{
+					// draw the polyline
+					auto numPoints = *(int*)(polyline);
+
+					auto x = (cdc::Vector*)(polyline + 0x10);
+					for (int j = 0; j < numPoints; j++)
+					{
+						auto y = (cdc::Vector*)(polyline + 16 * (j + 1));
+						cdc::Vector color{ 255.f, 255.f, 255.f, 255.f };
+
+						// no known drawline for TRAE without writing lot of manual code
+						// so write quads
+						// if you want to try, s_pLinePool is 0x7545E0 in TRAE
+						DrawQuads(x, y, &color);
+
+						x = y;
+					}
+				}
+			}
+
+			if (!next)
+				break;
+
+			box = next;
+		}
+	}
+
+#if TRAE
 	auto instance = *(DWORD*)0x817D64;
 
+	// draw instances
 	if (Hooking::GetInstance().GetMenu()->m_drawSettings.draw && instance)
 	{
 		auto settings = Hooking::GetInstance().GetMenu()->m_drawSettings;
@@ -248,6 +383,7 @@ void __cdecl Font__Flush()
 			instance = next;
 		}
 	}
+#endif
 
 	org_Font__Flush();
 }
@@ -303,6 +439,10 @@ void Hooking::GotDevice()
 
 	MH_CreateHook((void*)0xC5B896, TerrainDrawable_TerrainDrawable, (void**)&origTerrainDrawable_TerrainDrawable);
 	MH_CreateHook((void*)0xC5C280, GetDrawListByTpageId, (void**)&origGetDrawListByTpageId);
+
+	TRANS_TransToDrawVertexV4f = reinterpret_cast<void(__cdecl*)(DRAWVERTEX* v, cdc::Vector * vec)>(0x00402F20);
+
+	DRAW_DrawQuads = reinterpret_cast<void(__cdecl*)(int flags, int tpage, DRAWVERTEX * verts, int numquads)>(0x00406D70);
 #endif
 
 #if TRAE
@@ -311,6 +451,14 @@ void Hooking::GotDevice()
 #elif TR7
 	MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(0x0047DC70);
 	MH_CreateHook((void*)0x465320, OBTABLE_Init, (void**)&origOBTABLE_Init);
+
+	MH_CreateHook((void*)0x435050, Font__Flush, (void**)&org_Font__Flush);
+	Font__Print = reinterpret_cast<void(__cdecl*)(DWORD, const char*, ...)>(0x00435020);
+	TRANS_RotTransPersVectorf = reinterpret_cast<float* (__cdecl*)(DWORD, DWORD)>(0x00402D00);
+
+	TRANS_TransToDrawVertexV4f = reinterpret_cast<void(__cdecl*)(DRAWVERTEX * v, cdc::Vector * vec)>(0x004030D0);
+
+	DRAW_DrawQuads = reinterpret_cast<void(__cdecl*)(int flags, int tpage, DRAWVERTEX * verts, int numquads)>(0x00406720);
 
 	// nop out useless F3 mouse toggle to be replaced by our F3
 	NOP((void*)0x405559, 5);
