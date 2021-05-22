@@ -530,14 +530,11 @@ void Menu::Draw()
     }
 
     ImGui::Checkbox("Wireframe", (bool*)0x7C7CD4);
-    ImGui::Checkbox("Draw instances", &m_drawSettings.draw);
 #endif
 
 #if TRAE || TR7
+    ImGui::Checkbox("Draw instances", &m_drawSettings.draw);
     ImGui::Checkbox("Draw markup", &m_drawSettings.drawMarkup);
-#endif
- 
-#if TRAE
 
     if (ImGui::CollapsingHeader("Draw settings"))
     {
@@ -547,7 +544,9 @@ void Menu::Draw()
         ImGui::Checkbox("Draw 'family'", &m_drawSettings.drawFamily);
         ImGui::Checkbox("Draw enemy health", &m_drawSettings.drawHealth);
     }
+#endif
 
+#if TRAE
     ImGui::InputText("chapter", chapter, 32);
 #endif
     ImGui::InputText("unit", unit, MAX_UNIT_LEN);

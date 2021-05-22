@@ -311,6 +311,9 @@ void __cdecl Font__Flush()
 
 #if TRAE
 	auto instance = *(DWORD*)0x817D64;
+#elif TR7
+	auto instance = *(DWORD*)0x10CEE64;
+#endif
 
 	// draw instances
 	if (Hooking::GetInstance().GetMenu()->m_drawSettings.draw && instance)
@@ -346,34 +349,39 @@ void __cdecl Font__Flush()
 			if (show(settings, instance, data) && srcVector.z > 16.f /* only draw when on screen */)
 			{
 				SetCursor(srcVector.x, srcVector.y);
-				Font__Print(*(DWORD*)0x007D1800, "%s", (char*)*(DWORD*)(object + 0x48));
+				Font__Print(*(DWORD*)MAINFONT, "%s", (char*)*(DWORD*)(object + 0x48));
 
 				if (settings.drawHealth && extraData && data && *(unsigned __int16*)(data + 2) == 56048)
 				{
+#if TRAE
+					auto health = *(float*)(extraData + 5280);
+#elif TR7
+					auto health = *(float*)(extraData + 5040);
+#endif
 					srcVector.y += 15.f;
 					SetCursor(srcVector.x, srcVector.y);
-					Font__Print(*(DWORD*)0x007D1800, "%8.2f", *(float*)(extraData + 5280));
+					Font__Print(*(DWORD*)MAINFONT, "%8.2f", health);
 				}
 
 				if (settings.drawIntro)
 				{
 					srcVector.y += 15.f;
 					SetCursor(srcVector.x, srcVector.y);
-					Font__Print(*(DWORD*)0x007D1800, "%d", *(int*)(instance + 0x1D0));
+					Font__Print(*(DWORD*)MAINFONT, "%d", *(int*)(instance + 0x1D0));
 				}
 
 				if (settings.drawAddress)
 				{
 					srcVector.y += 15.f;
 					SetCursor(srcVector.x, srcVector.y);
-					Font__Print(*(DWORD*)0x007D1800, "%p", instance);
+					Font__Print(*(DWORD*)MAINFONT, "%p", instance);
 				}
 
 				if (settings.drawFamily && data)
 				{
 					srcVector.y += 15.f;
 					SetCursor(srcVector.x, srcVector.y);
-					Font__Print(*(DWORD*)0x007D1800, "%d", *(unsigned __int16*)(data + 2));
+					Font__Print(*(DWORD*)MAINFONT, "%d", *(unsigned __int16*)(data + 2));
 				}
 			}
 
@@ -383,7 +391,6 @@ void __cdecl Font__Flush()
 			instance = next;
 		}
 	}
-#endif
 
 	org_Font__Flush();
 }
@@ -459,6 +466,8 @@ void Hooking::GotDevice()
 	TRANS_TransToDrawVertexV4f = reinterpret_cast<void(__cdecl*)(DRAWVERTEX * v, cdc::Vector * vec)>(0x004030D0);
 
 	DRAW_DrawQuads = reinterpret_cast<void(__cdecl*)(int flags, int tpage, DRAWVERTEX * verts, int numquads)>(0x00406720);
+
+	objCheckFamily = reinterpret_cast<bool(__cdecl*)(DWORD instance, unsigned __int16 family)>(0x005369C0);
 
 	// nop out useless F3 mouse toggle to be replaced by our F3
 	NOP((void*)0x405559, 5);
