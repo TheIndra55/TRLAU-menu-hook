@@ -334,7 +334,11 @@ void __cdecl Font__Flush()
 			{
 				if (extraData && *(unsigned __int16*)(data + 2) == 56048)
 				{
+#if TR7
 					auto routing = extraData + 0x1060;
+#elif TRAE
+					auto routing = extraData + 4432;
+#endif
 					auto path = routing + 0x90;
 					auto length = *(int*)(path + 0x1A8);
 

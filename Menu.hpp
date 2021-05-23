@@ -57,3 +57,4 @@ private:
 };
 
 void DrawInstanceViewer();
+int __cdecl IMAGE_LoadImage(char* name);
