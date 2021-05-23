@@ -535,6 +535,9 @@ void Menu::Draw()
 #if TRAE || TR7
     ImGui::Checkbox("Draw instances", &m_drawSettings.draw);
     ImGui::Checkbox("Draw markup", &m_drawSettings.drawMarkup);
+#if TR7
+    ImGui::Checkbox("Draw enemy path", &m_drawSettings.drawPath);
+#endif
 
     if (ImGui::CollapsingHeader("Draw settings"))
     {

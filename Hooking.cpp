@@ -184,7 +184,7 @@ void(__cdecl* TRANS_TransToDrawVertexV4f)(DRAWVERTEX* v, cdc::Vector* vec);
 
 void(__cdecl* DRAW_DrawQuads)(int flags, int tpage, DRAWVERTEX* verts, int numquads);
 
-void DrawQuads(cdc::Vector* v0, cdc::Vector* v1, cdc::Vector* col)
+void DrawQuads(cdc::Vector* v0, cdc::Vector* v1)
 {
 	DRAWVERTEX vertex[4];
 
@@ -290,12 +290,11 @@ void __cdecl Font__Flush()
 					for (int j = 0; j < numPoints; j++)
 					{
 						auto y = (cdc::Vector*)(polyline + 16 * (j + 1));
-						cdc::Vector color{ 255.f, 255.f, 255.f, 255.f };
 
 						// no known drawline for TRAE without writing lot of manual code
 						// so write quads
 						// if you want to try, s_pLinePool is 0x7545E0 in TRAE
-						DrawQuads(x, y, &color);
+						DrawQuads(x, y);
 
 						x = y;
 					}
@@ -315,11 +314,11 @@ void __cdecl Font__Flush()
 	auto instance = *(DWORD*)0x10CEE64;
 #endif
 
-	// draw instances
-	if (Hooking::GetInstance().GetMenu()->m_drawSettings.draw && instance)
-	{
-		auto settings = Hooking::GetInstance().GetMenu()->m_drawSettings;
+	auto settings = Hooking::GetInstance().GetMenu()->m_drawSettings;
 
+	// draw instances
+	if ((settings.draw || settings.drawPath) && instance)
+	{
 		// loop trough all instances
 		while (1)
 		{
@@ -330,6 +329,26 @@ void __cdecl Font__Flush()
 
 			auto data = *(DWORD*)(instance + 448);
 			auto extraData = *(DWORD*)(instance + 572);
+
+			if (settings.drawPath)
+			{
+				if (extraData && *(unsigned __int16*)(data + 2) == 56048)
+				{
+					auto routing = extraData + 0x1060;
+					auto path = routing + 0x90;
+					auto length = *(int*)(path + 0x1A8);
+
+					auto x = (cdc::Vector*)(path);
+					for (int j = 0; j < length - 1; j++)
+					{
+						auto y = (cdc::Vector*)(path + 16 * (j + 1));
+
+						DrawQuads(x, y);
+
+						x = y;
+					}
+				}
+			}
 
 			// TODO filter only pickups
 			auto show = [](DrawSettings settings, DWORD instance, DWORD data)
@@ -346,7 +365,7 @@ void __cdecl Font__Flush()
 			srcVector = instanceObj->position;
 			TRANS_RotTransPersVectorf((DWORD)&srcVector, (DWORD)&srcVector);
 
-			if (show(settings, instance, data) && srcVector.z > 16.f /* only draw when on screen */)
+			if (settings.draw && show(settings, instance, data) && srcVector.z > 16.f /* only draw when on screen */)
 			{
 				SetCursor(srcVector.x, srcVector.y);
 				Font__Print(*(DWORD*)MAINFONT, "%s", (char*)*(DWORD*)(object + 0x48));
