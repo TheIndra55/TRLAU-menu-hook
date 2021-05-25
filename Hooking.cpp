@@ -180,6 +180,7 @@ void __cdecl DisplayInt(int a1, int a2, int a3)
 
 bool(__cdecl* objCheckFamily)(DWORD instance, unsigned __int16 family);
 
+#if TRAE || TR7
 void(__cdecl* TRANS_TransToDrawVertexV4f)(DRAWVERTEX* v, cdc::Vector* vec);
 
 void(__cdecl* DRAW_DrawQuads)(int flags, int tpage, DRAWVERTEX* verts, int numquads);
@@ -417,6 +418,7 @@ void __cdecl Font__Flush()
 
 	org_Font__Flush();
 }
+#endif
 
 void Hooking::GotDevice()
 {

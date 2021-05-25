@@ -2,6 +2,8 @@
 
 Reverse engineering project for Tomb Raider LAU games, this repo contains the code for TRAE-menu-hook menu for Tomb Raider Anniversary, Legend and Underworld.
 
+[![](https://github.com/TheIndra55/TRAE-menu-hook/actions/workflows/build.yml/badge.svg)](https://github.com/TheIndra55/TRAE-menu-hook/actions/workflows/build.yml)
+
 ## Videos
 
 (screenshots at bottom of readme)
