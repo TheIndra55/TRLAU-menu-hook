@@ -199,6 +199,8 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 	m_pd3dDevice = pd3dDevice;
 	m_hwnd = hwnd;
 
+	OnLayoutChange();
+
 	ImGui::CreateContext();
 
 	ImGui_ImplWin32_Init(m_hwnd);
@@ -418,6 +420,11 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     }
 #endif
 
+    if (msg == WM_INPUTLANGCHANGE)
+    {
+        OnLayoutChange();
+    }
+
     if (m_flight)
     {
         ProcessFlight(msg, wparam);
@@ -466,13 +473,15 @@ void Menu::ProcessFlight(UINT msg, WPARAM wparam)
     auto z = reinterpret_cast<float*>(base + 40);
 #endif
 
-    // TODO azerty?
-    if (msg == WM_KEYDOWN && wparam == 0x51/*Q Key*/)
+    auto upKey = m_isAzertyLayout ? 0x41 /* A */ : 0x51 /* Q */;
+    auto downKey = m_isAzertyLayout ? 0x57 /* W */ : 0x5A /* Z */;
+
+    if (msg == WM_KEYDOWN && wparam == upKey)
     {
         *z += m_flightSpeed;
     }
 
-    if (msg == WM_KEYDOWN && wparam == 0x5A/*Z Key*/)
+    if (msg == WM_KEYDOWN && wparam == downKey)
     {
         *z -= m_flightSpeed;
     }
@@ -971,4 +980,12 @@ bool Menu::IsFocus() const noexcept
 void Menu::SetFocus(bool value) noexcept
 {
     m_focus = value;
+}
+
+void Menu::OnLayoutChange() noexcept
+{
+    // thanks to Xwilarg
+    auto hkl = GetKeyboardLayout(0);
+    auto id = (int)((unsigned int)hkl & 0x0000FFFF);
+    m_isAzertyLayout = id == 2060 || id == 1036;
 }

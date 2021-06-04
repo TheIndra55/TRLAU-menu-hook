@@ -43,6 +43,8 @@ Reverse engineering project for Tomb Raider LAU games, this repo contains the co
 * See info about instance models
 * Play animations
 * Slow down game (slow motion)
+* See level markup
+* See enemy navigation
 
 ### Tomb Raider: Underworld
 
@@ -74,6 +76,7 @@ Progress on Underworld was started later and this is also a newer version of the
 * List instances
 * Spawn instances
 * Delete instances
+* Entity ESP to show entities (including intro id, "family", health and pointer address)
 * Loading units from a folder outside of bigfile.000
 * Load replacement or new objects outside bigfile.000
 * Load objectlist.txt outside bigfile.000
@@ -81,6 +84,8 @@ Progress on Underworld was started later and this is also a newer version of the
 * See info about instance models
 * Play animations
 * Slow down game (slow motion)
+* See level markup
+* See enemy navigation
 
 ## How to
 
@@ -142,8 +147,10 @@ Start by adding the .drm file of your object to the units folder (see above), ne
 <kbd>F4</kbd> Toggle free camera \
 <kbd>F5</kbd> Toggle player control
 
-<kbd>Q</kbd> Flight up \
-<kbd>Z</kbd> Flight down
+<kbd>Q</kbd> \/ <kbd>A</kbd> Flight up \
+<kbd>Z</kbd> \/ <kbd>W</kbd> Flight down
+
+Flight controls depend on QWERTY/AZERTY keyboard layout
 
 ## Screenshots
 

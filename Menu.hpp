@@ -35,6 +35,7 @@ public:
 	void ToggleFlight(bool flight);
 	void ProcessFlight(UINT msg, WPARAM wparam);
 	void SetDevice(LPDIRECT3DDEVICE9 pd3dDevice);
+	void OnLayoutChange() noexcept;
 	void Log(const char* fmt, ...);
 
 	bool IsFocus() const noexcept;
@@ -49,6 +50,7 @@ private:
 	float m_flightSpeed = 50.f;
 
 	bool m_visible = true;
+	bool m_isAzertyLayout = false;
 
 	ImGuiTextBuffer logBuffer;
 
