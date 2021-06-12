@@ -12,6 +12,7 @@
 	#define DISKFS 0x838890
 	#define CONFIGNAME "TRAE"
 	#define MAINFONT 0x007D1800
+	#define GCHEATWIREFRAME 0x7C7CD4
 #elif TR8
 	#define GAMETRACKER 0
 	#define GAMETRACKER_BASE_AREA 0x00E7F0C0 // TODO find gametracker address
@@ -30,6 +31,7 @@
 	#define DISKFS 0x010EEC80
 	#define CONFIGNAME "TR7"
 	#define MAINFONT 0x01088A2C
+	#define GCHEATWIREFRAME 0x107E580
 #else
 	#error "No game specified, set TRAE for Anniversary, TR7 for Legend or TR8 for Underworld"
 #endif

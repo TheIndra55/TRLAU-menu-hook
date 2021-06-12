@@ -537,8 +537,12 @@ void Menu::Draw()
     {
         *(int*)0x838348/*debugFlags2*/ |= 0x100;
     }
+#endif
 
+#if TRAE
     ImGui::Checkbox("Wireframe", (bool*)0x7C7CD4);
+#elif TR7
+    ImGui::Checkbox("Wireframe", (bool*)0x107E580);
 #endif
 
 #if TRAE || TR7

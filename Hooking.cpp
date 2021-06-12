@@ -96,7 +96,7 @@ int __fastcall TerrainDrawable_TerrainDrawable(DWORD _this, DWORD _, int* a2, in
 {
 	auto ret = origTerrainDrawable_TerrainDrawable(_this, a2, a3, a4, a5);
 
-	if (*(bool*)0x7C7CD4 /* wire frame */)
+	if (*(bool*)GCHEATWIREFRAME /* wire frame */)
 	{
 		*(unsigned int*)(_this + 0x1C) |= 0x800;
 	}
@@ -107,7 +107,7 @@ int __fastcall TerrainDrawable_TerrainDrawable(DWORD _this, DWORD _, int* a2, in
 int(__cdecl* origGetDrawListByTpageId)(unsigned int tpageid, bool reflect);
 int __cdecl GetDrawListByTpageId(unsigned int tpageid, bool reflect)
 {
-	if (*(bool*)0x7C7CD4 /* wire frame */)
+	if (*(bool*)GCHEATWIREFRAME /* wire frame */)
 	{
 		tpageid |= 0x800;
 	}
@@ -487,6 +487,9 @@ void Hooking::GotDevice()
 	MH_CreateHook((void*)0x435050, Font__Flush, (void**)&org_Font__Flush);
 	Font__Print = reinterpret_cast<void(__cdecl*)(DWORD, const char*, ...)>(0x00435020);
 	TRANS_RotTransPersVectorf = reinterpret_cast<float* (__cdecl*)(DWORD, DWORD)>(0x00402D00);
+
+	MH_CreateHook((void*)0x40B2C0, TerrainDrawable_TerrainDrawable, (void**)&origTerrainDrawable_TerrainDrawable);
+	MH_CreateHook((void*)0x4148D0, GetDrawListByTpageId, (void**)&origGetDrawListByTpageId);
 
 	TRANS_TransToDrawVertexV4f = reinterpret_cast<void(__cdecl*)(DRAWVERTEX * v, cdc::Vector * vec)>(0x004030D0);
 
