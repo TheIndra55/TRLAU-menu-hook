@@ -16,7 +16,7 @@ Reverse engineering project for Tomb Raider LAU games, this repo contains the co
 
 ### Tomb Raider: Anniversary
 
-**Supported version**: 4.58MB exe, hooks probably don't work with Steam version
+**Supported version**: 4.58MB exe, Steam version
 
 * Skew/flight cheat
 * Restore full health
@@ -86,6 +86,7 @@ Progress on Underworld was started later and this is also a newer version of the
 * Slow down game (slow motion)
 * See level markup
 * See enemy navigation
+* Wireframe rendering
 
 ## How to
 
@@ -151,6 +152,11 @@ Start by adding the .drm file of your object to the units folder (see above), ne
 <kbd>Z</kbd> \/ <kbd>W</kbd> Flight down
 
 Flight controls depend on QWERTY/AZERTY keyboard layout
+
+### Thanks
+
+* SunBeam906
+* Xwilarg
 
 ## Screenshots
 
