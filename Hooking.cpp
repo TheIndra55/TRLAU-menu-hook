@@ -4,19 +4,18 @@
 #include "ControlHooks.hpp"
 #include "Camera.hpp"
 
-extern Hooking* g_hooking;
-
 LPDIRECT3DDEVICE9 pDevice;
 HWND pHwnd;
 
 Hooking::Hooking()
 	: m_menu(nullptr)
 {
-	MH_Initialize();
-	
 	// hook into d3d9 creation function and wait for a device
 #if TRAE
-	MH_CreateHook(reinterpret_cast<void*>(0xC5C175), hooked_Direct3DInit, reinterpret_cast<void**>(&original_Direct3DInit));
+	auto pFound = FindPattern((PBYTE)"\xE8\x00\x00\x00\x00\x85\xC0\x75\x00\xE8\x00\x00\x00\x00\x6A\x00\x6A\x22\xE8", "x????xxx?x????xxxxx");
+	auto D3D_Init = GetAddress(pFound, 1, 5);
+
+	MH_CreateHook(reinterpret_cast<void*>(D3D_Init), hooked_Direct3DInit, reinterpret_cast<void**>(&original_Direct3DInit));
 #elif TR8
 	MH_CreateHook(reinterpret_cast<void*>(0x478640), hooked_Direct3DInit, reinterpret_cast<void**>(&original_Direct3DInit));
 #elif TR7
@@ -91,6 +90,7 @@ void __fastcall PCDeviceManager__ReleaseDevice(DWORD* _this, DWORD _, int status
 	orginal_PCDeviceManager__ReleaseDevice(_this, status);
 }
 
+#if TRAE || TR7
 int(__thiscall* origTerrainDrawable_TerrainDrawable)(DWORD _this, int* a2, int a3, int a4, int a5);
 int __fastcall TerrainDrawable_TerrainDrawable(DWORD _this, DWORD _, int* a2, int a3, int a4, int a5)
 {
@@ -114,6 +114,7 @@ int __cdecl GetDrawListByTpageId(unsigned int tpageid, bool reflect)
 
 	return origGetDrawListByTpageId(tpageid, reflect);
 }
+#endif
 
 float* (__cdecl* TRANS_RotTransPersVectorf)(DWORD a1, DWORD a2);
 void(__cdecl* Font__Print)(DWORD font, const char* a2, ...);
@@ -466,11 +467,12 @@ void Hooking::GotDevice()
 	objCheckFamily = reinterpret_cast<bool(__cdecl*)(DWORD instance, unsigned __int16 family)>(0x534660);
 
 	MH_CreateHook((void*)0x00434C40, Font__Flush, (void**)&org_Font__Flush);
-	Font__Print = reinterpret_cast<void(__cdecl*)(DWORD, const char*, ...)>(0x00C5F83D);
+	Font__Print = reinterpret_cast<void(__cdecl*)(DWORD, const char*, ...)>(0x00434C10);
+
 	TRANS_RotTransPersVectorf = reinterpret_cast<float*(__cdecl*)(DWORD, DWORD)>(0x00402B50);
 
-	MH_CreateHook((void*)0xC5B896, TerrainDrawable_TerrainDrawable, (void**)&origTerrainDrawable_TerrainDrawable);
-	MH_CreateHook((void*)0xC5C280, GetDrawListByTpageId, (void**)&origGetDrawListByTpageId);
+	MH_CreateHook((void*)0x40B9B0, TerrainDrawable_TerrainDrawable, (void**)&origTerrainDrawable_TerrainDrawable);
+	MH_CreateHook((void*)0x4158E0, GetDrawListByTpageId, (void**)&origGetDrawListByTpageId);
 
 	TRANS_TransToDrawVertexV4f = reinterpret_cast<void(__cdecl*)(DRAWVERTEX* v, cdc::Vector * vec)>(0x00402F20);
 

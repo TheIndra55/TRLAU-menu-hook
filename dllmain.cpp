@@ -1,8 +1,34 @@
 #include "Hooking.hpp"
 
+static bool hit = false;
+
+BOOL (WINAPI* dGetVersionExA)(LPOSVERSIONINFOA  lpStartupInfo);
+
+BOOL  WINAPI hGetVersionExA(LPOSVERSIONINFOA  lpStartupInfo)
+{
+    if (!hit)
+    {
+        Hooking::GetInstance(); // Will call the ctor
+        hit = true;
+
+        // TODO MH_RemoveHook
+    }
+
+    return dGetVersionExA(lpStartupInfo);
+}
+
 DWORD WINAPI Hook(LPVOID lpParam)
 {
+    MH_Initialize();
+
+#if TRAE
+    // we cannot insert our hooks now since game is not done yet unpacking
+    // hook one of the first functions called from unpacked code and insert our hooks then
+    MH_CreateHookApi(L"Kernel32", "GetStartupInfoW", hGetVersionExA, reinterpret_cast<void**>(&dGetVersionExA));
+    MH_EnableHook(MH_ALL_HOOKS);
+#else
     Hooking::GetInstance(); // Will call the ctor
+#endif
 
     while (true) Sleep(0);
     return 0;

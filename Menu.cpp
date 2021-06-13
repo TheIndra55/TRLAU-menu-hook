@@ -207,13 +207,12 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 	ImGui_ImplDX9_Init(m_pd3dDevice);
 
 #if TRAE
-    MH_CreateHook((void*)0x00C62479, newinstance, (void**)&INSTANCE_NewInstance);
+    MH_CreateHook((void*)0x00457580, newinstance, (void**)&INSTANCE_NewInstance);
     MH_CreateHook((void*)0x4FCB60, pushscreenhooked, (void**)&pushscreen);
     MH_CreateHook((void*)0x0046F080, hooked_Subtitle_Add, (void**)&orginal_Subtitle_Add);
 
     MH_CreateHook((void*)0x004E6EC0, IsPs2, nullptr);
-    
-    MH_CreateHook((void*)0x00C7DC5B, STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
+    MH_CreateHook((void*)0x005DBBA0, STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
     MH_CreateHook((void*)0x005DB680, STREAM_FinishLoad, (void**)&origSTREAM_FinishLoad);
 
     MH_CreateHook((void*)0x00424FE0, CinematicHandlerImpl_NextFrame, (void**)&origCinematicHandlerImpl_NextFrame);
@@ -221,13 +220,13 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
 #if TRAE
     MH_CreateHook((void*)0x0045F640, getFS, nullptr);
-    MH_CreateHook((void*)0x00C63241, unitFileName, (void**)&origUnitFileName);
-
-    MH_CreateHook((void*)0x00C7D980, InsertGlobalObject, (void**)&origInsertGlobalObject);
     MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(0x005E52C0);
 
     MH_CreateHook((void*)0x00401480, IMAGE_LoadImage, (void**)&origIMAGE_LoadImage);
-    MH_CreateHook((void*)0x00C63280, imageFileName, (void**)&origImageFileName);
+
+    MH_CreateHook((void*)0x45F650, unitFileName, (void**)&origUnitFileName);
+    MH_CreateHook((void*)0x5DB360, InsertGlobalObject, (void**)&origInsertGlobalObject);
+    MH_CreateHook((void*)0x0045F6A0, imageFileName, (void**)&origImageFileName);
 
     INSTANCE_ReallyRemoveInstance = reinterpret_cast<int(__cdecl*)(Instance*, int, char)>(0x0045A3A0);
     INSTANCE_SetModel = reinterpret_cast<void(__cdecl*)(Instance * instance, int model)>(0x00458A90);

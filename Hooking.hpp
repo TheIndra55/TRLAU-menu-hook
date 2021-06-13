@@ -27,7 +27,7 @@ private:
 };
 
 static int(*original_Direct3DInit)();
-static int hooked_Direct3DInit();
+int hooked_Direct3DInit();
 
 #if TRAE || TR7
 static void(__thiscall* original_PCRenderContext_Present)(DWORD*, int, int, int);
@@ -46,3 +46,6 @@ static BOOL WINAPI hooked_SetCursorPos(int x, int y);
 extern bool isDiskFS;
 
 void NOP(void* address, int num);
+
+uint8_t __declspec(noinline)* FindPattern(BYTE* bMask, char* szMask);
+uint8_t __declspec(noinline)* GetAddress(uint8_t* ptr, uint8_t offset, uint8_t instr_size);

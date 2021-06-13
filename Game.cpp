@@ -99,10 +99,10 @@ void Game::Initialize()
 	INSTANCE_HideUnhideDrawGroup = reinterpret_cast<void(__cdecl*)(int, int, int)>(0x004319B0);
 
 #if TRAE
-	OBTABLE_GetObjectID = reinterpret_cast<int(__cdecl*)(char*)>(0x00C63B7D);
+	OBTABLE_GetObjectID = reinterpret_cast<int(__cdecl*)(char*)>(0x4660C0);
 
 	INSTANCE_BirthObjectNoParent = reinterpret_cast<Instance*(__cdecl*)(int, cdc::Vector*, cdc::Vector*, DWORD*, DWORD*, int, int)>(0x0045BA90);
-	STREAM_GetObjectTrackerByName = reinterpret_cast<ObjectTracker*(__cdecl*)(char*)>(0x00C7D67C);
+	STREAM_GetObjectTrackerByName = reinterpret_cast<ObjectTracker*(__cdecl*)(char*)>(0x5DA260);
 	STREAM_PollLoadQueue = reinterpret_cast<bool(__cdecl*)()>(0x005DB190);
 #elif TR7
 	OBTABLE_GetObjectID = reinterpret_cast<int(__cdecl*)(char*)>(0x004655B0);
