@@ -467,7 +467,9 @@ void Hooking::GotDevice()
 	objCheckFamily = reinterpret_cast<bool(__cdecl*)(DWORD instance, unsigned __int16 family)>(0x534660);
 
 	MH_CreateHook((void*)0x00434C40, Font__Flush, (void**)&org_Font__Flush);
-	Font__Print = reinterpret_cast<void(__cdecl*)(DWORD, const char*, ...)>(0x00434C10);
+
+	auto pFound = FindPattern((PBYTE)"\xE8\x00\x00\x00\x00\x68\x00\x00\x00\x00\xE8\x00\x00\x00\x00\xA0\x00\x00\x00\x00\x83\xC4\x00\x84\xC0\x0F\x84", "x????x????x????x????xx?xxxx");
+	Font__Print = (void(__cdecl*)(DWORD, const char*, ...))GetAddress(pFound, 0x1, 0x5); // 0x00434C10
 
 	TRANS_RotTransPersVectorf = reinterpret_cast<float*(__cdecl*)(DWORD, DWORD)>(0x00402B50);
 

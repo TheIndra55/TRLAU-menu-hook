@@ -81,17 +81,16 @@ void Game::Initialize()
 #elif TR7
 	PLAYER_DebugSwitchPlayerCharacter = reinterpret_cast<void(__cdecl*)()>(0x005A9A90);
 #endif
-	sub_C64D3F = reinterpret_cast<DWORD(__cdecl*)(int, int, int)>(0xC64D3F);
 	G2EmulationInstanceSetEventAnimPlaying = reinterpret_cast<void(__cdecl*)(Instance*, int)>(0x4DE940);
 
 	IncrHealth = reinterpret_cast<void(__cdecl*)(float)>(0x005715E0);
 	UIFadeGroupTrigger = reinterpret_cast<void(__cdecl*)(int)>(0x004EE580);
 	game_SetGameValue = reinterpret_cast<void(__cdecl*)(int, float, char)>(0x004551A0);
 
-	PLAYER_SetLookAround = reinterpret_cast<void(__cdecl*)(Instance*)>(0x00C759A8);
+	PLAYER_SetLookAround = reinterpret_cast<void(__cdecl*)(Instance*)>(0x005600F0);
 	CAMERA_StartLookaroundMode = reinterpret_cast<void(__cdecl*)(DWORD)>(0x0048A300);
 	SteerSwitchMode = reinterpret_cast<int(__cdecl*)(Instance*, int)>(0x005BAE60);
-	PLAYER_ReSetLookAround = reinterpret_cast<void(__cdecl*)(Instance * instance)>(0x00C759C7);
+	PLAYER_ReSetLookAround = reinterpret_cast<void(__cdecl*)(Instance * instance)>(0x00560110);
 	CAMERA_ForceEndLookaroundMode = reinterpret_cast<__int16(__cdecl*)(DWORD)>(0x0048A5E0);
 
 	sub_456B50 = reinterpret_cast<void(__cdecl*)()>(0x456B50);
@@ -213,11 +212,6 @@ void Game::SwitchPlayerCharacter()
 	int a1 = 12; // im not sure what this value is, passing 12 works
 	PLAYER_DebugSwitchPlayerCharacter((DWORD)&a1);
 #endif
-}
-
-DWORD Game::AnimDataSomething(int a1, int a2, int a3)
-{
-	return sub_C64D3F(a1, a2, a3);
 }
 
 void Game::InstanceSetEventAnimPlaying(Instance* instance, int a2)
