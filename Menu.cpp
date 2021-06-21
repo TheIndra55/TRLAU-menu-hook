@@ -164,7 +164,7 @@ void STREAM_FinishLoad(StreamUnit* unit)
     if (!shouldReloc)
     {
         Level* level = unit->level;
-        *(DWORD*)(level + 156) = 0; // set reloc module ptr to 0
+        level->reloc = 0; // set reloc module ptr to 0
     }
 
     origSTREAM_FinishLoad(unit);
@@ -548,6 +548,7 @@ void Menu::Draw()
     ImGui::Checkbox("Draw instances", &m_drawSettings.draw);
     ImGui::Checkbox("Draw markup", &m_drawSettings.drawMarkup);
     ImGui::Checkbox("Draw enemy path", &m_drawSettings.drawPath);
+    ImGui::Checkbox("Draw collision mesh", &m_drawSettings.drawCollision);
 
     if (ImGui::CollapsingHeader("Draw settings"))
     {
@@ -753,10 +754,8 @@ void Menu::Draw()
     ImGui::End();
 }
 
-void DrawInstanceViewer()
+void Menu::DrawInstanceViewer()
 {
-    static DWORD clickedInstance;
-
     ImGui::Begin("Instances");
 
     ImGui::Columns(2, "instances");
@@ -952,6 +951,11 @@ void DrawInstanceViewer()
     }
 
     ImGui::End();
+}
+
+Instance* Menu::GetClickedInstance() noexcept
+{
+    return (Instance*)clickedInstance;
 }
 
 void Menu::Log(const char* fmt, ...) IM_FMTARGS(2)

@@ -1,3 +1,4 @@
+#include "include/MinHook.h"
 #include "Game.hpp"
 
 bool Game::m_binoculars = false;
@@ -26,6 +27,7 @@ Instance*(__cdecl* INSTANCE_Find)(int);
 void(__cdecl* IncrHealth)(float amount);
 void(__cdecl* UIFadeGroupTrigger)(int group);
 void(__cdecl* game_SetGameValue)(int a1, float a2, char a3);
+double(__cdecl* game_GetGameValue)(int a1);
 
 void(__cdecl* PLAYER_SetLookAround)(Instance* instance);
 void(__cdecl* CAMERA_StartLookaroundMode)(DWORD camera);
@@ -38,6 +40,8 @@ void(__cdecl* EVENT_PlayerTurnGold)();
 void(__cdecl* INSTANCE_HideUnhideDrawGroup)(int a1, int a2, int a3);
 
 int(__cdecl* OBTABLE_GetObjectID)(char* name);
+
+char* (__cdecl* game_localstr_get)(int a1);
 
 Instance* (__cdecl* INSTANCE_BirthObjectNoParent)(int unitId, cdc::Vector* position, cdc::Vector* rotation, DWORD* introData, DWORD* object, int modelnum, int);
 ObjectTracker*(__cdecl* STREAM_GetObjectTrackerByName)(char*);
@@ -86,6 +90,13 @@ void Game::Initialize()
 	IncrHealth = reinterpret_cast<void(__cdecl*)(float)>(0x005715E0);
 	UIFadeGroupTrigger = reinterpret_cast<void(__cdecl*)(int)>(0x004EE580);
 	game_SetGameValue = reinterpret_cast<void(__cdecl*)(int, float, char)>(0x004551A0);
+	game_GetGameValue = reinterpret_cast<double(__cdecl*)(int)>(0x004551E0);
+
+#if TRAE
+	MH_CreateHook((void*)0x4E3C80, localstr_get, (void**)&game_localstr_get);
+#elif TR7
+	MH_CreateHook((void*)0x4E7690, localstr_get, (void**)&game_localstr_get);
+#endif
 
 	PLAYER_SetLookAround = reinterpret_cast<void(__cdecl*)(Instance*)>(0x005600F0);
 	CAMERA_StartLookaroundMode = reinterpret_cast<void(__cdecl*)(DWORD)>(0x0048A300);
@@ -116,6 +127,11 @@ void Game::Initialize()
 	STREAM_GetObjectTrackerByName = reinterpret_cast<ObjectTracker * (__cdecl*)(char*)>(0x005C17D0);
 	STREAM_PollLoadQueue = reinterpret_cast<bool(__cdecl*)()>(0x005C1DA0);
 #endif
+}
+
+char* localstr_get(int a1)
+{
+	return game_localstr_get(a1);
 }
 
 void Game::SwitchChapter(char* chapter)
@@ -232,6 +248,11 @@ void Game::TriggerUiFadeGroup(int group)
 void Game::SetGameValue(int key, float val, bool apply)
 {
 	game_SetGameValue(key, val, apply);
+}
+
+double Game::GetGameValue(int key)
+{
+	return game_GetGameValue(key);
 }
 
 void Game::ToggleBinoculars()

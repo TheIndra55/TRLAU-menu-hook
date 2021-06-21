@@ -212,6 +212,11 @@ void DrawQuads(cdc::Vector* v0, cdc::Vector* v1)
 	DRAW_DrawQuads(2, 0, vertex, 1);
 }
 
+void DrawQuads(int flags, int tpage, DRAWVERTEX* verts, int numquads)
+{
+	DRAW_DrawQuads(flags, tpage, verts, numquads);
+}
+
 std::string FlagToFlags(int flag) noexcept
 {
 	std::string name;
@@ -235,6 +240,45 @@ std::string FlagToFlags(int flag) noexcept
 
 void __cdecl Font__Flush()
 {
+	auto level = *(Level**)(GAMETRACKER + 8);
+
+	if (Hooking::GetInstance().GetMenu()->m_drawSettings.drawCollision && level)
+	{
+		auto terrain = level->terrain;
+		auto terraingroup = *(int*)(terrain + 0x18);
+		auto mesh = *(int*)(terraingroup + 0x38);
+		auto vertices = *(int*)(mesh + 0x30);
+		auto faces = *(int*)(mesh + 0x34);
+
+		auto mapposition = *(cdc::Vector*)(mesh + 0x20); // position of collision in world
+
+		// loop trough all collision faces
+		for (int i = 0; i < *(__int16*)(mesh + 0x44); i++)
+		{
+			auto face = (IndexedFace*)(faces + 0x0a * i);
+
+			// get vertice by index
+			auto getVertice = [](int vertice, int vertices, cdc::Vector mapposition)
+			{
+				auto vertex = (MeshVertex*)(vertices + 6 * (vertice));
+
+				return cdc::Vector{
+					mapposition.x + (float)vertex->x, 
+					mapposition.y + (float)vertex->y, 
+					mapposition.z + (float)vertex->z };
+			};
+
+			// get the position of every vertice for this face
+			auto x = getVertice(face->i0, vertices, mapposition);
+			auto y = getVertice(face->i1, vertices, mapposition);
+			auto z = getVertice(face->i2, vertices, mapposition);
+
+			DrawQuads(&x, &y);
+			DrawQuads(&y, &z);
+			DrawQuads(&z, &x);
+		}
+	}
+
 	// draw markup
 	if (Hooking::GetInstance().GetMenu()->m_drawSettings.drawMarkup)
 	{

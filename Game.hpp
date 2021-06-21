@@ -89,6 +89,9 @@ struct Instance
 
 struct Level
 {
+	int terrain;
+	char pad[152];
+	int reloc; // void* to script PE
 };
 
 struct StreamUnit
@@ -113,6 +116,30 @@ struct Model
 	int normalList;
 	int numFaces;
 	int faceList;
+};
+
+struct MeshVertex
+{
+	__int16 x;
+	__int16 y;
+	__int16 z;
+};
+
+struct BBox
+{
+	cdc::Vector bMin;
+	cdc::Vector bMax;
+};
+
+struct IndexedFace
+{
+	unsigned __int16 i0;
+	unsigned __int16 i1;
+	unsigned __int16 i2;
+	char adjacencyFlags;
+	char collisionFlags;
+	char clientFlags;
+	char materialType;
 };
 
 struct DRAWVERTEX
@@ -213,7 +240,9 @@ public:
 
 	static void IncreaseHealth(float amount);
 	static void TriggerUiFadeGroup(int group);
+
 	static void SetGameValue(int key, float val, bool apply);
+	static double GetGameValue(int key);
 
 	static bool m_binoculars;
 	static void ToggleBinoculars();
@@ -231,3 +260,5 @@ public:
 	static ObjectTracker* GetObjectTrackerByName(char* name);
 	static bool PollLoadQueue();
 };
+
+char* localstr_get(int a1);

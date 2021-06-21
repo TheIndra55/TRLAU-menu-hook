@@ -2,6 +2,7 @@
 
 #include <memory>
 #include "include/MinHook.h"
+#include "Game.hpp"
 #include "Menu.hpp"
 
 class Hooking
@@ -49,3 +50,5 @@ void NOP(void* address, int num);
 
 uint8_t __declspec(noinline)* FindPattern(BYTE* bMask, char* szMask);
 uint8_t __declspec(noinline)* GetAddress(uint8_t* ptr, uint8_t offset, uint8_t instr_size);
+
+void DrawQuads(int flags, int tpage, DRAWVERTEX* verts, int numquads);

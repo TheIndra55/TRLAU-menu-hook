@@ -6,6 +6,8 @@
 #include "include/imgui_impl_dx9.h"
 #include "include/imgui_impl_win32.h"
 
+#include "Game.hpp"
+
 struct DrawSettings
 {
 	bool draw = false;
@@ -18,6 +20,7 @@ struct DrawSettings
 	bool drawDebug = false;
 	bool drawMarkup = false;
 	bool drawPath = false;
+	bool drawCollision = false;
 
 #if TR8
 	bool flight = false;
@@ -37,9 +40,12 @@ public:
 	void SetDevice(LPDIRECT3DDEVICE9 pd3dDevice);
 	void OnLayoutChange() noexcept;
 	void Log(const char* fmt, ...);
+	void DrawInstanceViewer();
 
 	bool IsFocus() const noexcept;
 	void SetFocus(bool value) noexcept;
+
+	Instance* GetClickedInstance() noexcept;
 
 	DrawSettings m_drawSettings;
 private:
@@ -56,6 +62,8 @@ private:
 
 	LPDIRECT3DDEVICE9 m_pd3dDevice;
 	HWND m_hwnd;
+
+	DWORD clickedInstance;
 };
 
 void DrawInstanceViewer();
