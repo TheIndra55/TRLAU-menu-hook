@@ -21,6 +21,7 @@ struct DrawSettings
 	bool drawMarkup = false;
 	bool drawPath = false;
 	bool drawCollision = false;
+	bool drawPortals = false;
 
 #if TR8
 	bool flight = false;

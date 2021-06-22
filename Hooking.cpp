@@ -241,8 +241,9 @@ std::string FlagToFlags(int flag) noexcept
 void __cdecl Font__Flush()
 {
 	auto level = *(Level**)(GAMETRACKER + 8);
+	auto drawSettings = Hooking::GetInstance().GetMenu()->m_drawSettings;
 
-	if (Hooking::GetInstance().GetMenu()->m_drawSettings.drawCollision && level)
+	if (drawSettings.drawCollision && level)
 	{
 		auto terrain = level->terrain;
 		auto terraingroup = *(int*)(terrain + 0x18);
@@ -276,6 +277,41 @@ void __cdecl Font__Flush()
 			DrawQuads(&x, &y);
 			DrawQuads(&y, &z);
 			DrawQuads(&z, &x);
+		}
+	}
+
+	if (drawSettings.drawPortals && level)
+	{
+		auto terrain = *(Terrain*)level->terrain;
+
+		// every portal
+		for (int i = 0; i < terrain.numStreamUnitPortals; i++)
+		{
+			auto portal = terrain.streamUnitPortals[i];
+
+			auto srcVector = cdc::Vector{};
+
+			// TODO vector functions?
+			srcVector = cdc::Vector{ (portal.min.x + portal.max.x) / 2, (portal.min.y + portal.max.y) / 2 , (portal.min.z + portal.max.z) / 2 };
+
+			TRANS_RotTransPersVectorf((DWORD)&srcVector, (DWORD)&srcVector);
+
+			// draw text if visible on screen
+			if (srcVector.z > 16.f)
+			{
+				// draw portal id and destination
+				SetCursor(srcVector.x, srcVector.y);
+				Font__Print(*(DWORD*)MAINFONT, "portal %d", i);
+
+				srcVector.y += 15.f;
+				SetCursor(srcVector.x, srcVector.y);
+
+				Font__Print(*(DWORD*)MAINFONT, "to %s", portal.tolevelname);
+
+				// mark portal dimensions by line
+				DrawQuads(&portal.min, &portal.max);
+				DrawQuads(&portal.max, &portal.min);
+			}
 		}
 	}
 

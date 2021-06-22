@@ -549,6 +549,7 @@ void Menu::Draw()
     ImGui::Checkbox("Draw markup", &m_drawSettings.drawMarkup);
     ImGui::Checkbox("Draw enemy path", &m_drawSettings.drawPath);
     ImGui::Checkbox("Draw collision mesh", &m_drawSettings.drawCollision);
+    ImGui::Checkbox("Draw portals", &m_drawSettings.drawPortals);
 
     if (ImGui::CollapsingHeader("Draw settings"))
     {

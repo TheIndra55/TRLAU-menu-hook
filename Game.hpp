@@ -87,6 +87,35 @@ struct Instance
 };
 #endif
 
+struct StreamUnit;
+
+struct StreamUnitPortal
+{
+	char tolevelname[30];
+	__int16 toSignalID;
+	__int16 MSignalID;
+	__int16 streamID;
+	unsigned __int16* closeVertList;
+	float activeDistance;
+	StreamUnit* toStreamUnit;
+	cdc::Vector min;
+	cdc::Vector max;
+	cdc::Vector portalquad[4];
+	cdc::Vector normal;
+};
+
+struct Terrain
+{
+	__int16 UnitChangeFlags;
+	__int16 spad;
+	int numIntros;
+	int introList;
+	int numStreamUnitPortals;
+
+	// all portals
+	StreamUnitPortal* streamUnitPortals;
+};
+
 struct Level
 {
 	int terrain;
