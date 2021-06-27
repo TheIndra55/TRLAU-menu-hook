@@ -176,6 +176,8 @@ void(__cdecl* INSTANCE_SetModel)(Instance* instance, int model);
 void(__cdecl* G2EmulationInstanceSetAnimation)(Instance* instance, int section, int anim, int frame, int frames);
 void(__cdecl* G2EmulationInstanceSetMode)(Instance* instance, int section, int mode);
 
+void(__cdecl* INSTANCE_HideUnhideDrawGroup)(Instance*, int, int);
+
 void(__thiscall* origCinematicHandlerImpl_NextFrame)(int _this);
 void __fastcall CinematicHandlerImpl_NextFrame(int _this, int)
 {
@@ -233,6 +235,7 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
     G2EmulationInstanceSetAnimation = reinterpret_cast<void(__cdecl*)(Instance*, int, int, int, int)>(0x004DE690);
     G2EmulationInstanceSetMode = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x004DE7F0);
+    INSTANCE_HideUnhideDrawGroup = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x004319B0);
 #elif TR7
     MH_CreateHook((void*)0x0045F420, getFS, nullptr);
     MH_CreateHook((void*)0x0045F4D0, unitFileName, (void**)&origUnitFileName);
@@ -250,6 +253,7 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
     G2EmulationInstanceSetAnimation = reinterpret_cast<void(__cdecl*)(Instance*, int, int, int, int)>(0x004E1F00);
     G2EmulationInstanceSetMode = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x004E2060);
+    INSTANCE_HideUnhideDrawGroup = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x00458FB0);
 #endif
 
 #if TR8
@@ -316,6 +320,11 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     if (msg == WM_KEYUP && wparam == VK_F9)
     {
         Game::SwitchPlayerCharacter();
+    }
+
+    if (msg == WM_KEYUP && wparam == VK_F11)
+    {
+        Game::InstancePost(*(Instance**)PLAYERINSTANCE, 262167, 3);
     }
 
     if (msg == WM_KEYUP && wparam == VK_F7)
@@ -885,6 +894,7 @@ void Menu::DrawInstanceViewer()
 
         if (ImGui::Button("Bring"))
         {
+            oInstance->oldPosition = player->position;
             oInstance->position = player->position;
         }
 
@@ -892,6 +902,28 @@ void Menu::DrawInstanceViewer()
         {
             INSTANCE_ReallyRemoveInstance((Instance*)clickedInstance, 0, 0);
         }
+
+#if TRAE || TR7
+        static int message;
+        static int postdata;
+
+        ImGui::InputInt("msg", &message);
+        ImGui::InputInt("data", &postdata);
+        if (ImGui::Button("Post"))
+        {
+            Game::InstancePost(oInstance, message, postdata);
+        }
+
+        static int group;
+        static int grouptoggle;
+        ImGui::InputInt("drawgroup", &group);
+        ImGui::InputInt("drawgrou toggle", &grouptoggle);
+
+        if (ImGui::Button("Toggle drawgroup"))
+        {
+            INSTANCE_HideUnhideDrawGroup(oInstance, group, grouptoggle);
+        }
+#endif
 
         ImGui::Text("numModels %d", numModels);
 
@@ -911,6 +943,20 @@ void Menu::DrawInstanceViewer()
             G2EmulationInstanceSetAnimation(oInstance, 0, anim, 0, 0);
             G2EmulationInstanceSetMode(oInstance, 0, 2);
         }
+
+#if TRAE
+        if (ImGui::Button("Attach camera"))
+        {
+            void(__cdecl* CAMERA_SetInstanceFocus)(int a1, Instance* instance);
+            CAMERA_SetInstanceFocus = reinterpret_cast<void(__cdecl*)(int a1, Instance * instance)>(0x00489380);
+
+            CAMERA_SetInstanceFocus(0x850670, oInstance);
+            *(cdc::Vector*)0x850670 = oInstance->position;
+
+            auto cameraMode = (int*)0x850984;
+            *cameraMode = 6;
+        }
+#endif
 
 #if TR8
         static int maxList;
