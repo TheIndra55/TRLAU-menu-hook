@@ -22,7 +22,7 @@ char(__cdecl* pushscreen)(int, bool);
 
 char pushscreenhooked(int screen, bool unk2)
 {
-    Hooking::GetInstance().GetMenu()->Log("screen pushed: %d\n", screen);
+    Hooking::GetInstance().GetMenu()->Log("Screen pushed: %d\n", screen);
     return pushscreen(screen, unk2);
 }
 
@@ -353,17 +353,17 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         auto debugTimeMult = (float*)0xE7F1D0;
 #endif
 
-        if (*debugTimeMult < 0.06f)
+        if (*debugTimeMult < 0.3f)
         {
             *debugTimeMult = 1.0f;
         }
-        else if (*debugTimeMult < 0.3f)
+        else if (*debugTimeMult < 0.5f)
         {
-            *debugTimeMult = 0.05f;
+            *debugTimeMult = 0.2f;
         }
         else
         {
-            *debugTimeMult = 0.2f;
+            *debugTimeMult = 0.4f;
         }
     }
 
@@ -523,10 +523,10 @@ void Menu::Draw()
 
     ImGui::Text("F2 = Flight, F8 = Toggle menu focus, F9 = Switch player character");
     ImGui::Text("Unit = %s, Flight = %s", (char*)GAMETRACKER_BASE_AREA, m_flight ? "true" : "false");
-
     ImGui::SliderFloat("Z speed", &m_flightSpeed, 0, 500);
 #if TRAE
 
+    ImGui::Checkbox("No deathfade", &m_drawSettings.noRespawn);
     if (ImGui::Button("Fill 'er Up"))
     {
         // pointers everywhere!

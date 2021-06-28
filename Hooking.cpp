@@ -22,6 +22,15 @@ Hooking::Hooking()
 	MH_CreateHook(reinterpret_cast<void*>(0x4143E0), hooked_Direct3DInit, reinterpret_cast<void**>(&original_Direct3DInit));
 #endif
 
+#if TRAE
+	// remove intros
+	NOP((void*)0x0045FDBA, 10);
+	NOP((void*)0x0045FDCE, 6);
+	NOP((void*)0x0045FD3F, 6);
+
+	*(int*)0x838838 = 3;
+#endif
+
 	InstallControlHooks();
 	InstallCameraHooks();
 

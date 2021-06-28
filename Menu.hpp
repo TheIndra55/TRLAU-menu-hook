@@ -23,6 +23,9 @@ struct DrawSettings
 	bool drawCollision = false;
 	bool drawPortals = false;
 
+	// "DrawSettings"
+	bool noRespawn = false;
+
 #if TR8
 	bool flight = false;
 #endif

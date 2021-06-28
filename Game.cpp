@@ -1,5 +1,6 @@
 #include "include/MinHook.h"
 #include "Game.hpp"
+#include "Hooking.hpp"
 
 bool Game::m_binoculars = false;
 
@@ -47,12 +48,46 @@ Instance* (__cdecl* INSTANCE_BirthObjectNoParent)(int unitId, cdc::Vector* posit
 ObjectTracker*(__cdecl* STREAM_GetObjectTrackerByName)(char*);
 bool(__cdecl* STREAM_PollLoadQueue)();
 
+bool(__cdecl* GAMELOOP_IsWipeDone)(int type);
+void(__cdecl* GAMELOOP_SetScreenWipe)(int type, int target, int time);
+
+// deathstate stuff
+int(__stdcall* DeathState_Entry)(int a1, int a2);
+void(__stdcall* DeathState_Process)(int a1, int a2);
+
+int __stdcall DeathStateEntry(int a1, int a2)
+{
+	auto ret = DeathState_Entry(a1, a2);
+
+	if (!Hooking::GetInstance().GetMenu()->m_drawSettings.noRespawn)
+	{
+		// we NOPed the orginal screenwipe code so call it manually
+		if (GAMELOOP_IsWipeDone(10))
+		{
+			GAMELOOP_SetScreenWipe(10, 100, 90);
+		}
+	}
+
+	return ret;
+}
+
+void __stdcall DeathStateProcess(int a1, int a2)
+{
+	if (!Hooking::GetInstance().GetMenu()->m_drawSettings.noRespawn)
+	{
+		DeathState_Process(a1, a2);
+	}
+}
+
 void Game::Initialize()
 {
 	CHRONICLE_SwitchChapter = reinterpret_cast<void(__cdecl*)(char*)>(0x422090);
 
 #if TRAE
 	GAMELOOP_ExitGame = reinterpret_cast<void(__cdecl*)(int)>(0x4542B0);
+
+	GAMELOOP_SetScreenWipe = reinterpret_cast<void(__cdecl*)(int type, int target, int time)>(0x00452A30);
+	GAMELOOP_IsWipeDone = reinterpret_cast<bool(__cdecl*)(int type)>(0x00452970);
 #elif TR8
 	GAMELOOP_ExitGame = reinterpret_cast<void(__cdecl*)(int)>(0x5DF760);
 #elif TR7
@@ -94,6 +129,10 @@ void Game::Initialize()
 
 #if TRAE
 	MH_CreateHook((void*)0x4E3C80, localstr_get, (void**)&game_localstr_get);
+
+	NOP((void*)0x005584DC, 5);
+	MH_CreateHook((void*)0x005699C0, DeathStateProcess, (void**)&DeathState_Process);
+	MH_CreateHook((void*)0x005581D0, DeathStateEntry, (void**)&DeathState_Entry);
 #elif TR7
 	MH_CreateHook((void*)0x4E7690, localstr_get, (void**)&game_localstr_get);
 #endif
@@ -217,7 +256,7 @@ void Game::SwitchPlayerCharacter()
 	*numPlayerObjects = 10;
 
 	auto playerObjects = *(int*)(ptr2 + 4);
-	*(__int16*)(playerObjects + 6) = 12; // patch the entire list to skip lara_doppelganger since that one is missing, dammit square enix
+	*(__int16*)(playerObjects + 6) = 12; // patch the entire list to skip lara_doppelganger since that one is missing, dammit CD
 	*(__int16*)(playerObjects + 8) = 13;
 	*(__int16*)(playerObjects + 10) = 14;
 	*(__int16*)(playerObjects + 12) = 16; // lara_mom_thrall also doesn't exist, skip too
