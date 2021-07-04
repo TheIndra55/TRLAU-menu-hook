@@ -105,6 +105,15 @@ GAMELOOP_ClearGameTracker 005D3DF0
 _setToGameplayCamera 005EDF50
 RazielInit 00721F80
 PLAYERCNTRL_Enable 005D5F40
+PlayerSM__SwitchPStates 006972C0
+PlayerSM__DefaultMessageHandler 0071F1D0
+GAMELOOP_IsWipeDone 0052E880
+GAMELOOP_SetScreenWipe 0052E8B0
+GAMELOOP_HandleScreenWipes 0052E900
+DeathState__Entry 0075AA50
+DeathState__Process 0075AF90
+RazielPost 0071FFE0
+INSTANCE_Post 005B3750
 
 
 

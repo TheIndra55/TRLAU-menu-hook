@@ -79,6 +79,18 @@ void __stdcall DeathStateProcess(int a1, int a2)
 	}
 }
 
+bool(__cdecl* UIScreenManager_WantsNormalFading)();
+
+bool HookedWipe11_WantsNormalFading()
+{
+	if (Hooking::GetInstance().GetMenu()->m_drawSettings.noMovieBars)
+	{
+		return false;
+	}
+
+	return UIScreenManager_WantsNormalFading();
+}
+
 void Game::Initialize()
 {
 	CHRONICLE_SwitchChapter = reinterpret_cast<void(__cdecl*)(char*)>(0x422090);
@@ -90,6 +102,9 @@ void Game::Initialize()
 	GAMELOOP_IsWipeDone = reinterpret_cast<bool(__cdecl*)(int type)>(0x00452970);
 #elif TR8
 	GAMELOOP_ExitGame = reinterpret_cast<void(__cdecl*)(int)>(0x5DF760);
+
+	GAMELOOP_SetScreenWipe = reinterpret_cast<void(__cdecl*)(int type, int target, int time)>(0x0052E8B0);
+	GAMELOOP_IsWipeDone = reinterpret_cast<bool(__cdecl*)(int type)>(0x0052E880);
 #elif TR7
 	GAMELOOP_ExitGame = reinterpret_cast<void(__cdecl*)(int)>(0x454550);
 #endif
@@ -103,6 +118,8 @@ void Game::Initialize()
 	INSTANCE_Post = reinterpret_cast<void(__cdecl*)(Instance*, DWORD, int)>(0x4580B0);
 #elif TR7
 	INSTANCE_Post = reinterpret_cast<void(__cdecl*)(Instance*, DWORD, int)>(0x458250);
+#elif TR8
+	INSTANCE_Post = reinterpret_cast<void(__cdecl*)(Instance*, DWORD, int)>(0x5B3750);
 #endif
 
 #if TRAE
@@ -133,6 +150,17 @@ void Game::Initialize()
 	NOP((void*)0x005584DC, 5);
 	MH_CreateHook((void*)0x005699C0, DeathStateProcess, (void**)&DeathState_Process);
 	MH_CreateHook((void*)0x005581D0, DeathStateEntry, (void**)&DeathState_Entry);
+
+	UIScreenManager_WantsNormalFading = reinterpret_cast<bool(__cdecl*)()>(0x004FC1F0);
+
+	auto call = int{ (int)HookedWipe11_WantsNormalFading - 0x00452F92 - 4};
+	memcpy((void*)0x00452F92, &call, sizeof(call));
+
+	//MH_CreateHook((void*)0x004FC1F0, UIScreenManager_WantsNormalFading, nullptr);
+#elif TR8
+	NOP((void*)0x0075AEDE, 5);
+	MH_CreateHook((void*)0x0075AF90, DeathStateProcess, (void**)&DeathState_Process);
+	MH_CreateHook((void*)0x0075AA50, DeathStateEntry, (void**)&DeathState_Entry);
 #elif TR7
 	MH_CreateHook((void*)0x4E7690, localstr_get, (void**)&game_localstr_get);
 #endif

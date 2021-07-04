@@ -324,7 +324,12 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
     if (msg == WM_KEYUP && wparam == VK_F11)
     {
+#if TRAE || TR7
         Game::InstancePost(*(Instance**)PLAYERINSTANCE, 262167, 3);
+#elif TR8
+        // instance message types were changed in Underworld
+        Game::InstancePost(*(Instance**)PLAYERINSTANCE, 4, 3);
+#endif
     }
 
     if (msg == WM_KEYUP && wparam == VK_F7)
@@ -524,9 +529,13 @@ void Menu::Draw()
     ImGui::Text("F2 = Flight, F8 = Toggle menu focus, F9 = Switch player character");
     ImGui::Text("Unit = %s, Flight = %s", (char*)GAMETRACKER_BASE_AREA, m_flight ? "true" : "false");
     ImGui::SliderFloat("Z speed", &m_flightSpeed, 0, 500);
-#if TRAE
 
+#if TRAE || TR8
     ImGui::Checkbox("No deathfade", &m_drawSettings.noRespawn);
+#endif
+
+#if TRAE
+    ImGui::Checkbox("No cinematic bars", &m_drawSettings.noMovieBars);
     if (ImGui::Button("Fill 'er Up"))
     {
         // pointers everywhere!
@@ -894,7 +903,9 @@ void Menu::DrawInstanceViewer()
 
         if (ImGui::Button("Bring"))
         {
+#if TRAE || TR7
             oInstance->oldPosition = player->position;
+#endif
             oInstance->position = player->position;
         }
 
@@ -903,7 +914,6 @@ void Menu::DrawInstanceViewer()
             INSTANCE_ReallyRemoveInstance((Instance*)clickedInstance, 0, 0);
         }
 
-#if TRAE || TR7
         static int message;
         static int postdata;
 
@@ -914,6 +924,7 @@ void Menu::DrawInstanceViewer()
             Game::InstancePost(oInstance, message, postdata);
         }
 
+#if TRAE || TR7
         static int group;
         static int grouptoggle;
         ImGui::InputInt("drawgroup", &group);

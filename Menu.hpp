@@ -25,6 +25,7 @@ struct DrawSettings
 
 	// "DrawSettings"
 	bool noRespawn = false;
+	bool noMovieBars = false;
 
 #if TR8
 	bool flight = false;
