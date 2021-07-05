@@ -45,6 +45,11 @@ Reverse engineering project for Tomb Raider LAU games, this repo contains the co
 * Slow down game (slow motion)
 * See level markup
 * See enemy navigation
+* See collision mesh
+* See portals
+* Skip intros/copyright screen
+* Disable death fade/respawn
+* Disable cinematic bars
 
 ### Tomb Raider: Underworld
 
@@ -64,6 +69,7 @@ Progress on Underworld was started later and this is also a newer version of the
 * Play animations
 * Slow down game (slow motion)
 * Free camera
+* Disable death fade/respawn
 
 ### Tomb Raider: Legend
 
@@ -87,6 +93,10 @@ Progress on Underworld was started later and this is also a newer version of the
 * See level markup
 * See enemy navigation
 * Wireframe rendering
+* See collision mesh
+* See portals
+* Disable death fade/respawn
+* Disable cinematic bars
 
 ## How to
 
@@ -140,7 +150,8 @@ Start by adding the .drm file of your object to the units folder (see above), ne
 
 <kbd>F7</kbd> Hide the menu \
 <kbd>F8</kbd> Toggle menu focus, this allows you to interact with the menu \
-<kbd>F9</kbd> Switch player character 
+<kbd>F9</kbd> Switch player character \
+<kbd>F11</kbd> Instant ragdoll death
 
 <kbd>F2</kbd> Toggle skew/flight cheat \
 <kbd>F3</kbd> Freeze the game \
