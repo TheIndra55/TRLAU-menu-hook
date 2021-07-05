@@ -50,6 +50,9 @@ public:
 	bool IsFocus() const noexcept;
 	void SetFocus(bool value) noexcept;
 
+	void LoadSettings() noexcept;
+	void SaveSettings() const noexcept;
+
 	Instance* GetClickedInstance() noexcept;
 
 	DrawSettings m_drawSettings;

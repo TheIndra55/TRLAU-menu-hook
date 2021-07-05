@@ -202,6 +202,7 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 	m_hwnd = hwnd;
 
 	OnLayoutChange();
+	LoadSettings();
 
 	ImGui::CreateContext();
 
@@ -530,12 +531,15 @@ void Menu::Draw()
     ImGui::Text("Unit = %s, Flight = %s", (char*)GAMETRACKER_BASE_AREA, m_flight ? "true" : "false");
     ImGui::SliderFloat("Z speed", &m_flightSpeed, 0, 500);
 
-#if TRAE || TR8
     ImGui::Checkbox("No deathfade", &m_drawSettings.noRespawn);
+#if TRAE || TR7
+    if (ImGui::Checkbox("No cinematic bars", &m_drawSettings.noMovieBars))
+    {
+        SaveSettings();
+    }
 #endif
 
 #if TRAE
-    ImGui::Checkbox("No cinematic bars", &m_drawSettings.noMovieBars);
     if (ImGui::Button("Fill 'er Up"))
     {
         // pointers everywhere!
@@ -1040,4 +1044,31 @@ void Menu::OnLayoutChange() noexcept
     auto hkl = GetKeyboardLayout(0);
     auto id = (int)((unsigned int)hkl & 0x0000FFFF);
     m_isAzertyLayout = id == 2060 || id == 1036;
+}
+
+void Menu::LoadSettings() noexcept
+{
+    HKEY phkResult;
+    if (!RegOpenKeyA(HKEY_CURRENT_USER, "SOFTWARE\\TRAE-Menu-Hook", &phkResult))
+    {
+        DWORD noCinematicBars;
+        DWORD len = sizeof(noCinematicBars);
+
+        RegQueryValueExA(phkResult, "NoCinematicBars", 0, 0, (LPBYTE)&noCinematicBars, &len);
+        m_drawSettings.noMovieBars = noCinematicBars;
+
+        RegCloseKey(phkResult);
+    }
+}
+
+void Menu::SaveSettings() const noexcept
+{
+    HKEY phkResult;
+    if (!RegCreateKeyA(HKEY_CURRENT_USER, "SOFTWARE\\TRAE-Menu-Hook", &phkResult))
+    {
+        DWORD noCinematicBars = m_drawSettings.noMovieBars;
+        RegSetValueExA(phkResult, "NoCinematicBars", 0, REG_DWORD, (LPBYTE)&noCinematicBars, 4);
+
+        RegCloseKey(phkResult);
+    }
 }

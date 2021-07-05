@@ -107,6 +107,9 @@ void Game::Initialize()
 	GAMELOOP_IsWipeDone = reinterpret_cast<bool(__cdecl*)(int type)>(0x0052E880);
 #elif TR7
 	GAMELOOP_ExitGame = reinterpret_cast<void(__cdecl*)(int)>(0x454550);
+
+	GAMELOOP_SetScreenWipe = reinterpret_cast<void(__cdecl*)(int type, int target, int time)>(0x00452F40);
+	GAMELOOP_IsWipeDone = reinterpret_cast<bool(__cdecl*)(int type)>(0x00452E80);
 #endif
 
 	UIScreenManager_PushScreen = reinterpret_cast<char(__cdecl*)(int, int)>(0x4FCB60);
@@ -163,6 +166,21 @@ void Game::Initialize()
 	MH_CreateHook((void*)0x0075AA50, DeathStateEntry, (void**)&DeathState_Entry);
 #elif TR7
 	MH_CreateHook((void*)0x4E7690, localstr_get, (void**)&game_localstr_get);
+
+	NOP((void*)0x00563478, 5);
+	MH_CreateHook((void*)0x00574320, DeathStateProcess, (void**)&DeathState_Process);
+	MH_CreateHook((void*)0x005631B0, DeathStateEntry, (void**)&DeathState_Entry);
+
+	UIScreenManager_WantsNormalFading = reinterpret_cast<bool(__cdecl*)()>(0x004FC130);
+
+	// .text section in nextgen debug exe is read only
+	DWORD lpflOldProtect, _;
+	VirtualProtect((void*)0x453499, 4, PAGE_EXECUTE_READWRITE, &lpflOldProtect);
+
+	auto call = int{ (int)HookedWipe11_WantsNormalFading - 0x453499 - 4 };
+	memcpy((void*)0x453499, &call, sizeof(call));
+
+	VirtualProtect((void*)0x453499, 4, lpflOldProtect, &_);
 #endif
 
 	PLAYER_SetLookAround = reinterpret_cast<void(__cdecl*)(Instance*)>(0x005600F0);
