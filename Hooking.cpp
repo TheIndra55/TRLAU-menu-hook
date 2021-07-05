@@ -19,7 +19,11 @@ Hooking::Hooking()
 #elif TR8
 	MH_CreateHook(reinterpret_cast<void*>(0x478640), hooked_Direct3DInit, reinterpret_cast<void**>(&original_Direct3DInit));
 #elif TR7
-	MH_CreateHook(reinterpret_cast<void*>(0x4143E0), hooked_Direct3DInit, reinterpret_cast<void**>(&original_Direct3DInit));
+	auto pFound = FindPattern((PBYTE)"\xE8\x00\x00\x00\x00\x8B\x00\x89\x00\xD4\x85\x00", "x????x?x?xx?");
+	assert(pFound);
+
+	auto D3D_Init = GetAddress(pFound, 1, 5);
+	MH_CreateHook(reinterpret_cast<void*>(D3D_Init), hooked_Direct3DInit, reinterpret_cast<void**>(&original_Direct3DInit));
 #endif
 
 #if TRAE
@@ -524,9 +528,11 @@ void Hooking::GotDevice()
 
 	MH_CreateHook(reinterpret_cast<void*>(0x478BC0), hooked_RegularWndProc, reinterpret_cast<void**>(&original_RegularWndProc));
 #elif TR7
-	MH_CreateHook(reinterpret_cast<void*>(0xED0990), hooked_PCRenderContext_Present, reinterpret_cast<void**>(&original_PCRenderContext_Present));
+	auto present = FindPattern((PBYTE)"\x8B\x41\x14\x85\xC0\x74\x19\x8B\x54\x24\x0C", "xxxxxxxxxxx");
+	MH_CreateHook(reinterpret_cast<void*>(present), hooked_PCRenderContext_Present, reinterpret_cast<void**>(&original_PCRenderContext_Present));
 
-	MH_CreateHook(reinterpret_cast<void*>(0x405380), hooked_RegularWndProc, reinterpret_cast<void**>(&original_RegularWndProc));
+	auto wndProc = FindPattern((PBYTE)"\x83\xEC\x68\x55", "xxxx");
+	MH_CreateHook(reinterpret_cast<void*>(wndProc), hooked_RegularWndProc, reinterpret_cast<void**>(&original_RegularWndProc));
 #endif
 
 	// hook SetCursorPos to prevent the game from resetting the cursor position
@@ -614,7 +620,9 @@ int hooked_Direct3DInit()
 #elif TR8
 	pHwnd = *reinterpret_cast<HWND*>(0x9EEDE8);
 #elif TR7
-	pHwnd = *reinterpret_cast<HWND*>(0xF48FB8);
+	auto pFound = FindPattern((PBYTE)"\x8B\x0D\x00\x00\x00\x00\x56\x51\xE8\x00\x00\x00\x00\xE8", "xx????xxx????x");
+
+	pHwnd = **(HWND**)(pFound + 2);
 #endif
 
 	// (IDirect3DDevice*)devicemanager->d3device
@@ -623,7 +631,8 @@ int hooked_Direct3DInit()
 #elif TR8
 	auto address = *reinterpret_cast<DWORD*>(0xAD75E4);
 #elif TR7
-	auto address = *reinterpret_cast<DWORD*>(0x139C758);
+	pFound = FindPattern((PBYTE)"\x8B\x0D\x00\x00\x00\x00\x68\x00\x00\x00\x00\x50\xE8", "xx????x????xx");
+	auto address = **(int**)(pFound + 2);
 #endif
 	auto device = *reinterpret_cast<DWORD*>(address + 0x20);
 	pDevice = reinterpret_cast<IDirect3DDevice9*>(device);

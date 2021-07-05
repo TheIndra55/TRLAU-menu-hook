@@ -21,7 +21,7 @@ DWORD WINAPI Hook(LPVOID lpParam)
 {
     MH_Initialize();
 
-#if TRAE
+#if TRAE || TR7
     // we cannot insert our hooks now since game is not done yet unpacking
     // hook one of the first functions called from unpacked code and insert our hooks then
     MH_CreateHookApi(L"Kernel32", "GetStartupInfoW", hGetVersionExA, reinterpret_cast<void**>(&dGetVersionExA));
