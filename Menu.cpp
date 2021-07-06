@@ -356,7 +356,7 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 #if TRAE || TR7
         auto debugTimeMult = (float*)(GAMETRACKER + 0x13C);
 #elif TR8
-        auto debugTimeMult = (float*)0xE7F1D0;
+        auto debugTimeMult = (float*)(GAMETRACKER + 0x148);
 #endif
 
         if (*debugTimeMult < 0.3f)
@@ -408,7 +408,7 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 #if TRAE || TR7
         auto streamFlags = (int*)(GAMETRACKER + 0xC4);
 #elif TR8
-        auto streamFlags = (int*)0xE7F0B8;
+        auto streamFlags = (int*)(GAMETRACKER + 0x30);
 #endif
         if (*streamFlags & 0x1000)
         {
@@ -593,7 +593,7 @@ void Menu::Draw()
     {
         // load chapter (chapter0, chapter1..)
         // chapter0 = croft manor
-        if(Game::CheckChapter(chapter))
+        if (Game::CheckChapter(chapter))
         {
             Game::SwitchChapter(chapter);
         }
@@ -733,9 +733,18 @@ void Menu::Draw()
         }
         else
         {
-            auto position = player->position;
-            auto rotation = player->rotation;
-
+            cdc::Vector position;
+            cdc::Vector rotation;
+            if (player != nullptr)
+            {
+                position = player->position;
+                rotation = player->rotation;
+            }
+            else
+            {
+                // player not found, try first instance
+                position = (*(Instance**)INSTANCELIST)->position;
+            }
 #if TRAE
             auto unitId = *(int*)0x838418;
 #elif TR7

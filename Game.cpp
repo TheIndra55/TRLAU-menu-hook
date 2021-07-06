@@ -254,6 +254,12 @@ void Game::PopScreen()
 // more can be found here https://theindra.eu/projects/TRAE-Research/research.html#_example
 void Game::InstancePost(Instance* instance, int a2, int data)
 {
+	if (instance == nullptr)
+	{
+		Hooking::GetInstance().GetMenu()->Log(__FUNCTION__ " ignored, no instance.\n");
+		return;
+	}
+
 	return INSTANCE_Post(instance, a2, data);
 }
 
@@ -292,6 +298,12 @@ bool Game::CheckChapter(char* chapter)
 
 void Game::SwitchPlayerCharacter()
 {
+	if (*(int*)PLAYERINSTANCE == NULL)
+	{
+		Hooking::GetInstance().GetMenu()->Log(__FUNCTION__ " ignored, no player instance.\n");
+		return;
+	}
+
 #if TRAE || TR7
 	PLAYER_DebugSwitchPlayerCharacter();
 #elif TR8

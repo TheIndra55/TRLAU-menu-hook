@@ -117,5 +117,6 @@ INSTANCE_Post 005B3750
 
 
 
+gameTrackerX 00E7F088
 INPUT_instances 00A02B68
 gPlayerControl_Enabled 008AB4E6 ; setting this to 0 disables any control of lara like moving and shooting.
