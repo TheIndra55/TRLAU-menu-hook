@@ -378,13 +378,7 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 #if TRAE // current legend supported exe (debug exe) has already fly on F4 so only switch the mode on TRAE
         auto cameraMode = (int*)0x850984;
         *cameraMode = *cameraMode == 7 ? 2 : 7;
-#endif
-
-#if TRAE || TR7
-        *(int*)(GAMETRACKER + 0x1C) ^= 0x8000; // hide hud
-#endif
-
-#if TR8
+#elif TR8
         m_drawSettings.flight = !m_drawSettings.flight;
         if (m_drawSettings.flight)
         {
@@ -431,6 +425,13 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         switchPlayerNextFrame = false;
 
         Game::SwitchPlayerCharacter();
+    }
+#endif
+
+#if TRAE || TR7
+    if (msg == WM_KEYUP && wparam == VK_INSERT)
+    {
+        *(int*)(GAMETRACKER + 0x1C) ^= 0x8000; // hide hud
     }
 #endif
 

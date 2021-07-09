@@ -157,7 +157,8 @@ Start by adding the .drm file of your object to the units folder (see above), ne
 <kbd>F3</kbd> Freeze the game \
 <kbd>Shift</kbd> + <kbd>F3</kbd> Cycle Slow motion \
 <kbd>F4</kbd> Toggle free camera \
-<kbd>F5</kbd> Toggle player control
+<kbd>F5</kbd> Toggle player control \
+<kbd>Insert/Ins</kbd> Toggle hud
 
 <kbd>Q</kbd> \/ <kbd>A</kbd> Flight up \
 <kbd>Z</kbd> \/ <kbd>W</kbd> Flight down
