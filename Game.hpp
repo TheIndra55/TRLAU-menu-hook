@@ -294,3 +294,5 @@ public:
 };
 
 char* localstr_get(int a1);
+
+void memcpyProtectedSection(void* dst, const void* src, size_t size);

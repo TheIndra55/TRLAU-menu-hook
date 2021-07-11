@@ -157,7 +157,7 @@ void Game::Initialize()
 	UIScreenManager_WantsNormalFading = reinterpret_cast<bool(__cdecl*)()>(0x004FC1F0);
 
 	auto call = int{ (int)HookedWipe11_WantsNormalFading - 0x00452F92 - 4};
-	memcpy((void*)0x00452F92, &call, sizeof(call));
+	memcpyProtectedSection((void*)0x00452F92, &call, sizeof(call));
 
 	//MH_CreateHook((void*)0x004FC1F0, UIScreenManager_WantsNormalFading, nullptr);
 #elif TR8
@@ -174,13 +174,8 @@ void Game::Initialize()
 	UIScreenManager_WantsNormalFading = reinterpret_cast<bool(__cdecl*)()>(0x004FC130);
 
 	// .text section in nextgen debug exe is read only
-	DWORD lpflOldProtect, _;
-	VirtualProtect((void*)0x453499, 4, PAGE_EXECUTE_READWRITE, &lpflOldProtect);
-
 	auto call = int{ (int)HookedWipe11_WantsNormalFading - 0x453499 - 4 };
-	memcpy((void*)0x453499, &call, sizeof(call));
-
-	VirtualProtect((void*)0x453499, 4, lpflOldProtect, &_);
+	memcpyProtectedSection((void*)0x453499, &call, sizeof(call));
 #endif
 
 	PLAYER_SetLookAround = reinterpret_cast<void(__cdecl*)(Instance*)>(0x005600F0);
@@ -212,6 +207,16 @@ void Game::Initialize()
 	STREAM_GetObjectTrackerByName = reinterpret_cast<ObjectTracker * (__cdecl*)(char*)>(0x005C17D0);
 	STREAM_PollLoadQueue = reinterpret_cast<bool(__cdecl*)()>(0x005C1DA0);
 #endif
+}
+
+void memcpyProtectedSection(void* dst, const void* src, size_t size)
+{
+	DWORD lpflOldProtect, _;
+	VirtualProtect((void*)dst, size, PAGE_EXECUTE_READWRITE, &lpflOldProtect);
+
+	memcpy(dst, src, size);
+
+	VirtualProtect((void*)dst, size, lpflOldProtect, &_);
 }
 
 char* localstr_get(int a1)
