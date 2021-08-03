@@ -40,14 +40,20 @@ jobs:
     - uses: actions/upload-artifact@v1
       with:
         name: Anniversary
-        path: bin/Release/TRAE-Menu-Hook.asi
+        path: |
+          bin/Release/TRAE-Menu-Hook.asi
+          bin/Release/TRAE-Menu-Hook.pdb
 
     - uses: actions/upload-artifact@v1
       with:
         name: Underworld
-        path: bin/Release/TR8-Menu-Hook.asi
+        path: |
+          bin/Release/TR8-Menu-Hook.asi
+          bin/Release/TR8-Menu-Hook.pdb
 
     - uses: actions/upload-artifact@v1
       with:
         name: Legend
-        path: bin/Release/TR7-Menu-Hook.asi
+        path: |
+          bin/Release/TR7-Menu-Hook.asi
+          bin/Release/TR7-Menu-Hook.pdb
