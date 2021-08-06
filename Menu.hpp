@@ -64,9 +64,7 @@ private:
 	bool m_visible = true;
 	bool m_isAzertyLayout = false;
 
-#if TR8
 	bool m_freecam = false;
-#endif
 
 	ImGuiTextBuffer logBuffer;
 
