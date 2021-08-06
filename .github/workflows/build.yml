@@ -37,21 +37,21 @@ jobs:
       run: MSBuild /p:Configuration=Release /p:Platform=Win32 /p:GameConstant=TR7 /p:TargetName=TR7-Menu-Hook
 
     # upload
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v2
       with:
         name: Anniversary
         path: |
           bin/Release/TRAE-Menu-Hook.asi
           bin/Release/TRAE-Menu-Hook.pdb
 
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v2
       with:
         name: Underworld
         path: |
           bin/Release/TR8-Menu-Hook.asi
           bin/Release/TR8-Menu-Hook.pdb
 
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v2
       with:
         name: Legend
         path: |

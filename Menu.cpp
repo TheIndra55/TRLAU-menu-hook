@@ -2,8 +2,6 @@
 #include "Game.hpp"
 #include "Hooking.hpp"
 
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
 static bool shouldInstance = true;
 static bool shouldReloc = true;
 
@@ -379,8 +377,8 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         auto cameraMode = (int*)0x850984;
         *cameraMode = *cameraMode == 7 ? 2 : 7;
 #elif TR8
-        m_drawSettings.flight = !m_drawSettings.flight;
-        if (m_drawSettings.flight)
+        m_freecam = !m_freecam;
+        if (m_freecam)
         {
             CAMERA_SetMode(11);
 
@@ -389,8 +387,6 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         }
         else
         {
-            //*(int*)0xE80534 = 0xE83860 /* AVLaraCameraRewrite */;
-
             _setToGameplayCamera(0xE804F0 /* AVCameraManager */);
         }
 #endif
@@ -1041,6 +1037,11 @@ void Menu::Log(const char* fmt, ...) IM_FMTARGS(2)
 bool Menu::IsFocus() const noexcept
 {
     return m_focus;
+}
+
+bool Menu::IsFreecam() const noexcept
+{
+    return m_freecam;
 }
 
 void Menu::SetFocus(bool value) noexcept

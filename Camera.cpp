@@ -93,7 +93,7 @@ void __cdecl GAMELOOP_Process(int a1)
 {
 	origGAMELOOP_Process(a1);
 
-	if (Hooking::GetInstance().GetMenu()->m_drawSettings.flight)
+	if (Hooking::GetInstance().GetMenu()->IsFreecam())
 	{
 		auto speed = IsActionPressed(34);
 		auto camera = *reinterpret_cast<int*>(0xE80534);

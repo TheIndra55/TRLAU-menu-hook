@@ -26,10 +26,6 @@ struct DrawSettings
 	// "DrawSettings"
 	bool noRespawn = false;
 	bool noMovieBars = false;
-
-#if TR8
-	bool flight = false;
-#endif
 };
 
 class Menu
@@ -41,12 +37,10 @@ public:
 	void OnPresent();
 	void Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	void ToggleFlight(bool flight);
-	void ProcessFlight(UINT msg, WPARAM wparam);
 	void SetDevice(LPDIRECT3DDEVICE9 pd3dDevice);
-	void OnLayoutChange() noexcept;
 	void Log(const char* fmt, ...);
-	void DrawInstanceViewer();
 
+	bool IsFreecam() const noexcept;
 	bool IsFocus() const noexcept;
 	void SetFocus(bool value) noexcept;
 
@@ -58,13 +52,21 @@ public:
 	DrawSettings m_drawSettings;
 private:
 	void Draw();
+	void ProcessFlight(UINT msg, WPARAM wparam);
+	void DrawInstanceViewer();
+	void OnLayoutChange() noexcept;
 
+private:
 	bool m_focus = false;
 	bool m_flight = false;
-	float m_flightSpeed = 50.f;
+	float m_flightSpeed = 75.f;
 
 	bool m_visible = true;
 	bool m_isAzertyLayout = false;
+
+#if TR8
+	bool m_freecam = false;
+#endif
 
 	ImGuiTextBuffer logBuffer;
 
@@ -74,5 +76,4 @@ private:
 	DWORD clickedInstance;
 };
 
-void DrawInstanceViewer();
-int __cdecl IMAGE_LoadImage(char* name);
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);

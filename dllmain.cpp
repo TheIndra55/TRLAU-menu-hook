@@ -30,7 +30,6 @@ DWORD WINAPI Hook(LPVOID lpParam)
     Hooking::GetInstance(); // Will call the ctor
 #endif
 
-    while (true) Sleep(0);
     return 0;
 }
 
