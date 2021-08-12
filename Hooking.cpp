@@ -637,7 +637,11 @@ int hooked_Direct3DInit()
 	auto device = *reinterpret_cast<DWORD*>(address + 0x20);
 	pDevice = reinterpret_cast<IDirect3DDevice9*>(device);
 
-	Hooking::GetInstance().GotDevice();
+	// if direct3d initialisation fails using the device will crash the game instead of showing game dx9 error
+	if (pDevice != nullptr)
+	{
+		Hooking::GetInstance().GotDevice();
+	}
 
 	return val;
 }

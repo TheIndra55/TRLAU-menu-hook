@@ -25,4 +25,3 @@ project "TRAE-menu-hook"
         defines { "NDEBUG" }
         optimize "On"
         symbols "On"
-        linkoptions { "/pdbaltpath:%_PDB%" }
