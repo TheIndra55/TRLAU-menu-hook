@@ -16,7 +16,7 @@ Reverse engineering project for Tomb Raider LAU games, this repo contains the co
 
 ### Tomb Raider: Anniversary
 
-**Supported version**: 4.58MB exe, Steam version
+**Supported version**: 4.58MB exe, Steam, GOG.com
 
 * Skew/flight cheat
 * Restore full health
@@ -53,8 +53,7 @@ Reverse engineering project for Tomb Raider LAU games, this repo contains the co
 
 ### Tomb Raider: Underworld
 
-**Supported version**: Steam \
-Progress on Underworld was started later and this is also a newer version of the engine so requires more research, therefore Underworld version is less feature rich.
+**Supported version**: Steam, GOG.com
 
 * Skew/flight cheat
 * Switch player character
@@ -100,6 +99,8 @@ Progress on Underworld was started later and this is also a newer version of the
 
 ## How to
 
+Detailed installation instructions can be found on every release.
+
 Use [Ultimate ASI Loader](https://github.com/ThirteenAG/Ultimate-ASI-Loader/releases) by replacing `binkw32.dll` and drop the compiled .asi in your game folder.
 
 ## Build
@@ -116,8 +117,9 @@ Make sure to set TRAE, TR7 or TR8 preprocessor definition for the target game.
 
 Other todo items can be found in the 'Projects' tab on GitHub
 
-- Make use of patterns to support more executables like Steam
-- Refactor a lot of code to use structs instead of offsets
+- Code should be refactored
+- Support retail version of Legend
+- Make use of patterns to support more executables
 
 ## FAQ
 
