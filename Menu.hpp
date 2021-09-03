@@ -54,6 +54,8 @@ private:
 	void Draw();
 	void ProcessFlight(UINT msg, WPARAM wparam);
 	void DrawInstanceViewer();
+	void DrawEventDebugViewer() const noexcept;
+
 	void OnLayoutChange() noexcept;
 
 private:

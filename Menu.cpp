@@ -2,6 +2,8 @@
 #include "Game.hpp"
 #include "Hooking.hpp"
 
+#include "event.hpp"
+
 static bool shouldInstance = true;
 static bool shouldReloc = true;
 
@@ -194,6 +196,8 @@ void(__cdecl* CAMERA_SetMode)(int mode);
 int(__thiscall* _setToGameplayCamera)(int _this);
 #endif
 
+int(*__cdecl RELOC_GetProcAddress)(int reloc, const char* symbol);
+
 Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 {
 	m_pd3dDevice = pd3dDevice;
@@ -206,6 +210,7 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
 	ImGui_ImplWin32_Init(m_hwnd);
 	ImGui_ImplDX9_Init(m_pd3dDevice);
+
 
 #if TRAE
     MH_CreateHook((void*)0x00457580, newinstance, (void**)&INSTANCE_NewInstance);
@@ -235,6 +240,8 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
     G2EmulationInstanceSetAnimation = reinterpret_cast<void(__cdecl*)(Instance*, int, int, int, int)>(0x004DE690);
     G2EmulationInstanceSetMode = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x004DE7F0);
     INSTANCE_HideUnhideDrawGroup = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x004319B0);
+
+    RELOC_GetProcAddress = reinterpret_cast<int(*__cdecl)(int, const char*)>(0x004680C0);
 #elif TR7
     MH_CreateHook((void*)0x0045F420, getFS, nullptr);
     MH_CreateHook((void*)0x0045F4D0, unitFileName, (void**)&origUnitFileName);
@@ -253,6 +260,8 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
     G2EmulationInstanceSetAnimation = reinterpret_cast<void(__cdecl*)(Instance*, int, int, int, int)>(0x004E1F00);
     G2EmulationInstanceSetMode = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x004E2060);
     INSTANCE_HideUnhideDrawGroup = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x00458FB0);
+
+    RELOC_GetProcAddress = reinterpret_cast<int(*__cdecl)(int, const char*)>(0x00467570);
 #endif
 
 #if TR8
@@ -510,7 +519,13 @@ void Menu::Draw()
     static char unit[32] = "";
 
     static bool show_instance_viewer = false;
+    static bool show_event_debug_viewer = false;
+
     if (show_instance_viewer) DrawInstanceViewer();
+
+#if TRAE || TR7 // event system doesnt exist in Underworld
+    if (show_event_debug_viewer) DrawEventDebugViewer();
+#endif
 
     ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_MenuBar);
 
@@ -519,6 +534,10 @@ void Menu::Draw()
         if (ImGui::BeginMenu("Tools"))
         {
             ImGui::MenuItem("Instance viewer", NULL, &show_instance_viewer);
+
+#if TRAE || TR7
+            ImGui::MenuItem("Event debug", NULL, &show_event_debug_viewer);
+#endif
             ImGui::EndMenu();
         }
         ImGui::EndMenuBar();
@@ -1016,6 +1035,60 @@ void Menu::DrawInstanceViewer()
             }
         }
 #endif
+    }
+
+    ImGui::End();
+}
+
+void Menu::DrawEventDebugViewer() const noexcept
+{
+    ImGui::Begin("Event debug");
+
+    auto level = *(Level**)(GAMETRACKER + 8);
+    auto eventVarVals = *(int**)(GLOBALDATA + 0xE8 /* event vars */);
+
+    if (level)
+    {
+        // get the level reloc module
+        auto reloc = level->reloc;
+        auto eventVars = reinterpret_cast<EventVar*>(RELOC_GetProcAddress(reloc, "EventDebug"));
+
+        if (eventVars)
+        {
+            int i = 0;
+            while (true)
+            {
+                auto var = eventVars[i++];
+
+                if (var.name == nullptr)
+                    break;
+
+                ImGui::Text("%d %s = %d", var.offset, var.name, eventVarVals[var.offset]);
+            }
+
+            auto unsavedVars = reinterpret_cast<UnsavedVar*>(eventVars);
+            while (true)
+            {
+                auto var = unsavedVars[i++];
+
+                if (var.name == nullptr || var.var == nullptr)
+                    break;
+
+                ImGui::Text("%s %d", var.name, *var.var);
+            }
+
+            ImGui::Separator();
+        }
+    }
+
+    static int var;
+    static int value;
+    ImGui::InputInt("eventVar", &var);
+    ImGui::InputInt("value", &value);
+
+    if (ImGui::Button("Set"))
+    {
+        eventVarVals[var] = value;
     }
 
     ImGui::End();

@@ -14,6 +14,7 @@
 	#define MAINFONT 0x007D1800
 	#define GCHEATWIREFRAME 0x7C7CD4
 	#define INSTANCELIST 0x817D64
+	#define GLOBALDATA 0x007C8A50
 #elif TR8
 	#define GAMETRACKER 0x00E7F088
 	#define GAMETRACKER_BASE_AREA (GAMETRACKER + 56)
@@ -23,6 +24,7 @@
 	#define DISKFS 0x9CE27C
 	#define CONFIGNAME "TR8"
 	#define INSTANCELIST 0xD98D54
+	#define GLOBALDATA 0
 #elif TR7
 	#define GAMETRACKER 0x010EE730
 	#define GAMETRACKER_BASE_AREA (GAMETRACKER + 204)
@@ -35,6 +37,7 @@
 	#define MAINFONT 0x01088A2C
 	#define GCHEATWIREFRAME 0x107E580
 	#define INSTANCELIST 0x10CEE64
+	#define GLOBALDATA 0x0107F920
 #else
 	#error "No game specified, set TRAE for Anniversary, TR7 for Legend or TR8 for Underworld"
 #endif
