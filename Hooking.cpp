@@ -485,7 +485,7 @@ void __cdecl Font__Flush()
 				{
 					srcVector.y += 15.f;
 					SetCursor(srcVector.x, srcVector.y);
-					Font__Print(*(DWORD*)MAINFONT, "%d", *(int*)(instance + 0x1D0));
+					Font__Print(*(DWORD*)MAINFONT, "Intro %d", *(int*)(instance + 0x1D0));
 				}
 
 				if (settings.drawAddress)
@@ -499,7 +499,16 @@ void __cdecl Font__Flush()
 				{
 					srcVector.y += 15.f;
 					SetCursor(srcVector.x, srcVector.y);
-					Font__Print(*(DWORD*)MAINFONT, "%d", *(unsigned __int16*)(data + 2));
+					Font__Print(*(DWORD*)MAINFONT, "Family %d", *(unsigned __int16*)(data + 2));
+				}
+
+				if (settings.drawAnim)
+				{
+					auto anim = G2EmulationInstanceQueryAnimation(instanceObj, 0);
+
+					srcVector.y += 15.f;
+					SetCursor(srcVector.x, srcVector.y);
+					Font__Print(*(DWORD*)MAINFONT, "Anim %d", anim);
 				}
 			}
 

@@ -114,6 +114,19 @@ DeathState__Entry 0075AA50
 DeathState__Process 0075AF90
 RazielPost 0071FFE0
 INSTANCE_Post 005B3750
+MultiFileSystem__GetBestFileSystem 00473560
+MainG2 005DF390
+ProcessArgs	004778C0
+NtUnlockableCinematic_ScriptType__InitType 007AD530
+MAIN_DoMainInit	005DEF70
+NtUnlockableMovie_ScriptType__InitType 007AD750
+NtUIGameData_ScriptType__InitType 007AF0C0
+PhysicsKickStateImpl__ApplyKickImpulse 00769830
+ANIMATE_Init 006C77B0
+OBJ_SwitchState 0069A670
+ANIMATE_Idle 006C2530
+cdc__Resolve__Load 00551470
+_loadPdaMap 006E4E80
 
 
 

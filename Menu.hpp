@@ -16,6 +16,7 @@ struct DrawSettings
 	bool drawAddress = false;
 	bool drawFamily = false;
 	bool drawHealth = false;
+	bool drawAnim = false;
 
 	bool drawDebug = false;
 	bool drawMarkup = false;

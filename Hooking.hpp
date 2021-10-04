@@ -52,3 +52,5 @@ uint8_t __declspec(noinline)* FindPattern(BYTE* bMask, char* szMask);
 uint8_t __declspec(noinline)* GetAddress(uint8_t* ptr, uint8_t offset, uint8_t instr_size);
 
 void DrawQuads(int flags, int tpage, DRAWVERTEX* verts, int numquads);
+
+extern int(__cdecl* G2EmulationInstanceQueryAnimation)(Instance* instance, int section);

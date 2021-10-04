@@ -175,6 +175,7 @@ void(__cdecl* INSTANCE_SetModel)(Instance* instance, int model);
 
 void(__cdecl* G2EmulationInstanceSetAnimation)(Instance* instance, int section, int anim, int frame, int frames);
 void(__cdecl* G2EmulationInstanceSetMode)(Instance* instance, int section, int mode);
+int(__cdecl* G2EmulationInstanceQueryAnimation)(Instance* a1, int section);
 
 void(__cdecl* INSTANCE_HideUnhideDrawGroup)(Instance*, int, int);
 
@@ -239,6 +240,8 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
     G2EmulationInstanceSetAnimation = reinterpret_cast<void(__cdecl*)(Instance*, int, int, int, int)>(0x004DE690);
     G2EmulationInstanceSetMode = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x004DE7F0);
+    G2EmulationInstanceQueryAnimation = reinterpret_cast<int(__cdecl*)(Instance*, int)>(0x004DE8B0);
+
     INSTANCE_HideUnhideDrawGroup = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x004319B0);
 
     RELOC_GetProcAddress = reinterpret_cast<int(*__cdecl)(int, const char*)>(0x004680C0);
@@ -259,6 +262,8 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
     G2EmulationInstanceSetAnimation = reinterpret_cast<void(__cdecl*)(Instance*, int, int, int, int)>(0x004E1F00);
     G2EmulationInstanceSetMode = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x004E2060);
+    G2EmulationInstanceQueryAnimation = reinterpret_cast<int(__cdecl*)(Instance*, int)>(0x004E2120);
+
     INSTANCE_HideUnhideDrawGroup = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x00458FB0);
 
     RELOC_GetProcAddress = reinterpret_cast<int(*__cdecl)(int, const char*)>(0x00467570);
@@ -593,6 +598,7 @@ void Menu::Draw()
     {
         ImGui::Checkbox("Filter", &m_drawSettings.filter);
         ImGui::Checkbox("Draw intro id", &m_drawSettings.drawIntro);
+        ImGui::Checkbox("Draw animation", &m_drawSettings.drawAnim);
         ImGui::Checkbox("Draw pointer address", &m_drawSettings.drawAddress);
         ImGui::Checkbox("Draw 'family'", &m_drawSettings.drawFamily);
         ImGui::Checkbox("Draw enemy health", &m_drawSettings.drawHealth);
