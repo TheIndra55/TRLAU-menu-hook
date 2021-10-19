@@ -1053,7 +1053,7 @@ void Menu::DrawEventDebugViewer() const noexcept
     auto level = *(Level**)(GAMETRACKER + 8);
     auto eventVarVals = *(int**)(GLOBALDATA + 0xE8 /* event vars */);
 
-    if (level)
+    if (level && level->reloc)
     {
         // get the level reloc module
         auto reloc = level->reloc;
