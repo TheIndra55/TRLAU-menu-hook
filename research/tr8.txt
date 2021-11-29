@@ -1,7 +1,7 @@
-addresses from Steam version
-checksum: SHA256          D554EE8BD38985F08092C8A0D0F7192B0AC583B38D93083326901CAE0D1F8507
+Tomb Raider: Underworld function addresses
 
-
+Base address: 400000
+Exe timestamp: 4947E5D6 (Tue Dec 16 17:31:02 2008)
 
 D3D_Init 00478640
 FXDRAW_DrawModelParticles 0053DFC0
