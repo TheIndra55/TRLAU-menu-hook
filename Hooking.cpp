@@ -48,7 +48,7 @@ Hooking::~Hooking()
 	MH_Uninitialize();
 }
 
-std::unique_ptr<Menu>& Hooking::GetMenu() noexcept
+std::shared_ptr<Menu>& Hooking::GetMenu() noexcept
 {
 	return m_menu;
 }
@@ -676,9 +676,18 @@ void __fastcall hooked_PCRenderContext_Present(DWORD* _this, void* _, int a2)
 
 LRESULT hooked_RegularWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
+	auto menu = Hooking::GetInstance().GetMenu();
+
 	if (msg == WM_KEYUP && wparam == VK_F8)
 	{
+		// set menu focus
 		Hooking::GetInstance().GetMenu()->SetFocus(!Hooking::GetInstance().GetMenu()->IsFocus());
+
+		// show menu if hidden
+		if (!menu->IsVisible())
+		{
+			menu->SetVisibility(true);
+		}
 
 		// disable game input
 #if TRAE

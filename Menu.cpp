@@ -520,16 +520,13 @@ void __cdecl DialogFn()
 
 void Menu::Draw()
 {
-    static char chapter[32] = "";
-    static char unit[32] = "";
-
     static bool show_instance_viewer = false;
     static bool show_event_debug_viewer = false;
 
-    if (show_instance_viewer) DrawInstanceViewer();
+    if (show_instance_viewer) DrawInstanceViewer(&show_instance_viewer);
 
 #if TRAE || TR7 // event system doesnt exist in Underworld
-    if (show_event_debug_viewer) DrawEventDebugViewer();
+    if (show_event_debug_viewer) DrawEventDebugViewer(&show_event_debug_viewer);
 #endif
 
     ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_MenuBar);
@@ -545,10 +542,20 @@ void Menu::Draw()
 #endif
             ImGui::EndMenu();
         }
+
+        if (ImGui::BeginMenu("Help"))
+        {
+            if (ImGui::MenuItem("GitHub"))
+            {
+                ShellExecuteA(0, 0, "https://github.com/TheIndra55/TRAE-menu-hook", 0, 0, SW_SHOW);
+            }
+
+            ImGui::EndMenu();
+        }
+
         ImGui::EndMenuBar();
     }
 
-    ImGui::Text("F2 = Flight, F8 = Toggle menu focus, F9 = Switch player character");
     ImGui::Text("Unit = %s, Flight = %s", (char*)GAMETRACKER_BASE_AREA, m_flight ? "true" : "false");
     ImGui::SliderFloat("Z speed", &m_flightSpeed, 0, 500);
 
@@ -605,26 +612,8 @@ void Menu::Draw()
     }
 #endif
 
-#if TRAE
-    ImGui::InputText("chapter", chapter, 32);
-#endif
+    static char unit[32] = "";
     ImGui::InputText("unit", unit, MAX_UNIT_LEN);
-
-#if TRAE
-    if (ImGui::Button("Load chapter"))
-    {
-        // load chapter (chapter0, chapter1..)
-        // chapter0 = croft manor
-        if (Game::CheckChapter(chapter))
-        {
-            Game::SwitchChapter(chapter);
-        }
-        else
-        {
-            Game::PushOkDialog("Chapter does not exist.", DialogFn, 0, 0);
-        }
-    }
-#endif
     if (ImGui::Button("Load unit"))
     {
         // change current unit
@@ -796,6 +785,7 @@ void Menu::Draw()
 
     ImGui::End();
 
+    ImGui::SetNextWindowSize(ImVec2(500, 100), ImGuiCond_FirstUseEver);
     ImGui::Begin("Log", nullptr);
 
     // log window (based on imgui_demo log window)
@@ -808,9 +798,9 @@ void Menu::Draw()
     ImGui::End();
 }
 
-void Menu::DrawInstanceViewer()
+void Menu::DrawInstanceViewer(bool* show_instance_viewer)
 {
-    ImGui::Begin("Instances");
+    ImGui::Begin("Instances", show_instance_viewer);
 
     ImGui::Columns(2, "instances");
 
@@ -1046,9 +1036,9 @@ void Menu::DrawInstanceViewer()
     ImGui::End();
 }
 
-void Menu::DrawEventDebugViewer() const noexcept
+void Menu::DrawEventDebugViewer(bool* show_event_debug_viewer) const noexcept
 {
-    ImGui::Begin("Event debug");
+    ImGui::Begin("Event debug", show_event_debug_viewer);
 
     auto level = *(Level**)(GAMETRACKER + 8);
     auto eventVarVals = *(int**)(GLOBALDATA + 0xE8 /* event vars */);
@@ -1126,6 +1116,16 @@ bool Menu::IsFreecam() const noexcept
 void Menu::SetFocus(bool value) noexcept
 {
     m_focus = value;
+}
+
+bool Menu::IsVisible() const noexcept
+{
+    return m_visible;
+}
+
+void Menu::SetVisibility(bool value) noexcept
+{
+    m_visible = value;
 }
 
 void Menu::OnLayoutChange() noexcept

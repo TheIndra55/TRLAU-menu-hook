@@ -21,10 +21,10 @@ public:
 	void operator=(Hooking const&) = delete;
 
 	void GotDevice();
-	std::unique_ptr<Menu>& GetMenu() noexcept;
+	std::shared_ptr<Menu>& GetMenu() noexcept;
 
 private:
-	std::unique_ptr<Menu> m_menu;
+	std::shared_ptr<Menu> m_menu;
 };
 
 static int(*original_Direct3DInit)();

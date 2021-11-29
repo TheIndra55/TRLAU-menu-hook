@@ -43,7 +43,9 @@ public:
 
 	bool IsFreecam() const noexcept;
 	bool IsFocus() const noexcept;
+	bool IsVisible() const noexcept;
 	void SetFocus(bool value) noexcept;
+	void SetVisibility(bool value) noexcept;
 
 	void LoadSettings() noexcept;
 	void SaveSettings() const noexcept;
@@ -54,8 +56,8 @@ public:
 private:
 	void Draw();
 	void ProcessFlight(UINT msg, WPARAM wparam);
-	void DrawInstanceViewer();
-	void DrawEventDebugViewer() const noexcept;
+	void DrawInstanceViewer(bool* show_instance_viewer);
+	void DrawEventDebugViewer(bool* show_event_debug_viewer) const noexcept;
 
 	void OnLayoutChange() noexcept;
 
