@@ -3,6 +3,7 @@
 #include "Game.hpp"
 #include "ControlHooks.hpp"
 #include "Camera.hpp"
+#include "multiplexstream.hpp"
 
 LPDIRECT3DDEVICE9 pDevice;
 HWND pHwnd;
@@ -37,6 +38,7 @@ Hooking::Hooking()
 
 	InstallControlHooks();
 	InstallCameraHooks();
+	InstallSoundHooks();
 
 	Game::Initialize();
 
