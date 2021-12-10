@@ -23,6 +23,7 @@ struct DrawSettings
 	bool drawPath = false;
 	bool drawCollision = false;
 	bool drawPortals = false;
+	bool drawSignals = false;
 
 	// "DrawSettings"
 	bool noRespawn = false;

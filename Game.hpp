@@ -93,7 +93,12 @@ struct Instance
 };
 #endif
 
+struct Level;
 struct StreamUnit;
+struct Signal;
+
+struct MeshVertex;
+struct MeshVertex32;
 
 struct StreamUnitPortal
 {
@@ -110,6 +115,34 @@ struct StreamUnitPortal
 	cdc::Vector normal;
 };
 
+struct Mesh
+{
+	char m_box[0x20];
+	cdc::Vector m_position;
+	void* m_vertices;
+	void* m_faces;
+	int m_root;
+	void* m_clientData;
+	unsigned __int16 m_vertexType;
+	unsigned __int16 m_numNodes;
+	unsigned __int16 m_numFaces;
+	unsigned __int16 m_numVertices;
+};
+
+struct TerrainGroup
+{
+	cdc::Vector globalOffset;
+	cdc::Vector localOffset;
+	int flags;
+	int ID;
+	int uniqueID;
+	int splineID;
+	Instance* instanceSpline;
+	Level* level;
+	Mesh* mesh;
+	char pad[0x74];
+};
+
 struct Terrain
 {
 	__int16 UnitChangeFlags;
@@ -120,12 +153,20 @@ struct Terrain
 
 	// all portals
 	StreamUnitPortal* streamUnitPortals;
+
+	int numTerrainGroups;
+	TerrainGroup* terrainGroups;
+	TerrainGroup* signalTerrainGroup;
+	Signal* signals;
 };
 
 struct Level
 {
 	int terrain;
-	char pad[152];
+	char pad[140];
+	Signal* SignalListStart;
+	__int16* SignalIDList;
+	void* splineCameraData;
 	int reloc; // void* to script PE
 };
 
@@ -160,10 +201,28 @@ struct MeshVertex
 	__int16 z;
 };
 
+struct MeshVertex32
+{
+	float x;
+	float y;
+	float z;
+	float w;
+};
+
 struct BBox
 {
 	cdc::Vector bMin;
 	cdc::Vector bMax;
+};
+
+struct SignalFace
+{
+	unsigned __int16 i0;
+	unsigned __int16 i1;
+	unsigned __int16 i2;
+	char adjacencyFlags;
+	char collisionFlags;
+	unsigned __int16 id;
 };
 
 struct IndexedFace
