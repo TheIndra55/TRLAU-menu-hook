@@ -38,7 +38,10 @@ Hooking::Hooking()
 
 	InstallControlHooks();
 	InstallCameraHooks();
+
+#if TRAE // TODO
 	InstallSoundHooks();
+#endif
 
 	Game::Initialize();
 
