@@ -64,6 +64,11 @@ char __fastcall PCDeviceManager__CreateDevice(DWORD* _this, DWORD _, DWORD a2)
 {
 	auto val = original__PCDeviceManager__CreateDevice(_this, a2);
 
+	if (!val)
+	{
+		return val;
+	}
+
 #if TRAE
 	auto address = *reinterpret_cast<DWORD*>(0xA6669C);
 #elif TR8
@@ -71,8 +76,7 @@ char __fastcall PCDeviceManager__CreateDevice(DWORD* _this, DWORD _, DWORD a2)
 #elif TR7
 	auto address = *reinterpret_cast<DWORD*>(0x139C758);
 #endif
-	auto device = *reinterpret_cast<DWORD*>(address + 0x20);
-	pDevice = reinterpret_cast<IDirect3DDevice9*>(device);
+	pDevice = *reinterpret_cast<IDirect3DDevice9**>(address + 0x20);
 
 	Hooking::GetInstance().GetMenu()->SetDevice(pDevice);
 
@@ -104,6 +108,8 @@ void __fastcall PCDeviceManager__ReleaseDevice(DWORD* _this, DWORD _, int status
 {
 	Hooking::GetInstance().GetMenu()->OnDeviceReleased();
 	ImGui_ImplDX9_InvalidateDeviceObjects();
+	
+	pDevice = nullptr;
 
 	orginal_PCDeviceManager__ReleaseDevice(_this, status);
 }
@@ -712,7 +718,10 @@ int hooked_Direct3DInit()
 #if TRAE || TR7
 void __fastcall hooked_PCRenderContext_Present(DWORD* _this, void* _, int a2, int a3, int a4)
 {
-	Hooking::GetInstance().GetMenu()->OnPresent();
+	if (pDevice)
+	{
+		Hooking::GetInstance().GetMenu()->OnPresent();
+	}
 
 	// call orginal game present function to draw on the screen
 	original_PCRenderContext_Present(_this, a2, a3, a4);
