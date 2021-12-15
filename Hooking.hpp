@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "include/MinHook.h"
+#include "vendor/MinHook.h"
 #include "Game.hpp"
 #include "Menu.hpp"
 

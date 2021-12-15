@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include "../include/MinHook.h"
 #include "multiplexstream.hpp"
 #include "../Hooking.hpp"
 

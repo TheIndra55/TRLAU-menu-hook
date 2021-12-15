@@ -9,9 +9,26 @@ project "TRAE-menu-hook"
     files {
 		"*.hpp",
 		"*.cpp",
-		"*.h",
-		"include/**"
+		"**/*.cpp",
+		"**/*.hpp"
 	}
+	
+	-- ignore all vendor files in above glob
+	removefiles { "vendor/**" }
+	
+	-- imgui files
+	files {
+		"vendor/imgui/*.cpp",
+		"vendor/imgui/*.h",
+		"vendor/imgui/examples/imgui_impl_win32.cpp",
+		"vendor/imgui/examples/imgui_impl_win32.h",
+		"vendor/imgui/examples/imgui_impl_dx9.cpp",
+		"vendor/imgui/examples/imgui_impl_dx9.h"
+	}
+	
+	includedirs { "vendor/imgui" }
+	
+	files "vendor/MinHook.h"
 
     language "C++"
 	links { "MinHook.x86.lib", "d3d9.lib" }
