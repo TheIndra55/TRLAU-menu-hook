@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include "include/MinHook.h"
+#include "../include/MinHook.h"
 #include "multiplexstream.hpp"
-#include "Hooking.hpp"
+#include "../Hooking.hpp"
 
 void* (__cdecl* SNDAPP_StreamOpenFile)(const char* filename);
 int (__cdecl* SNDAPP_StreamGetSize)(void* file);
@@ -22,21 +22,21 @@ bool __fastcall MultiplexStreamImpl_Init(MultiplexStreamImpl* _this, int _, Stre
 		_this->m_streamBufSize = *(int*)0x66323C;
 		sprintf(filename, "%s%s.mul", (char*)0x754778, name);
 
-		assignment = (*(GlobalSoundInfo**)(0x008A687C))->soundGroupAssignments->cine;
+		assignment = globalSoundInfo->soundGroupAssignments->cine;
 	}
 	else if (type == kMusicStream)
 	{
 		_this->m_streamBufSize = *(int*)0x663240;
 		sprintf(filename, "%s%s.mul", (char*)0x86330C, name);
 
-		assignment = (*(GlobalSoundInfo**)(0x008A687C))->soundGroupAssignments->music;
+		assignment = globalSoundInfo->soundGroupAssignments->music;
 	}
 	else if (type == kSoundStream)
 	{
 		_this->m_streamBufSize = *(int*)0x66323C;
 		sprintf(filename, "%s%s.mul", (char*)0x754678, name);
 
-		assignment = (*(GlobalSoundInfo**)(0x008A687C))->soundGroupAssignments->sfx;
+		assignment = globalSoundInfo->soundGroupAssignments->sfx;
 	}
 	else
 	{

@@ -2,7 +2,7 @@
 #include "Game.hpp"
 #include "Hooking.hpp"
 
-#include "event.hpp"
+#include "game/event.hpp"
 
 static bool shouldInstance = true;
 static bool shouldReloc = true;

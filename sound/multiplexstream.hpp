@@ -1,6 +1,9 @@
 #pragma once
 
-#include "Game.hpp"
+#include "../Game.hpp"
+#include "../util.hpp"
+
+#define globalSoundInfo VAR_U_(0x008A687C, GlobalSoundInfo*)
 
 enum StreamType
 {

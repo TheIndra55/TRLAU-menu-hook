@@ -13,3 +13,5 @@ struct UnsavedVar
     char* name;
     int* var;
 };
+
+extern int(*__cdecl RELOC_GetProcAddress)(int reloc, const char* symbol);

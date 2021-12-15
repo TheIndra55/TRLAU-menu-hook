@@ -3,7 +3,7 @@
 #include "Game.hpp"
 #include "ControlHooks.hpp"
 #include "Camera.hpp"
-#include "multiplexstream.hpp"
+#include "sound/multiplexstream.hpp"
 
 LPDIRECT3DDEVICE9 pDevice;
 HWND pHwnd;
