@@ -77,7 +77,7 @@ private:
 	LPDIRECT3DDEVICE9 m_pd3dDevice;
 	HWND m_hwnd;
 
-	DWORD clickedInstance;
+	DWORD clickedInstance = 0;
 };
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
