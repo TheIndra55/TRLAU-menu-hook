@@ -32,7 +32,9 @@ project "TRAE-menu-hook"
 
     language "C++"
 	links { "MinHook.x86.lib", "d3d9.lib" }
-	defines { "$(GameConstant)" }
+	
+	-- Xinput disabled since it causes issues with Windows 7
+	defines { "IMGUI_IMPL_WIN32_DISABLE_GAMEPAD", "$(GameConstant)" }
 	
     filter "configurations:Debug"
         defines { "DEBUG", "_DEBUG" }
