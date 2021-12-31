@@ -4,6 +4,7 @@
 #include "ControlHooks.hpp"
 #include "Camera.hpp"
 #include "sound/multiplexstream.hpp"
+#include "reloc.hpp"
 
 LPDIRECT3DDEVICE9 pDevice;
 HWND pHwnd;
@@ -41,6 +42,10 @@ Hooking::Hooking()
 
 #if TRAE // TODO
 	InstallSoundHooks();
+
+	MH_CreateHook((void*)0x467E60, MakePeHandle, nullptr);
+#elif TR7
+	MH_CreateHook((void*)0x467310, MakePeHandle, nullptr);
 #endif
 
 	Game::Initialize();
