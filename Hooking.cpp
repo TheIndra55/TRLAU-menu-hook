@@ -4,7 +4,7 @@
 #include "ControlHooks.hpp"
 #include "Camera.hpp"
 #include "sound/multiplexstream.hpp"
-#include "reloc.hpp"
+#include "game/reloc.hpp"
 
 LPDIRECT3DDEVICE9 pDevice;
 HWND pHwnd;

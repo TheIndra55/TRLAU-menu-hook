@@ -1,5 +1,4 @@
 #include "reloc.hpp"
-#include <stdio.h>
 
 int __cdecl MakePeHandle(_IMAGE_DOS_HEADER* peData, PEHANDLE* pe)
 {
