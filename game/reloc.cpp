@@ -51,6 +51,7 @@ int __cdecl MakePeHandle(_IMAGE_DOS_HEADER* peData, PEHANDLE* pe)
 			return -1;
 		}
 
+#if GENERAL_FIXES
 		// check if section is executable
 		if (pe->firstReloc && (section.Characteristics & IMAGE_SCN_CNT_CODE) != 0)
 		{
@@ -58,6 +59,7 @@ int __cdecl MakePeHandle(_IMAGE_DOS_HEADER* peData, PEHANDLE* pe)
 			DWORD lpflOldProtect;
 			VirtualProtect((void*)((int)peData + section.PointerToRawData), section.SizeOfRawData, PAGE_EXECUTE_READWRITE, &lpflOldProtect);
 		}
+#endif
 
 		pe->lpSectionTable[i].Misc.VirtualSize = section.SizeOfRawData;
 	}

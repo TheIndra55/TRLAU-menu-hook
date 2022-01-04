@@ -12,7 +12,6 @@
 	#define DISKFS 0x838890
 	#define CONFIGNAME "TRAE"
 	#define MAINFONT 0x007D1800
-	#define GCHEATWIREFRAME 0x7C7CD4
 	#define INSTANCELIST 0x817D64
 	#define GLOBALDATA 0x007C8A50
 #elif TR8
@@ -35,7 +34,6 @@
 	#define DISKFS 0x010EEC80
 	#define CONFIGNAME "TR7"
 	#define MAINFONT 0x01088A2C
-	#define GCHEATWIREFRAME 0x107E580
 	#define INSTANCELIST 0x10CEE64
 	#define GLOBALDATA 0x0107F920
 #else
@@ -162,7 +160,7 @@ struct Terrain
 
 struct Level
 {
-	int terrain;
+	Terrain* terrain;
 	char pad[140];
 	Signal* SignalListStart;
 	__int16* SignalIDList;

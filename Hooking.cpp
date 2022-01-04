@@ -3,8 +3,10 @@
 #include "Game.hpp"
 #include "ControlHooks.hpp"
 #include "Camera.hpp"
+
 #include "sound/multiplexstream.hpp"
 #include "game/reloc.hpp"
+#include "game/d3d/d3dterrain.hpp"
 
 LPDIRECT3DDEVICE9 pDevice;
 HWND pHwnd;
@@ -39,6 +41,7 @@ Hooking::Hooking()
 
 	InstallControlHooks();
 	InstallCameraHooks();
+	InsertTerrainDrawableHooks();
 
 #if TRAE // TODO
 	InstallSoundHooks();
@@ -118,32 +121,6 @@ void __fastcall PCDeviceManager__ReleaseDevice(DWORD* _this, DWORD _, int status
 
 	orginal_PCDeviceManager__ReleaseDevice(_this, status);
 }
-
-#if TRAE || TR7
-int(__thiscall* origTerrainDrawable_TerrainDrawable)(DWORD _this, int* a2, int a3, int a4, int a5);
-int __fastcall TerrainDrawable_TerrainDrawable(DWORD _this, DWORD _, int* a2, int a3, int a4, int a5)
-{
-	auto ret = origTerrainDrawable_TerrainDrawable(_this, a2, a3, a4, a5);
-
-	if (*(bool*)GCHEATWIREFRAME /* wire frame */)
-	{
-		*(unsigned int*)(_this + 0x1C) |= 0x800;
-	}
-
-	return ret;
-}
-
-int(__cdecl* origGetDrawListByTpageId)(unsigned int tpageid, bool reflect);
-int __cdecl GetDrawListByTpageId(unsigned int tpageid, bool reflect)
-{
-	if (*(bool*)GCHEATWIREFRAME /* wire frame */)
-	{
-		tpageid |= 0x800;
-	}
-
-	return origGetDrawListByTpageId(tpageid, reflect);
-}
-#endif
 
 float* (__cdecl* TRANS_RotTransPersVectorf)(DWORD a1, DWORD a2);
 void(__cdecl* Font__Print)(DWORD font, const char* a2, ...);
@@ -642,9 +619,6 @@ void Hooking::GotDevice()
 
 	TRANS_RotTransPersVectorf = reinterpret_cast<float*(__cdecl*)(DWORD, DWORD)>(0x00402B50);
 
-	MH_CreateHook((void*)0x40B9B0, TerrainDrawable_TerrainDrawable, (void**)&origTerrainDrawable_TerrainDrawable);
-	MH_CreateHook((void*)0x4158E0, GetDrawListByTpageId, (void**)&origGetDrawListByTpageId);
-
 	TRANS_TransToDrawVertexV4f = reinterpret_cast<void(__cdecl*)(DRAWVERTEX* v, cdc::Vector * vec)>(0x00402F20);
 
 	DRAW_DrawQuads = reinterpret_cast<void(__cdecl*)(int flags, int tpage, DRAWVERTEX * verts, int numquads)>(0x00406D70);
@@ -660,9 +634,6 @@ void Hooking::GotDevice()
 	MH_CreateHook((void*)0x435050, Font__Flush, (void**)&org_Font__Flush);
 	Font__Print = reinterpret_cast<void(__cdecl*)(DWORD, const char*, ...)>(0x00435020);
 	TRANS_RotTransPersVectorf = reinterpret_cast<float* (__cdecl*)(DWORD, DWORD)>(0x00402D00);
-
-	MH_CreateHook((void*)0x40B2C0, TerrainDrawable_TerrainDrawable, (void**)&origTerrainDrawable_TerrainDrawable);
-	MH_CreateHook((void*)0x4148D0, GetDrawListByTpageId, (void**)&origGetDrawListByTpageId);
 
 	TRANS_TransToDrawVertexV4f = reinterpret_cast<void(__cdecl*)(DRAWVERTEX * v, cdc::Vector * vec)>(0x004030D0);
 
