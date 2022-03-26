@@ -1,3 +1,4 @@
+#ifndef TR8
 #include "d3dterrain.hpp"
 
 #include "../../Hooking.hpp"
@@ -65,6 +66,7 @@ TerrainDrawable* __fastcall TerrainDrawable_TerrainDrawable(
 
 	return _this;
 }
+#endif
 
 void InsertTerrainDrawableHooks()
 {
