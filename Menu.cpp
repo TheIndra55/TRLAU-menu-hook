@@ -669,6 +669,16 @@ void Menu::Draw()
         ImGui::SetClipboardText(this->logBuffer.begin());
     }
 
+#if TR8
+    if (ImGui::Button("Unhide all instances"))
+    {
+        for (auto instance = *(Instance**)INSTANCELIST; instance != nullptr; instance = instance->next)
+        {
+            Game::InstancePost(instance, 7, 0);
+        }
+    }
+#endif
+
     if (ImGui::Button("List instances"))
     {
 #if TRAE
@@ -996,6 +1006,11 @@ void Menu::DrawInstanceViewer(bool* show_instance_viewer)
 #endif
 
 #if TR8
+        if (ImGui::Button("Unhide"))
+        {
+            Game::InstancePost(oInstance, 7, 0);
+        }
+
         static int maxList;
 
         if (ImGui::Button("List anims"))
