@@ -58,11 +58,17 @@ struct ObjectTracker
 };
 
 #if TRAE || TR7
+struct Object
+{
+	char padding[72];
+	char* name;
+};
+
 struct Instance
 {
 	__int64 node;
-	__int32 next;
-	__int32 prev;
+	Instance* next;
+	Instance* prev;
 	cdc::Vector position;
 	cdc::Vector oldPosition;
 	cdc::Vector rotation;
@@ -76,18 +82,29 @@ struct Instance
 	__int8 unk8;
 	__int8 unk9;
 	__int16 introNum;
-	DWORD* object;
+	int unk10;
+	Object* object;
+	char padding[312];
+	int introUniqueID;
 };
 #elif TR8
+struct Object
+{
+	char padding[96];
+	char* name;
+};
+
 struct Instance
 {
 	__int64 node;
 	Instance* next;
 	__int32 prev;
-	DWORD* object;
+	Object* object;
 	char padding[12];
 	cdc::Vector position;
 	cdc::Vector rotation;
+	char padding2[24];
+	int introUniqueID;
 };
 #endif
 

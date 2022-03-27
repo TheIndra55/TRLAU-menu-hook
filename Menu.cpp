@@ -308,8 +308,8 @@ void Menu::OnPresent()
 	ImGui_ImplWin32_NewFrame();
 
 	ImGui::NewFrame();
-	// draw menu
 
+	// draw menu
     if (m_visible)
     {
         this->Draw();
@@ -673,8 +673,10 @@ void Menu::Draw()
 #if TR8
     if (ImGui::Button("Unhide all instances"))
     {
+        // loop trough all instances
         for (auto instance = *(Instance**)INSTANCELIST; instance != nullptr; instance = instance->next)
         {
+            // send post message to toggle hide
             Game::InstancePost(instance, 7, 0);
         }
     }
@@ -682,34 +684,13 @@ void Menu::Draw()
 
     if (ImGui::Button("List instances"))
     {
-#if TRAE
-        auto instance = *(DWORD*)0x817D64;
-#elif TR7
-        auto instance = *(DWORD*)0x10CEE64;
-#elif TR8
-        auto instance = *(DWORD*)0xD98D54;
-#endif
-        while (1)
+        // loop trough all instances and log to console
+        for (auto instance = *(Instance**)INSTANCELIST; instance != nullptr; instance = instance->next)
         {
-            auto next = *(DWORD*)(instance + 8);
-
-#if TRAE || TR7
-            auto object = *(DWORD*)(instance + 0x94);
-            auto name = (char*)*(DWORD*)(object + 0x48);
-            auto intro = *(int*)(instance + 0x1D0);
-#elif TR8
-            auto object = *(DWORD*)(instance + 0x10);
-            auto name = (char*)*(DWORD*)(object + 0x60);
-            auto intro = *(int*)(instance + 0x58);
-#endif
-            Log("%s - %d\n", name, intro);
-
-            if (!next)
-                break;
-
-            instance = next;
+            Log("%s - %d\n", instance->object->name, instance->introUniqueID);
         }
 
+        // copy console buffer to clipboard
         ImGui::SetClipboardText(this->logBuffer.begin());
     }
 
@@ -815,46 +796,18 @@ void Menu::DrawInstanceViewer(bool* show_instance_viewer)
     ImGui::Begin("Instances", show_instance_viewer);
 
     ImGui::Columns(2, "instances");
-
-#if TRAE
-    auto instance = *(DWORD*)0x817D64;
-#elif TR7
-    auto instance = *(DWORD*)0x10CEE64;
-#elif TR8
-    auto instance = *(DWORD*)0xD98D54;
-#endif
-
     ImGui::BeginChild("InstanceListTree");
-    if (instance)
+
+    for (auto instance = *(Instance**)INSTANCELIST; instance != nullptr; instance = instance->next)
     {
-        while (1)
+        if (ImGui::TreeNodeEx((void*)instance, ImGuiTreeNodeFlags_Leaf, "%d %s", instance->introUniqueID, instance->object->name))
         {
-            auto next = *(DWORD*)(instance + 8);
-
-#if TRAE || TR7
-            auto object = *(DWORD*)(instance + 0x94);
-            auto name = (char*)*(DWORD*)(object + 0x48);
-            auto intro = *(int*)(instance + 0x1D0);
-#elif TR8
-            auto object = *(DWORD*)(instance + 0x10);
-            auto name = (char*)*(DWORD*)(object + 0x60);
-            auto intro = *(int*)(instance + 0x58);
-#endif
-
-            if (ImGui::TreeNodeEx((void*)object, ImGuiTreeNodeFlags_Leaf, "%d %s", intro, name))
+            if (ImGui::IsItemClicked())
             {
-                if (ImGui::IsItemClicked())
-                {
-                    clickedInstance = instance;
-                }
-
-                ImGui::TreePop();
+                clickedInstance = (DWORD)instance;
             }
 
-            if (!next)
-                break;
-
-            instance = next;
+            ImGui::TreePop();
         }
     }
     ImGui::EndChild();
