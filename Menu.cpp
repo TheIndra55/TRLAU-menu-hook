@@ -480,12 +480,13 @@ void Menu::ToggleFlight(bool flight)
     {
         //*ptr ^= 256;
         *ptr = 0;
-
-        // drop player when flight disabled
-#if TRAE || TR7
-        Game::InstancePost(*reinterpret_cast<Instance**>(PLAYERINSTANCE), 1048592, 0);
-#endif
     }
+
+#if TRAE || TR7
+    Game::InstancePost(*reinterpret_cast<Instance**>(PLAYERINSTANCE), 1048592, m_flight);
+#else
+    Game::InstancePost(*reinterpret_cast<Instance**>(PLAYERINSTANCE), 12, m_flight);
+#endif
 }
 
 void Menu::ProcessFlight(UINT msg, WPARAM wparam)
