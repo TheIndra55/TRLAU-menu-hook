@@ -391,16 +391,27 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         auto cameraMode = (int*)0x850984;
         *cameraMode = *cameraMode == 7 ? 2 : 7;
 #elif TR8
-        m_freecam = !m_freecam;
-        if (m_freecam)
+        if (m_freeCamMode == FreeCameraMode::disabled)
         {
+            // enable free camera
+            m_freeCamMode = FreeCameraMode::enabled;
+
+            // switch to camera
             CAMERA_SetMode(11);
 
             auto camera = *(int*)0xE80534;
             *(cdc::Vector*)(camera + 0x40) = (*(Instance**)PLAYERINSTANCE)->position;
         }
-        else
+        else if (m_freeCamMode == FreeCameraMode::enabled)
         {
+            // disable free camera but keep camera active
+            m_freeCamMode = FreeCameraMode::nocontrol;
+        }
+        else if (m_freeCamMode == FreeCameraMode::nocontrol)
+        {
+            m_freeCamMode = FreeCameraMode::disabled;
+
+            // switch back to gameplay camera
             _setToGameplayCamera(0xE804F0 /* AVCameraManager */);
         }
 #endif
@@ -1078,9 +1089,9 @@ bool Menu::IsFocus() const noexcept
     return m_focus;
 }
 
-bool Menu::IsFreecam() const noexcept
+FreeCameraMode Menu::GetFreeCamMode() const noexcept
 {
-    return m_freecam;
+    return m_freeCamMode;
 }
 
 void Menu::SetFocus(bool value) noexcept

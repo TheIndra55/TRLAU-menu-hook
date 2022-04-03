@@ -45,7 +45,7 @@ Hooking::Hooking()
 	InsertTerrainDrawableHooks();
 
 #if TRAE // TODO
-	InstallSoundHooks();
+	//InstallSoundHooks();
 
 	MH_CreateHook((void*)0x467E60, MakePeHandle, nullptr);
 #elif TR7

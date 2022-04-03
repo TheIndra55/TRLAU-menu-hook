@@ -8,6 +8,13 @@
 
 #include "Game.hpp"
 
+enum class FreeCameraMode
+{
+	enabled,
+	nocontrol,
+	disabled,
+};
+
 struct DrawSettings
 {
 	bool draw = false;
@@ -42,7 +49,7 @@ public:
 	void SetDevice(LPDIRECT3DDEVICE9 pd3dDevice);
 	void Log(const char* fmt, ...);
 
-	bool IsFreecam() const noexcept;
+	FreeCameraMode GetFreeCamMode() const noexcept;
 	bool IsFocus() const noexcept;
 	bool IsVisible() const noexcept;
 	void SetFocus(bool value) noexcept;
@@ -70,7 +77,7 @@ private:
 	bool m_visible = true;
 	bool m_isAzertyLayout = false;
 
-	bool m_freecam = false;
+	FreeCameraMode m_freeCamMode = FreeCameraMode::disabled;
 
 	ImGuiTextBuffer logBuffer;
 
