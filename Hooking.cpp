@@ -712,14 +712,11 @@ LRESULT hooked_RegularWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	if (msg == WM_KEYUP && wparam == VK_F8)
 	{
-		// set menu focus
-		Hooking::GetInstance().GetMenu()->SetFocus(!Hooking::GetInstance().GetMenu()->IsFocus());
+		auto focus = menu->IsFocus();
 
-		// show menu if hidden
-		if (!menu->IsVisible())
-		{
-			menu->SetVisibility(true);
-		}
+		// set menu focus
+		menu->SetFocus(!focus);
+		menu->SetVisibility(!focus);
 
 		// disable game input
 #if TRAE

@@ -348,6 +348,12 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     if (msg == WM_KEYUP && wparam == VK_F7)
     {
         m_visible = !m_visible;
+
+        // if menu is focussed and being hidden also stop focus
+        if (m_focus && !m_visible)
+        {
+            m_focus = false;
+        }
     }
 
     if (msg == WM_KEYUP && wparam == VK_F5)
