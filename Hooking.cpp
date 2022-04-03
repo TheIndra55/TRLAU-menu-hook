@@ -7,6 +7,7 @@
 #include "sound/multiplexstream.hpp"
 #include "game/reloc.hpp"
 #include "game/d3d/d3dterrain.hpp"
+#include "game/script/script.hpp"
 
 LPDIRECT3DDEVICE9 pDevice;
 HWND pHwnd;
@@ -170,18 +171,6 @@ void __cdecl EVENT_PrintScalarExpression(int val, int time)
 	char v3[11];
 	sprintf(v3, "%d", val);
 	Font__Print(*(DWORD*)0x007D1800, v3);
-}
-#endif
-
-#if TR8
-void __stdcall DisplayString(int a1, int a2, bool newline)
-{
-	Hooking::GetInstance().GetMenu()->Log("%s%s", (char*)*(DWORD*)a1, newline ? "\n" : "");
-}
-
-void __cdecl DisplayInt(int a1, int a2, int a3)
-{
-	Hooking::GetInstance().GetMenu()->Log("%f%s", *(float*)(a3 + 4), *(char*)(a3 + 8) != 0 ? "\n" : "");
 }
 #endif
 
@@ -646,9 +635,13 @@ void Hooking::GotDevice()
 #endif
 
 #if TR8
-	// debug print nullsub in TR8
-	MH_CreateHook((void*)0x574BE0, DisplayString, nullptr);
-	MH_CreateHook((void*)0x795D50, DisplayInt, nullptr);
+	MH_CreateHook((void*)0x4A3280, ScriptPrintInt, nullptr);
+	MH_CreateHook((void*)0x4A32C0, ScriptPrintFloat, nullptr);
+	MH_CreateHook((void*)0x795DB0, NsCoreBase_PrintString, nullptr);
+
+	MH_CreateHook((void*)0x4A3200, ScriptLogInt, nullptr);
+	MH_CreateHook((void*)0x4A3240, ScriptLogFloat, nullptr);
+	MH_CreateHook((void*)0x795E30, NsCoreBase_PrintString, nullptr);
 #endif
 
 	MH_EnableHook(MH_ALL_HOOKS);
