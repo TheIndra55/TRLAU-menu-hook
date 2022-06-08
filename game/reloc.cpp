@@ -6,7 +6,7 @@ int __cdecl MakePeHandle(_IMAGE_DOS_HEADER* peData, PEHANDLE* pe)
 
 	if (peData->e_magic != IMAGE_DOS_SIGNATURE)
 	{
-		return 3;
+		return RELOC_ERROR_NON_EXECUTABLE;
 	}
 
 	IMAGE_NT_HEADERS* header = (IMAGE_NT_HEADERS*)((int)peData + peData->e_lfanew);
@@ -17,7 +17,7 @@ int __cdecl MakePeHandle(_IMAGE_DOS_HEADER* peData, PEHANDLE* pe)
 	{
 		if (header->Signature != 0x4551)
 		{
-			return 3;
+			return RELOC_ERROR_NON_EXECUTABLE;
 		}
 
 		pe->firstReloc = 0;
@@ -25,21 +25,22 @@ int __cdecl MakePeHandle(_IMAGE_DOS_HEADER* peData, PEHANDLE* pe)
 
 	if (header->FileHeader.Machine != IMAGE_FILE_MACHINE_I386)
 	{
-		return 3;
+		return RELOC_ERROR_NON_EXECUTABLE;
 	}
 
 	auto flags = header->FileHeader.Characteristics;
 
 	if ((flags & IMAGE_FILE_EXECUTABLE_IMAGE) == 0 || (flags & IMAGE_FILE_DLL) == 0)
 	{
-		return 3;
+		return RELOC_ERROR_NON_EXECUTABLE;
 	}
 
 	pe->lpSectionTable = IMAGE_FIRST_SECTION(header);
 
 	if (header->FileHeader.NumberOfSections <= 0)
 	{
-		return 0;
+		// not sure why this would be success, but as in orginal game code
+		return RELOC_SUCCESS;
 	}
 
 	for (int i = 0; i < header->FileHeader.NumberOfSections; i++)
@@ -48,7 +49,8 @@ int __cdecl MakePeHandle(_IMAGE_DOS_HEADER* peData, PEHANDLE* pe)
 
 		if (section.Misc.VirtualSize > section.SizeOfRawData)
 		{
-			return -1;
+			// actually valid in Windows PE loader, but rejected in the orginal game code
+			return RELOC_ERROR_INVALID_SECTION;
 		}
 
 #if GENERAL_FIXES
@@ -64,5 +66,5 @@ int __cdecl MakePeHandle(_IMAGE_DOS_HEADER* peData, PEHANDLE* pe)
 		pe->lpSectionTable[i].Misc.VirtualSize = section.SizeOfRawData;
 	}
 
-	return 0;
+	return RELOC_SUCCESS;
 }
