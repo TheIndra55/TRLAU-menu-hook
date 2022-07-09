@@ -69,7 +69,7 @@ int __cdecl InsertGlobalObject(int a1, char a2)
 #if TRAE
     auto objects = *(int*)0x842C70;
 #elif TR7
-    auto objects = *(int*)0x10F9110;
+    auto objects = *(int*)ADDR(0x10F9110, 0x10EFC90);
 #elif TR8
     auto objects = *(int*)0xDB94D0;
 #endif
@@ -132,7 +132,7 @@ int getFS()
 #elif TR8
     return *(int*)0x9CE278;
 #elif TR7
-    return *(int*)0x10EEC7C;
+    return *(int*)ADDR(0x10EEC7C, 0x10E58BC);
 #endif
 }
 
@@ -246,27 +246,27 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
     RELOC_GetProcAddress = reinterpret_cast<int(*__cdecl)(int, const char*)>(0x004680C0);
 #elif TR7
-    MH_CreateHook((void*)0x0045F420, getFS, nullptr);
-    MH_CreateHook((void*)0x0045F4D0, unitFileName, (void**)&origUnitFileName);
+    MH_CreateHook((void*)ADDR(0x45F420, 0x45C700), getFS, nullptr);
+    MH_CreateHook((void*)ADDR(0x45F4D0, 0x45C730), unitFileName, (void**)&origUnitFileName);
 
-    MH_CreateHook((void*)0x005DB550, InsertGlobalObject, (void**)&origInsertGlobalObject);
-    MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(0x0047DC70);
+    MH_CreateHook((void*)ADDR(0x5DB550, 0x5D5390), InsertGlobalObject, (void**)&origInsertGlobalObject);
+    MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(ADDR(0x0047DC70, 0x47AB50));
 
-    MH_CreateHook((void*)0x005DBD20, STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
+    MH_CreateHook((void*)ADDR(0x5DBD20, 0x5D5B60), STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
 
-    MH_CreateHook((void*)0x00401480, IMAGE_LoadImage, (void**)&origIMAGE_LoadImage);
-    MH_CreateHook((void*)0x0045F520, imageFileName, (void**)&origImageFileName);
+    MH_CreateHook((void*)ADDR(0x401480, 0x401480), IMAGE_LoadImage, (void**)&origIMAGE_LoadImage);
+    MH_CreateHook((void*)ADDR(0x45F520, 0x45C780), imageFileName, (void**)&origImageFileName);
 
-    INSTANCE_ReallyRemoveInstance = reinterpret_cast<int(__cdecl*)(Instance*, int, char)>(0x0045A330);
-    INSTANCE_SetModel = reinterpret_cast<void(__cdecl*)(Instance * instance, int model)>(0x00458C80);
+    INSTANCE_ReallyRemoveInstance = reinterpret_cast<int(__cdecl*)(Instance*, int, char)>(ADDR(0x45A330, 0x4575B0));
+    INSTANCE_SetModel = reinterpret_cast<void(__cdecl*)(Instance * instance, int model)>(ADDR(0x458C80, 0x455F40));
 
-    G2EmulationInstanceSetAnimation = reinterpret_cast<void(__cdecl*)(Instance*, int, int, int, int)>(0x004E1F00);
-    G2EmulationInstanceSetMode = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x004E2060);
-    G2EmulationInstanceQueryAnimation = reinterpret_cast<int(__cdecl*)(Instance*, int)>(0x004E2120);
+    G2EmulationInstanceSetAnimation = reinterpret_cast<void(__cdecl*)(Instance*, int, int, int, int)>(ADDR(0x4E1F00, 0x4DEC30));
+    G2EmulationInstanceSetMode = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(ADDR(0x4E2060, 0x4DED90));
+    G2EmulationInstanceQueryAnimation = reinterpret_cast<int(__cdecl*)(Instance*, int)>(ADDR(0x4E2120, 0x4DEE50));
 
-    INSTANCE_HideUnhideDrawGroup = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x00458FB0);
+    INSTANCE_HideUnhideDrawGroup = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(ADDR(0x458FB0, 0x456230));
 
-    RELOC_GetProcAddress = reinterpret_cast<int(*__cdecl)(int, const char*)>(0x00467570);
+    RELOC_GetProcAddress = reinterpret_cast<int(*__cdecl)(int, const char*)>(ADDR(0x467570, 0x464550));
 #endif
 
 #if TR8
@@ -363,7 +363,7 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 #elif TRAE
         auto gPlayerControl_Enabled = (bool*)0x666C34;
 #elif TR7
-        auto gPlayerControl_Enabled = (bool*)0xF1E40C;
+        auto gPlayerControl_Enabled = (bool*)ADDR(0xF1E40C, 0xF15AB4);
 #endif
 
         *gPlayerControl_Enabled = !*gPlayerControl_Enabled;
@@ -609,7 +609,7 @@ void Menu::Draw()
 #if TRAE
     ImGui::Checkbox("Wireframe", (bool*)0x7C7CD4);
 #elif TR7
-    ImGui::Checkbox("Wireframe", (bool*)0x107E580);
+    ImGui::Checkbox("Wireframe", (bool*)ADDR(0x107E580, 0x1075BD4));
 #endif
 
 #if TRAE || TR7
@@ -664,7 +664,7 @@ void Menu::Draw()
 #elif TR8
         auto unitList = *(DWORD*)0xDBA188;
 #elif TR7
-        auto unitList = *(DWORD*)0x1162C54;
+        auto unitList = *(DWORD*)ADDR(0x1162C54, 0x1159314);
 #endif
         auto numUnits = *(int*)unitList;
         Log("numUnits: %d\n", numUnits);

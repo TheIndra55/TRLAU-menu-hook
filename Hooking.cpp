@@ -49,7 +49,7 @@ Hooking::Hooking()
 
 	MH_CreateHook((void*)0x467E60, MakePeHandle, nullptr);
 #elif TR7
-	MH_CreateHook((void*)0x467310, MakePeHandle, nullptr);
+	MH_CreateHook((void*)ADDR(0x467310, 0x4642F0), MakePeHandle, nullptr);
 #endif
 
 	Game::Initialize();
@@ -83,7 +83,7 @@ char __fastcall PCDeviceManager__CreateDevice(DWORD* _this, DWORD _, DWORD a2)
 #elif TR8
 	auto address = *reinterpret_cast<DWORD*>(0xAD75E4);
 #elif TR7
-	auto address = *reinterpret_cast<DWORD*>(0x139C758);
+	auto address = *reinterpret_cast<DWORD*>(ADDR(0x139C758, 0x1392E18));
 #endif
 	pDevice = *reinterpret_cast<IDirect3DDevice9**>(address + 0x20);
 
@@ -124,8 +124,20 @@ void __fastcall PCDeviceManager__ReleaseDevice(DWORD* _this, DWORD _, int status
 }
 
 float* (__cdecl* TRANS_RotTransPersVectorf)(DWORD a1, DWORD a2);
-void(__cdecl* Font__Print)(DWORD font, const char* a2, ...);
 void(__cdecl* org_Font__Flush)();
+
+// needed due to TR7 retail only having Font::Print(fmt, ...)
+// and TR7 Debug + TRAE retail only has Font::Print(font, fmt, ...)
+// TODO replace this by our own Font::Print function using Font::PrintFormatted
+#if TR7 && RETAIL_VERSION
+	void(__cdecl* org_Font__Print)(const char* fmt, ...);
+
+	#define Font__Print(font, fmt, ...) org_Font__Print(fmt, __VA_ARGS__)
+#else
+	void(__cdecl* org_Font__Print)(DWORD font, const char* fmt, ...);
+
+	#define Font__Print(font, fmt, ...) org_Font__Print(font, fmt, __VA_ARGS__)
+#endif
 
 void SetCursor(float x, float y)
 {
@@ -133,8 +145,8 @@ void SetCursor(float x, float y)
 	/* CursorX */ *(float*)0x007D180C = x;
 	/* CursorY */ *(float*)0x007D1810 = y;
 #elif TR7
-	/* CursorX */* (float*)0x01088A38 = x;
-	/* CursorY */ *(float*)0x01088A3C = y;
+	/* CursorX */* (float*)ADDR(0x1088A38, 0x107F68C) = x;
+	/* CursorY */ *(float*)ADDR(0x1088A3C, 0x107F690) = y;
 #endif
 }
 
@@ -363,7 +375,7 @@ void __cdecl Font__Flush()
 	if (Hooking::GetInstance().GetMenu()->m_drawSettings.drawMarkup)
 	{
 #if TR7
-		auto markUpManager = *(int*)0x01120DC8;
+		auto markUpManager = *(int*)ADDR(0x1120DC8, 0x1117544);
 #elif TRAE
 		auto markUpManager = *(int*)0x86CD14;
 #endif
@@ -433,11 +445,12 @@ void __cdecl Font__Flush()
 			box = next;
 		}
 	}
-
+	
+	// TODO refactor instance loop
 #if TRAE
 	auto instance = *(DWORD*)0x817D64;
 #elif TR7
-	auto instance = *(DWORD*)0x10CEE64;
+	auto instance = *(DWORD*)INSTANCELIST;
 #endif
 
 	auto settings = Hooking::GetInstance().GetMenu()->m_drawSettings;
@@ -585,8 +598,8 @@ void Hooking::GotDevice()
 	MH_CreateHook((void*)0x005223F0, PCDeviceManager__ReleaseDevice, (void**)&orginal_PCDeviceManager__ReleaseDevice);
 	MH_CreateHook((void*)0x00522580, PCDeviceManager__CreateDevice, (void**)&original__PCDeviceManager__CreateDevice);
 #elif TR7
-	MH_CreateHook((void*)0x00ECCC20, PCDeviceManager__ReleaseDevice, (void**)&orginal_PCDeviceManager__ReleaseDevice);
-	MH_CreateHook((void*)0x00ECC8F0, PCDeviceManager__CreateDevice, (void**)&original__PCDeviceManager__CreateDevice);
+	MH_CreateHook((void*)ADDR(0xECCC20, 0xEC6550), PCDeviceManager__ReleaseDevice, (void**)&orginal_PCDeviceManager__ReleaseDevice);
+	MH_CreateHook((void*)ADDR(0xECC8F0, 0xEC62A0), PCDeviceManager__CreateDevice, (void**)&original__PCDeviceManager__CreateDevice);
 #endif
 
 #if TRAE
@@ -604,7 +617,7 @@ void Hooking::GotDevice()
 	MH_CreateHook((void*)0x00434C40, Font__Flush, (void**)&org_Font__Flush);
 
 	auto pFound = FindPattern((PBYTE)"\xE8\x00\x00\x00\x00\x68\x00\x00\x00\x00\xE8\x00\x00\x00\x00\xA0\x00\x00\x00\x00\x83\xC4\x00\x84\xC0\x0F\x84", "x????x????x????x????xx?xxxx");
-	Font__Print = (void(__cdecl*)(DWORD, const char*, ...))GetAddress(pFound, 0x1, 0x5); // 0x00434C10
+	org_Font__Print = (void(__cdecl*)(DWORD, const char*, ...))GetAddress(pFound, 0x1, 0x5); // 0x00434C10
 
 	TRANS_RotTransPersVectorf = reinterpret_cast<float*(__cdecl*)(DWORD, DWORD)>(0x00402B50);
 
@@ -617,21 +630,29 @@ void Hooking::GotDevice()
 	MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(0x005E52C0);
 	MH_CreateHook((void*)0x465E30, OBTABLE_Init, (void**)&origOBTABLE_Init);
 #elif TR7
-	MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(0x0047DC70);
-	MH_CreateHook((void*)0x465320, OBTABLE_Init, (void**)&origOBTABLE_Init);
+	MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(ADDR(0x47DC70, 0x47AB50));
+	MH_CreateHook((void*)ADDR(0x465320, 0x462300), OBTABLE_Init, (void**)&origOBTABLE_Init);
 
-	MH_CreateHook((void*)0x435050, Font__Flush, (void**)&org_Font__Flush);
-	Font__Print = reinterpret_cast<void(__cdecl*)(DWORD, const char*, ...)>(0x00435020);
-	TRANS_RotTransPersVectorf = reinterpret_cast<float* (__cdecl*)(DWORD, DWORD)>(0x00402D00);
+	MH_CreateHook((void*)ADDR(0x435050, 0x432570), Font__Flush, (void**)&org_Font__Flush);
 
-	TRANS_TransToDrawVertexV4f = reinterpret_cast<void(__cdecl*)(DRAWVERTEX * v, cdc::Vector * vec)>(0x004030D0);
+	#if RETAIL_VERSION
+		org_Font__Print = reinterpret_cast<void(__cdecl*)(const char*, ...)>(0x432860);
+	#else
+		org_Font__Print = reinterpret_cast<void(__cdecl*)(DWORD, const char*, ...)>(0x435020);
+	#endif
 
-	DRAW_DrawQuads = reinterpret_cast<void(__cdecl*)(int flags, int tpage, DRAWVERTEX * verts, int numquads)>(0x00406720);
+	TRANS_RotTransPersVectorf = reinterpret_cast<float* (__cdecl*)(DWORD, DWORD)>(ADDR(0x402D00, 0x402B20));
 
-	objCheckFamily = reinterpret_cast<bool(__cdecl*)(DWORD instance, unsigned __int16 family)>(0x005369C0);
+	TRANS_TransToDrawVertexV4f = reinterpret_cast<void(__cdecl*)(DRAWVERTEX * v, cdc::Vector * vec)>(ADDR(0x4030D0, 0x402EF0));
 
-	// nop out useless F3 mouse toggle to be replaced by our F3
-	NOP((void*)0x405559, 5);
+	DRAW_DrawQuads = reinterpret_cast<void(__cdecl*)(int flags, int tpage, DRAWVERTEX * verts, int numquads)>(ADDR(0x406720, 0x406240));
+
+	objCheckFamily = reinterpret_cast<bool(__cdecl*)(DWORD instance, unsigned __int16 family)>(ADDR(0x5369C0, 0x531B10));
+
+	#if !RETAIL_VERSION
+		// nop out useless F3 mouse toggle to be replaced by our F3
+		NOP((void*)0x405559, 5);
+	#endif
 #endif
 
 #if TR8
@@ -724,7 +745,7 @@ LRESULT hooked_RegularWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 #elif TR8
 		*(bool*)0xA02B79 = Hooking::GetInstance().GetMenu()->IsFocus();
 #elif TR7
-		*(bool*)0x110AF09 = Hooking::GetInstance().GetMenu()->IsFocus();
+		*(bool*)ADDR(0x110AF09, 0x1101689) = Hooking::GetInstance().GetMenu()->IsFocus();
 #endif
 	}
 

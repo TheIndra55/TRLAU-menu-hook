@@ -105,10 +105,10 @@ void Game::Initialize()
 	GAMELOOP_SetScreenWipe = reinterpret_cast<void(__cdecl*)(int type, int target, int time)>(0x0052E8B0);
 	GAMELOOP_IsWipeDone = reinterpret_cast<bool(__cdecl*)(int type)>(0x0052E880);
 #elif TR7
-	GAMELOOP_ExitGame = reinterpret_cast<void(__cdecl*)(int)>(0x454550);
+	GAMELOOP_ExitGame = reinterpret_cast<void(__cdecl*)(int)>(ADDR(0x454550, 0x451870));
 
-	GAMELOOP_SetScreenWipe = reinterpret_cast<void(__cdecl*)(int type, int target, int time)>(0x00452F40);
-	GAMELOOP_IsWipeDone = reinterpret_cast<bool(__cdecl*)(int type)>(0x00452E80);
+	GAMELOOP_SetScreenWipe = reinterpret_cast<void(__cdecl*)(int type, int target, int time)>(ADDR(0x452F40, 0x4503D0));
+	GAMELOOP_IsWipeDone = reinterpret_cast<bool(__cdecl*)(int type)>(ADDR(0x452E80, 0x450310));
 #endif
 
 	UIScreenManager_PushScreen = reinterpret_cast<char(__cdecl*)(int, int)>(0x4FCB60);
@@ -119,7 +119,7 @@ void Game::Initialize()
 #if TRAE
 	INSTANCE_Post = reinterpret_cast<void(__cdecl*)(Instance*, DWORD, int)>(0x4580B0);
 #elif TR7
-	INSTANCE_Post = reinterpret_cast<void(__cdecl*)(Instance*, DWORD, int)>(0x458250);
+	INSTANCE_Post = reinterpret_cast<void(__cdecl*)(Instance*, DWORD, int)>(ADDR(0x458250, 0x455510));
 #elif TR8
 	INSTANCE_Post = reinterpret_cast<void(__cdecl*)(Instance*, DWORD, int)>(0x5B3750);
 #endif
@@ -127,7 +127,7 @@ void Game::Initialize()
 #if TRAE
 	INSTANCE_Query = reinterpret_cast<int(__cdecl*)(Instance*, int)>(0x00458060);
 #elif TR7
-	INSTANCE_Query = reinterpret_cast<int(__cdecl*)(Instance*, int)>(0x00458200);
+	INSTANCE_Query = reinterpret_cast<int(__cdecl*)(Instance*, int)>(ADDR(0x458200, 0x4554C0));
 #endif
 
 	INSTANCE_Find = reinterpret_cast<Instance*(__cdecl*)(int)>(0x004582D0);
@@ -137,8 +137,9 @@ void Game::Initialize()
 #elif TR8
 	PLAYER_DebugSwitchPlayerCharacter = reinterpret_cast<int(__cdecl*)(DWORD)>(0x0079DB50);
 #elif TR7
-	PLAYER_DebugSwitchPlayerCharacter = reinterpret_cast<void(__cdecl*)()>(0x005A9A90);
+	PLAYER_DebugSwitchPlayerCharacter = reinterpret_cast<void(__cdecl*)()>(ADDR(0x5A9A90, 0x5A40B0));
 #endif
+
 	G2EmulationInstanceSetEventAnimPlaying = reinterpret_cast<void(__cdecl*)(Instance*, int)>(0x4DE940);
 
 	IncrHealth = reinterpret_cast<void(__cdecl*)(float)>(0x005715E0);
@@ -164,17 +165,19 @@ void Game::Initialize()
 	MH_CreateHook((void*)0x0075AF90, DeathStateProcess, (void**)&DeathState_Process);
 	MH_CreateHook((void*)0x0075AA50, DeathStateEntry, (void**)&DeathState_Entry);
 #elif TR7
-	MH_CreateHook((void*)0x4E7690, localstr_get, (void**)&game_localstr_get);
+	MH_CreateHook((void*)ADDR(0x4E7690, 0x4E43C0), localstr_get, (void**)&game_localstr_get);
 
-	NOP((void*)0x00563478, 5);
-	MH_CreateHook((void*)0x00574320, DeathStateProcess, (void**)&DeathState_Process);
-	MH_CreateHook((void*)0x005631B0, DeathStateEntry, (void**)&DeathState_Entry);
+	NOP((void*)ADDR(0x563478, 0x55E188), 5);
+	MH_CreateHook((void*)ADDR(0x574320, 0x56EC70), DeathStateProcess, (void**)&DeathState_Process);
+	MH_CreateHook((void*)ADDR(0x5631B0, 0x55DEC0), DeathStateEntry, (void**)&DeathState_Entry);
 
-	UIScreenManager_WantsNormalFading = reinterpret_cast<bool(__cdecl*)()>(0x004FC130);
+	UIScreenManager_WantsNormalFading = reinterpret_cast<bool(__cdecl*)()>(ADDR(0x4FC130, 0x4F7480));
+
+	auto patchaddr = ADDR(0x453499, 0x450929);
 
 	// .text section in nextgen debug exe is read only
-	auto call = int{ (int)HookedWipe11_WantsNormalFading - 0x453499 - 4 };
-	memcpyProtectedSection((void*)0x453499, &call, sizeof(call));
+	auto call = int{ (int)HookedWipe11_WantsNormalFading - patchaddr - 4 };
+	memcpyProtectedSection((void*)patchaddr, &call, sizeof(call));
 #endif
 
 	PLAYER_SetLookAround = reinterpret_cast<void(__cdecl*)(Instance*)>(0x005600F0);
@@ -194,11 +197,11 @@ void Game::Initialize()
 	STREAM_GetObjectTrackerByName = reinterpret_cast<ObjectTracker*(__cdecl*)(char*)>(0x5DA260);
 	STREAM_PollLoadQueue = reinterpret_cast<bool(__cdecl*)()>(0x005DB190);
 #elif TR7
-	OBTABLE_GetObjectID = reinterpret_cast<int(__cdecl*)(char*)>(0x004655B0);
+	OBTABLE_GetObjectID = reinterpret_cast<int(__cdecl*)(char*)>(ADDR(0x4655B0, 0x462590));
 
-	INSTANCE_BirthObjectNoParent = reinterpret_cast<Instance * (__cdecl*)(int, cdc::Vector*, cdc::Vector*, DWORD*, DWORD*, int, int)>(0x0045B710);
-	STREAM_GetObjectTrackerByName = reinterpret_cast<ObjectTracker * (__cdecl*)(char*)>(0x005DA400);
-	STREAM_PollLoadQueue = reinterpret_cast<bool(__cdecl*)()>(0x005DB350);
+	INSTANCE_BirthObjectNoParent = reinterpret_cast<Instance * (__cdecl*)(int, cdc::Vector*, cdc::Vector*, DWORD*, DWORD*, int, int)>(ADDR(0x45B710, 0x458990));
+	STREAM_GetObjectTrackerByName = reinterpret_cast<ObjectTracker * (__cdecl*)(char*)>(ADDR(0x5DA400, 0x5D4270));
+	STREAM_PollLoadQueue = reinterpret_cast<bool(__cdecl*)()>(ADDR(0x5DB350, 0x5D51C0));
 #elif TR8
 	OBTABLE_GetObjectID = reinterpret_cast<int(__cdecl*)(char*)>(0x005BF770);
 

@@ -48,10 +48,10 @@ void InsertTerrainDrawableHooks();
 
 #elif TR7
 
-#define gTextureLess VAR_U_(0x107E57C, int)
-#define gWireFrame VAR_U_(0x107E580, int)
-#define terrainShaders VAR_U_(0xF51400, int)
+#define gTextureLess VAR_U_(ADDR(0x107E57C, 0x1075BD0), int)
+#define gWireFrame VAR_U_(ADDR(0x107E580, 0x1075BD4), int)
+#define terrainShaders VAR_U_(ADDR(0xF51400, 0xF48A60), int)
 
-#define FX_Onscreen_Water VAR_U_(0x10C9D8C, int)
+#define FX_Onscreen_Water VAR_U_(ADDR(0x10C9D8C, 0x10C09DC), int)
 
 #endif

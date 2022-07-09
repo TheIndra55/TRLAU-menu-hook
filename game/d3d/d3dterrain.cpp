@@ -18,8 +18,8 @@ TerrainDrawable* __fastcall TerrainDrawable_TerrainDrawable(
 	_this->scene = 0x66321C;
 	_this->__vftable = 0x64FCA4;
 #elif TR7
-	_this->scene = 0xF1A88C;
-	_this->__vftable = 0xF03EAC;
+	_this->scene = ADDR(0xF1A88C, 0xF12864);
+	_this->__vftable = ADDR(0xF03EAC, 0xEFDE08);
 #endif
 	_this->sortZ = 0.0;
 	_this->material = material;
@@ -46,6 +46,7 @@ TerrainDrawable* __fastcall TerrainDrawable_TerrainDrawable(
 		_this->tpageid &= 0xFFFFF800;
 
 #if GENERAL_FIXES
+	// TODO wireframe for terrain optional
 	if (gWireFrame)
 		_this->tpageid |= 0x800;
 #endif
@@ -77,10 +78,10 @@ void InsertTerrainDrawableHooks()
 
 	MH_CreateHook((void*)0x40B9B0, TerrainDrawable_TerrainDrawable, nullptr);
 #elif TR7
-	CreateVertexShaderFlags = reinterpret_cast<unsigned int(__fastcall*)(unsigned int, char)>(0x40AE90);
-	GetVertexShader = reinterpret_cast<int(__thiscall*)(int, unsigned int)>(0xED1770);
-	GetDrawListByTpageId = reinterpret_cast<int(__cdecl*)(unsigned int, bool)>(0x4148D0);
+	CreateVertexShaderFlags = reinterpret_cast<unsigned int(__fastcall*)(unsigned int, char)>(ADDR(0x40AE90, 0x40A8E0));
+	GetVertexShader = reinterpret_cast<int(__thiscall*)(int, unsigned int)>(ADDR(0xED1770, 0xECB0B0));
+	GetDrawListByTpageId = reinterpret_cast<int(__cdecl*)(unsigned int, bool)>(ADDR(0x4148D0, 0x414280));
 
-	MH_CreateHook((void*)0x40B2C0, TerrainDrawable_TerrainDrawable, nullptr);
+	MH_CreateHook((void*)ADDR(0x40B2C0, 0x40ACF0), TerrainDrawable_TerrainDrawable, nullptr);
 #endif
 }

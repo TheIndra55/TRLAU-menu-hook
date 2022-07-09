@@ -3,6 +3,13 @@
 #include <Windows.h>
 #include <functional>
 
+// hack until everything is patterns
+#if TR7 && RETAIL_VERSION
+	#define ADDR(debug, retail) retail
+#elif TR7 && DEBUG_VERSION
+	#define ADDR(debug, retail) debug
+#endif
+
 #if TRAE
 	#define GAMETRACKER 0x838330
 	#define GAMETRACKER_BASE_AREA (GAMETRACKER + 204)
@@ -25,17 +32,17 @@
 	#define INSTANCELIST 0xD98D54
 	#define GLOBALDATA 0
 #elif TR7
-	#define GAMETRACKER 0x010EE730
+	#define GAMETRACKER ADDR(0x10EE730, 0x10E5370)
 	#define GAMETRACKER_BASE_AREA (GAMETRACKER + 204)
 
 	#define MAX_UNIT_LEN 32
 	#define PLAYERINSTANCE (GAMETRACKER + 12)
 
-	#define DISKFS 0x010EEC80
+	#define DISKFS ADDR(0x10EEC80, 0x10E58C0)
 	#define CONFIGNAME "TR7"
-	#define MAINFONT 0x01088A2C
-	#define INSTANCELIST 0x10CEE64
-	#define GLOBALDATA 0x0107F920
+	#define MAINFONT ADDR(0x01088A2C, 0x107F680)
+	#define INSTANCELIST ADDR(0x10CEE64, 0x10C5AA4)
+	#define GLOBALDATA ADDR(0x107F920, 0x1076980)
 #else
 	#error "No game specified, set TRAE for Anniversary, TR7 for Legend or TR8 for Underworld"
 #endif
