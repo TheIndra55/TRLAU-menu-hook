@@ -394,7 +394,10 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     if (msg == WM_KEYUP && wparam == VK_F4)
     {
 #if TRAE // current legend supported exe (debug exe) has already fly on F4 so only switch the mode on TRAE
-        auto cameraMode = (int*)0x850984;
+        auto cameraMode = (__int16*)0x850984;
+        *cameraMode = *cameraMode == 7 ? 2 : 7;
+#elif TR7 && RETAIL_VERSION
+        auto cameraMode = (__int16*)0x10FC974;
         *cameraMode = *cameraMode == 7 ? 2 : 7;
 #elif TR8
         if (m_freeCamMode == FreeCameraMode::disabled)

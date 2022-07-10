@@ -6,7 +6,7 @@
 // hack until everything is patterns
 #if TR7 && RETAIL_VERSION
 	#define ADDR(debug, retail) retail
-#elif TR7 && DEBUG_VERSION
+#elif TR7
 	#define ADDR(debug, retail) debug
 #endif
 

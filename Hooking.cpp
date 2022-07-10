@@ -31,13 +31,20 @@ Hooking::Hooking()
 	MH_CreateHook(reinterpret_cast<void*>(D3D_Init), hooked_Direct3DInit, reinterpret_cast<void**>(&original_Direct3DInit));
 #endif
 
-#if TRAE
 	// remove intros
+	// TODO this code make quite a lot of assumptions, refactor
+#if TRAE
 	NOP((void*)0x0045FDBA, 10);
 	NOP((void*)0x0045FDCE, 6);
 	NOP((void*)0x0045FD3F, 6);
 
 	*(int*)0x838838 = 3;
+#elif TR7 && RETAIL_VERSION
+	NOP((void*)0x45D043, 10);
+	NOP((void*)0x45D057, 6);
+	NOP((void*)0x45CFC9, 6);
+
+	*(int*)0x10E5868 = 3;
 #endif
 
 	InstallControlHooks();

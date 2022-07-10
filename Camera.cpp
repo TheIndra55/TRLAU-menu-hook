@@ -29,8 +29,13 @@ void CAMERA_Fly(Camera* camera)
 		CAMERA_CalcPosition(&camera->position, &camera->position, &camera->rotation, speed ? 50.f : 20.f);
 	}
 
+#if TRAE
 	auto a = InputSystem_GetAxisValue(*(int*)0x008551A0, 17);
 	auto b = InputSystem_GetAxisValue(*(int*)0x008551A0, 16);
+#else //(TR7 && RETAIL_VERSION)
+	auto a = InputSystem_GetAxisValue(*(int*)0x1101680, 17);
+	auto b = InputSystem_GetAxisValue(*(int*)0x1101680, 16);
+#endif
 
 	camera->rotation.x -= static_cast<float>(a);
 	camera->rotation.z -= static_cast<float>(b);
@@ -40,7 +45,11 @@ void __cdecl CAMERA_Process(Camera* camera)
 {
 	origCAMERA_Process(camera);
 
+#if TRAE
 	if (*(__int16*)0x850984 == 7)
+#elif (TR7 && RETAIL_VERSION)
+	if (*(__int16*)0x10FC974 == 7)
+#endif
 	{
 		CAMERA_Fly(camera);
 	}
@@ -130,6 +139,12 @@ void InstallCameraHooks()
 	EVENT_InputActionOn = reinterpret_cast<bool(__cdecl*)(int)>(0x42F740);
 	CAMERA_CalcPosition = reinterpret_cast<void(__cdecl*)(cdc::Vector*, cdc::Vector*, cdc::Vector*, float)>(0x00491320);
 	InputSystem_GetAxisValue = reinterpret_cast<double(__thiscall*)(int, int)>(0x004E38C0);
+#elif TR7 && RETAIL_VERSION
+	MH_CreateHook((void*)0x47EBE0, CAMERA_Process, (void**)&origCAMERA_Process);
+
+	EVENT_InputActionOn = reinterpret_cast<bool(__cdecl*)(int)>(0x42E3B0);
+	CAMERA_CalcPosition = reinterpret_cast<void(__cdecl*)(cdc::Vector*, cdc::Vector*, cdc::Vector*, float)>(0x48D8B0);
+	InputSystem_GetAxisValue = reinterpret_cast<double(__thiscall*)(int, int)>(0x4E3FC0);
 #elif TR8
 	// no known CAMERA_Process in Underworld so hook GAMELOOP_Process
 	MH_CreateHook((void*)0x005DFBE0, GAMELOOP_Process, (void**)&origGAMELOOP_Process);

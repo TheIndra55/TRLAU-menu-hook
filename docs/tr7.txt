@@ -74,3 +74,7 @@ cdc__PCVertexShaderTable__GetVertexShader 00ECB0B0
 j_PLAYERCNTRL_Enable 0042FF80
 j_localstr_get 004055B0
 localstr_get 004E43C0
+CAMERA_Process 0047EBE0
+EVENT_InputActionOn 0042E3B0
+CAMERA_CalcPosition 0048D8B0
+CAMERA_Control 0047F320
