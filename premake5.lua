@@ -1,6 +1,7 @@
 workspace "TRAE-menu-hook"
     architecture "x86"
-    configurations {"Debug", "Release"}
+    configurations { "Debug", "Release" }
+	platforms { "TR7", "TR7DEBUG", "TRAE", "TR8" }
 
 project "TRAE-menu-hook"
     kind "SharedLib"
@@ -34,7 +35,7 @@ project "TRAE-menu-hook"
 	links { "MinHook.x86.lib", "d3d9.lib" }
 	
 	-- Xinput disabled since it causes issues with Windows 7
-	defines { "IMGUI_IMPL_WIN32_DISABLE_GAMEPAD", "GENERAL_FIXES", "$(GameConstant)" }
+	defines { "IMGUI_IMPL_WIN32_DISABLE_GAMEPAD", "GENERAL_FIXES" }
 	
     filter "configurations:Debug"
         defines { "DEBUG", "_DEBUG" }
@@ -44,3 +45,19 @@ project "TRAE-menu-hook"
         defines { "NDEBUG" }
         optimize "On"
         symbols "On"
+
+	filter "platforms:TR7"
+		defines { "TR7", "RETAIL_VERSION" }
+		targetname "TR7-Menu-Hook"
+		
+	filter "platforms:TR7DEBUG"
+		defines { "TR7" }
+		targetname "TR7DEBUG-Menu-Hook"
+		
+	filter "platforms:TRAE"
+		defines { "TRAE" }
+		targetname "TRAE-Menu-Hook"
+		
+	filter "platforms:TR8"
+		defines { "TR8" }
+		targetname "TR8-Menu-Hook"

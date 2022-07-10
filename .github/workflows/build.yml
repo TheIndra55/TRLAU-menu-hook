@@ -31,32 +31,42 @@ jobs:
 
     # compile
     - name: Build Anniversary
-      run: MSBuild /p:Configuration=Release /p:Platform=Win32 /p:GameConstant=TRAE /p:TargetName=TRAE-Menu-Hook
+      run: MSBuild /p:Configuration=Release /p:Platform=TRAE
 
     - name: Build Underworld
-      run: MSBuild /p:Configuration=Release /p:Platform=Win32 /p:GameConstant=TR8 /p:TargetName=TR8-Menu-Hook
+      run: MSBuild /p:Configuration=Release /p:Platform=TR8
 
     - name: Build Legend
-      run: MSBuild /p:Configuration=Release /p:Platform=Win32 /p:GameConstant=TR7 /p:TargetName=TR7-Menu-Hook
+      run: MSBuild /p:Configuration=Release /p:Platform=TR7
+
+    - name: Build Legend Nextgen Demo
+      run: MSBuild /p:Configuration=Release /p:Platform=TR7DEBUG
 
     # upload
     - uses: actions/upload-artifact@v2
       with:
         name: Anniversary
         path: |
-          bin/Release/TRAE-Menu-Hook.asi
-          bin/Release/TRAE-Menu-Hook.pdb
+          bin/TRAE/Release/TRAE-Menu-Hook.asi
+          bin/TRAE/Release/TRAE-Menu-Hook.pdb
 
     - uses: actions/upload-artifact@v2
       with:
         name: Underworld
         path: |
-          bin/Release/TR8-Menu-Hook.asi
-          bin/Release/TR8-Menu-Hook.pdb
+          bin/TR8/Release/TR8-Menu-Hook.asi
+          bin/TR8/Release/TR8-Menu-Hook.pdb
 
     - uses: actions/upload-artifact@v2
       with:
         name: Legend
         path: |
-          bin/Release/TR7-Menu-Hook.asi
-          bin/Release/TR7-Menu-Hook.pdb
+          bin/TR7/Release/TR7-Menu-Hook.asi
+          bin/TR7/Release/TR7-Menu-Hook.pdb
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Legend Nextgen Demo
+        path: |
+          bin/TR7DEBUG/Release/TR7DEBUG-Menu-Hook.asi
+          bin/TR7DEBUG/Release/TR7DEBUG-Menu-Hook.pdb
