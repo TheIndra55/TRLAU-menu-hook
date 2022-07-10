@@ -252,7 +252,10 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
     MH_CreateHook((void*)ADDR(0x5DB550, 0x5D5390), InsertGlobalObject, (void**)&origInsertGlobalObject);
     MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(ADDR(0x0047DC70, 0x47AB50));
 
+    MH_CreateHook((void*)ADDR(0x457730, 0x454A00), newinstance, (void**)&INSTANCE_NewInstance);
+
     MH_CreateHook((void*)ADDR(0x5DBD20, 0x5D5B60), STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
+    MH_CreateHook((void*)ADDR(0x5DB800, 0x5D5640), STREAM_FinishLoad, (void**)&origSTREAM_FinishLoad);
 
     MH_CreateHook((void*)ADDR(0x401480, 0x401480), IMAGE_LoadImage, (void**)&origIMAGE_LoadImage);
     MH_CreateHook((void*)ADDR(0x45F520, 0x45C780), imageFileName, (void**)&origImageFileName);
@@ -393,7 +396,7 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
     if (msg == WM_KEYUP && wparam == VK_F4)
     {
-#if TRAE // current legend supported exe (debug exe) has already fly on F4 so only switch the mode on TRAE
+#if TRAE
         auto cameraMode = (__int16*)0x850984;
         *cameraMode = *cameraMode == 7 ? 2 : 7;
 #elif TR7 && RETAIL_VERSION
@@ -449,6 +452,7 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     {
         Game::ToggleBinoculars();
     }
+#endif
 
     if (switchPlayerNextFrame)
     {
@@ -456,7 +460,6 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
         Game::SwitchPlayerCharacter();
     }
-#endif
 
 #if TRAE || TR7
     if (msg == WM_KEYUP && wparam == VK_INSERT)
@@ -598,20 +601,23 @@ void Menu::Draw()
         Game::TriggerUiFadeGroup(1);
         // TODO ammo
     }
+#endif
 
+#if TRAE || TR7
     ImGui::Checkbox("Should instance?", &shouldInstance);
     ImGui::Checkbox("Load unit script", &shouldReloc);
-    ImGui::Checkbox("Enable debug keypad", (bool*)0x7C8A3C);
 
     if (ImGui::Checkbox("Enable debug draw", &m_drawSettings.drawDebug))
     {
-        *(int*)0x838348/*debugFlags2*/ |= 0x100;
+        *(int*)(GAMETRACKER + 0x18) /*debugFlags2*/ |= 0x100;
     }
 #endif
 
 #if TRAE
+    ImGui::Checkbox("Enable debug keypad", (bool*)0x7C8A3C);
     ImGui::Checkbox("Wireframe", (bool*)0x7C7CD4);
 #elif TR7
+    ImGui::Checkbox("Enable debug keypad", (bool*)ADDR(0x107F90C, 0x107696C));
     ImGui::Checkbox("Wireframe", (bool*)ADDR(0x107E580, 0x1075BD4));
 #endif
 
@@ -784,7 +790,7 @@ void Menu::Draw()
         }
     }
 
-#if TRAE
+#if TRAE || TR7
     static char outfit[100] = "";
     ImGui::InputText("outfit", outfit, 100);
     if (ImGui::Button("Load outfit"))
@@ -792,7 +798,7 @@ void Menu::Draw()
         switchPlayerNextFrame = true;
 
         auto obj = Game::GetObjectID(outfit);
-        *(int*)0x838768 /* alt player object */ = obj;
+        *(int*)(GAMETRACKER + 0x438) /* alt player object */ = obj;
     }
 #endif
 

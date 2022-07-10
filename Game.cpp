@@ -4,7 +4,6 @@
 bool Game::m_binoculars = false;
 
 void(__cdecl* GAMELOOP_ExitGame)(int a1);
-void(__cdecl* CHRONICLE_SwitchChapter)(char* chapter);
 char(__cdecl* UIScreenManager_PushScreen)(int screenId, int a2);
 int(__cdecl* UIScreenManager_GetTopScreenID)();
 int(__cdecl* UIScreenManager_PushOkDialog)(const char* text, int a2, int a3, int a4);
@@ -37,7 +36,6 @@ __int16(__cdecl* CAMERA_ForceEndLookaroundMode)(DWORD camera);
 
 void(__cdecl* sub_456B50)();
 void(__cdecl* EVENT_PlayerTurnGold)();
-void(__cdecl* INSTANCE_HideUnhideDrawGroup)(int a1, int a2, int a3);
 
 int(__cdecl* OBTABLE_GetObjectID)(char* name);
 
@@ -92,8 +90,6 @@ bool HookedWipe11_WantsNormalFading()
 
 void Game::Initialize()
 {
-	CHRONICLE_SwitchChapter = reinterpret_cast<void(__cdecl*)(char*)>(0x422090);
-
 #if TRAE
 	GAMELOOP_ExitGame = reinterpret_cast<void(__cdecl*)(int)>(0x4542B0);
 
@@ -188,7 +184,6 @@ void Game::Initialize()
 
 	sub_456B50 = reinterpret_cast<void(__cdecl*)()>(0x456B50);
 	EVENT_PlayerTurnGold = reinterpret_cast<void(__cdecl*)()>(0x0044E290);
-	INSTANCE_HideUnhideDrawGroup = reinterpret_cast<void(__cdecl*)(int, int, int)>(0x004319B0);
 
 #if TRAE
 	OBTABLE_GetObjectID = reinterpret_cast<int(__cdecl*)(char*)>(0x4660C0);
@@ -224,11 +219,6 @@ void memcpyProtectedSection(void* dst, const void* src, size_t size)
 char* localstr_get(int a1)
 {
 	return game_localstr_get(a1);
-}
-
-void Game::SwitchChapter(char* chapter)
-{
-	CHRONICLE_SwitchChapter(chapter);
 }
 
 void Game::ResetGame(int unk1)
@@ -395,11 +385,6 @@ void Game::ToggleBinoculars()
 void Game::PlayerTurnGold()
 {
 	EVENT_PlayerTurnGold();
-}
-
-void Game::HideUnhideDrawGroup(int instance, int drawGroup, int on)
-{
-	INSTANCE_HideUnhideDrawGroup(instance, drawGroup, on);
 }
 
 Instance* Game::BirthObjectNoParent(int unitId, cdc::Vector* position, cdc::Vector* rotation, DWORD* introData, DWORD* object, int modelnum, int initEffects)

@@ -157,7 +157,7 @@ void SetCursor(float x, float y)
 #endif
 }
 
-#if TRAE
+#if TRAE || (TR7 && RETAIL_VERSION)
 void __cdecl EVENT_DisplayString(char* str, int time)
 {
 	Hooking::GetInstance().GetMenu()->Log("%s\n", str);
@@ -168,7 +168,7 @@ void __cdecl EVENT_DisplayStringXY(char* str, int time, int x, int y)
 	if (!Hooking::GetInstance().GetMenu()->m_drawSettings.drawDebug) return;
 
 	SetCursor((float)x, (float)y);
-	Font__Print(*(DWORD*)0x007D1800, str);
+	Font__Print(*(DWORD*)MAINFONT, str);
 }
 
 void __cdecl EVENT_FontPrint(char* fmt, ...)
@@ -180,7 +180,7 @@ void __cdecl EVENT_FontPrint(char* fmt, ...)
 	char str[1024]; // size same as game buffer
 	vsprintf(str, fmt, vl);
 
-	Font__Print(*(DWORD*)0x007D1800, str);
+	Font__Print(*(DWORD*)MAINFONT, str);
 }
 
 void __cdecl EVENT_PrintScalarExpression(int val, int time)
@@ -189,7 +189,7 @@ void __cdecl EVENT_PrintScalarExpression(int val, int time)
 
 	char v3[11];
 	sprintf(v3, "%d", val);
-	Font__Print(*(DWORD*)0x007D1800, v3);
+	Font__Print(*(DWORD*)MAINFONT, v3);
 }
 #endif
 
@@ -611,14 +611,23 @@ void Hooking::GotDevice()
 
 #if TRAE
 	// patch debug print nullsubs to our functions
-	*(DWORD*)(0x7C8A50 + 528) = (DWORD)EVENT_DisplayString;
-	*(DWORD*)(0x7C8A50 + 304) = (DWORD)EVENT_DisplayString;
+	*(DWORD*)(GLOBALDATA + 528) = (DWORD)EVENT_DisplayString;
+	*(DWORD*)(GLOBALDATA + 304) = (DWORD)EVENT_DisplayString;
 
 	// draw debug
-	*(DWORD*)(0x7C8A50 + 1400) = (DWORD)EVENT_DisplayStringXY;
-	*(DWORD*)(0x7C8A50 + 464) = (DWORD)EVENT_FontPrint;
-	*(DWORD*)(0x7C8A50 + 1292) = (DWORD)EVENT_PrintScalarExpression;
+	*(DWORD*)(GLOBALDATA + 1400) = (DWORD)EVENT_DisplayStringXY;
+	*(DWORD*)(GLOBALDATA + 464) = (DWORD)EVENT_FontPrint;
+	*(DWORD*)(GLOBALDATA + 1292) = (DWORD)EVENT_PrintScalarExpression;
+#elif (TR7 && RETAIL_VERSION)
+	*(DWORD*)(GLOBALDATA + 504) = (DWORD)EVENT_DisplayString;
+	*(DWORD*)(GLOBALDATA + 304) = (DWORD)EVENT_DisplayString;
 
+	*(DWORD*)(GLOBALDATA + 1336) = (DWORD)EVENT_DisplayStringXY;
+	*(DWORD*)(GLOBALDATA + 444) = (DWORD)EVENT_FontPrint;
+	*(DWORD*)(GLOBALDATA + 1232) = (DWORD)EVENT_PrintScalarExpression;
+#endif
+
+#if TRAE
 	objCheckFamily = reinterpret_cast<bool(__cdecl*)(DWORD instance, unsigned __int16 family)>(0x534660);
 
 	MH_CreateHook((void*)0x00434C40, Font__Flush, (void**)&org_Font__Flush);
@@ -631,9 +640,7 @@ void Hooking::GotDevice()
 	TRANS_TransToDrawVertexV4f = reinterpret_cast<void(__cdecl*)(DRAWVERTEX* v, cdc::Vector * vec)>(0x00402F20);
 
 	DRAW_DrawQuads = reinterpret_cast<void(__cdecl*)(int flags, int tpage, DRAWVERTEX * verts, int numquads)>(0x00406D70);
-#endif
 
-#if TRAE
 	MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(0x005E52C0);
 	MH_CreateHook((void*)0x465E30, OBTABLE_Init, (void**)&origOBTABLE_Init);
 #elif TR7

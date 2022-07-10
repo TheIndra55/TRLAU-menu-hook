@@ -337,7 +337,6 @@ class Game
 public:
 	static void Initialize();
 
-	static void SwitchChapter(char* chapter);
 	static void ResetGame(int a1);
 
 	static void PushScreen(int screenId, int a2);
@@ -364,7 +363,6 @@ public:
 	static void ToggleBinoculars();
 
 	static void PlayerTurnGold();
-	static void HideUnhideDrawGroup(int instance, int drawGroup, int on);
 	static Instance* BirthObjectNoParent(int unitId, cdc::Vector* position, cdc::Vector* rotation, DWORD* introData, DWORD* object, int modelnum, int initEffects);
 
 	static int GetObjectID(char* name);
