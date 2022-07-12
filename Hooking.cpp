@@ -33,6 +33,7 @@ Hooking::Hooking()
 
 	// remove intros
 	// TODO this code make quite a lot of assumptions, refactor
+	// TODO config option
 #if TRAE
 	NOP((void*)0x0045FDBA, 10);
 	NOP((void*)0x0045FDCE, 6);

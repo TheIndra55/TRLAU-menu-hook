@@ -753,6 +753,15 @@ void Menu::Draw()
     }
 #endif
 
+#if TR7 && RETAIL_VERSION
+    static int weapon;
+    ImGui::InputInt("weapon", &weapon);
+    if (ImGui::Button("Give weapon"))
+    {
+        Game::InstancePost(player, 262257, weapon);
+    }
+#endif
+
     static char name[100] = "";
     ImGui::InputText("name", name, 100);
     if (ImGui::Button("Birth instance"))

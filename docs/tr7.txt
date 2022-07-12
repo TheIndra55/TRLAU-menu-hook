@@ -78,3 +78,8 @@ CAMERA_Process 0047EBE0
 EVENT_InputActionOn 0042E3B0
 CAMERA_CalcPosition 0048D8B0
 CAMERA_Control 0047F320
+STREAM_FinishLoad 005D5640
+MAIN_FailAbort 00401F20
+cdc__FatalError 005DA0C0
+EVENT_DebugInputActionPressed 0042E420
+DisplayExceptionInfo 00401A50

@@ -31,8 +31,8 @@ struct TerrainDrawable
 	TerrainGroup* terrainGroup;
 	unsigned int tpageid;
 	void* indexBuffer;
-	int vertexShader;
-	int renderList;
+	void* vertexShader;
+	void* renderList;
 	unsigned int indices;
 };
 
@@ -42,7 +42,7 @@ void InsertTerrainDrawableHooks();
 
 #define gTextureLess VAR_U_(0x7C7CD0, int)
 #define gWireFrame VAR_U_(0x7C7CD4, int)
-#define terrainShaders VAR_U_(0x69AB00, int)
+#define terrainShaders VAR_U_(0x69AB00, void*)
 
 #define FX_Onscreen_Water VAR_U_(0x812B5C, int)
 
@@ -50,7 +50,7 @@ void InsertTerrainDrawableHooks();
 
 #define gTextureLess VAR_U_(ADDR(0x107E57C, 0x1075BD0), int)
 #define gWireFrame VAR_U_(ADDR(0x107E580, 0x1075BD4), int)
-#define terrainShaders VAR_U_(ADDR(0xF51400, 0xF48A60), int)
+#define terrainShaders VAR_U_(ADDR(0xF51400, 0xF48A60), void*)
 
 #define FX_Onscreen_Water VAR_U_(ADDR(0x10C9D8C, 0x10C09DC), int)
 
