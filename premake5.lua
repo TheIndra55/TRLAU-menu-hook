@@ -27,7 +27,7 @@ project "TRAE-menu-hook"
 		"vendor/imgui/examples/imgui_impl_dx9.h"
 	}
 	
-	includedirs { "vendor/imgui" }
+	includedirs { "vendor/imgui", "vendor/json/include" }
 	
 	files "vendor/MinHook.h"
 
