@@ -5,6 +5,14 @@
 #include "Game.hpp"
 #include "Menu.hpp"
 
+namespace mh
+{
+	struct Config
+	{
+		bool remove_legal_screen = true;
+	};
+}
+
 class Hooking
 {
 public:
@@ -23,8 +31,13 @@ public:
 	void GotDevice();
 	std::shared_ptr<Menu>& GetMenu() noexcept;
 
+	mh::Config& GetConfig();
+	void LoadConfig();
+
 private:
 	std::shared_ptr<Menu> m_menu;
+
+	mh::Config m_config;
 };
 
 static int(*original_Direct3DInit)();

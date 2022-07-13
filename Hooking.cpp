@@ -15,6 +15,9 @@ HWND pHwnd;
 Hooking::Hooking()
 	: m_menu(nullptr)
 {
+	// load config.json into m_config
+	LoadConfig();
+
 	// hook into d3d9 creation function and wait for a device
 #if TRAE
 	auto pFound = FindPattern((PBYTE)"\xE8\x00\x00\x00\x00\x85\xC0\x75\x00\xE8\x00\x00\x00\x00\x6A\x00\x6A\x22\xE8", "x????xxx?x????xxxxx");
@@ -33,20 +36,22 @@ Hooking::Hooking()
 
 	// remove intros
 	// TODO this code make quite a lot of assumptions, refactor
-	// TODO config option
+	if (m_config.remove_legal_screen)
+	{
 #if TRAE
-	NOP((void*)0x0045FDBA, 10);
-	NOP((void*)0x0045FDCE, 6);
-	NOP((void*)0x0045FD3F, 6);
+		NOP((void*)0x0045FDBA, 10);
+		NOP((void*)0x0045FDCE, 6);
+		NOP((void*)0x0045FD3F, 6);
 
-	*(int*)0x838838 = 3;
+		*(int*)0x838838 = 3;
 #elif TR7 && RETAIL_VERSION
-	NOP((void*)0x45D043, 10);
-	NOP((void*)0x45D057, 6);
-	NOP((void*)0x45CFC9, 6);
+		NOP((void*)0x45D043, 10);
+		NOP((void*)0x45D057, 6);
+		NOP((void*)0x45CFC9, 6);
 
-	*(int*)0x10E5868 = 3;
+		*(int*)0x10E5868 = 3;
 #endif
+	}
 
 	InstallControlHooks();
 	InstallCameraHooks();

@@ -1,0 +1,4 @@
+{
+	// Removes the ~5 seconds legal screen while starting the game.
+	"remove_legal_screen": true
+}
