@@ -355,7 +355,7 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         // if menu is focussed and being hidden also stop focus
         if (m_focus && !m_visible)
         {
-            m_focus = false;
+            SetFocus(false);
         }
     }
 
@@ -1121,6 +1121,15 @@ FreeCameraMode Menu::GetFreeCamMode() const noexcept
 void Menu::SetFocus(bool value) noexcept
 {
     m_focus = value;
+
+    // enable/disable game input
+#if TRAE
+    * (bool*)0x8551A9 = m_focus;
+#elif TR8
+    * (bool*)0xA02B79 = m_focus;
+#elif TR7
+    * (bool*)ADDR(0x110AF09, 0x1101689) = m_focus;
+#endif
 }
 
 bool Menu::IsVisible() const noexcept

@@ -1,4 +1,4 @@
 {
-	// Removes the ~5 seconds legal screen while starting the game.
+	// Removes the ~5 seconds legal screen while starting the game (Legend, Anniversary).
 	"remove_legal_screen": true
 }

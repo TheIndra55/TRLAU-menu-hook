@@ -758,15 +758,6 @@ LRESULT hooked_RegularWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		// set menu focus
 		menu->SetFocus(!focus);
 		menu->SetVisibility(!focus);
-
-		// disable game input
-#if TRAE
-		*(bool*)0x8551A9 = Hooking::GetInstance().GetMenu()->IsFocus();
-#elif TR8
-		*(bool*)0xA02B79 = Hooking::GetInstance().GetMenu()->IsFocus();
-#elif TR7
-		*(bool*)ADDR(0x110AF09, 0x1101689) = Hooking::GetInstance().GetMenu()->IsFocus();
-#endif
 	}
 
 	// pass input to menu

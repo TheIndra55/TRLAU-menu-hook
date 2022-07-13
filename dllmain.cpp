@@ -17,6 +17,20 @@ BOOL  WINAPI hGetVersionExA(LPOSVERSIONINFOA  lpStartupInfo)
     return dGetVersionExA(lpStartupInfo);
 }
 
+bool CheckVersion()
+{
+    auto hModule = GetModuleHandleA(nullptr);
+    auto header = (PIMAGE_NT_HEADERS)((DWORD_PTR)hModule + ((PIMAGE_DOS_HEADER)hModule)->e_lfanew);
+
+#if RETAIL_VERSION
+    // if retail check if not debug exe timestamp
+    return header->FileHeader.TimeDateStamp != 0x446DCF16;
+#else
+    // if debug check for debug exe timestamp
+    return header->FileHeader.TimeDateStamp == 0x446DCF16;
+#endif
+}
+
 DWORD WINAPI Hook(LPVOID lpParam)
 {
     MH_Initialize();
@@ -35,6 +49,15 @@ DWORD WINAPI Hook(LPVOID lpParam)
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
+    // since there could be retail and debug asi in same folder
+    // unload early if exe timestamp is wrong one
+#if TR7
+    if (!CheckVersion())
+    {
+        return FALSE;
+    }
+#endif
+
     switch (ul_reason_for_call)
     {
         case DLL_PROCESS_ATTACH:
