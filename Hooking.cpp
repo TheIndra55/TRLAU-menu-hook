@@ -138,19 +138,23 @@ void __fastcall PCDeviceManager__ReleaseDevice(DWORD* _this, DWORD _, int status
 
 float* (__cdecl* TRANS_RotTransPersVectorf)(DWORD a1, DWORD a2);
 void(__cdecl* org_Font__Flush)();
+void(__thiscall* Font__PrintFormatted)(void* font, const char* formatted, bool backdrop);
 
-// needed due to TR7 retail only having Font::Print(fmt, ...)
-// and TR7 Debug + TRAE retail only has Font::Print(font, fmt, ...)
-// TODO replace this by our own Font::Print function using Font::PrintFormatted
-#if TR7 && RETAIL_VERSION
-	void(__cdecl* org_Font__Print)(const char* fmt, ...);
+void FONT_Print(const char* fmt, ...)
+{
+	va_list va;
+	char formatted[1024];
 
-	#define Font__Print(font, fmt, ...) org_Font__Print(fmt, __VA_ARGS__)
-#else
-	void(__cdecl* org_Font__Print)(DWORD font, const char* fmt, ...);
+	va_start(va, fmt);
+	vsprintf(formatted, fmt, va);
 
-	#define Font__Print(font, fmt, ...) org_Font__Print(font, fmt, __VA_ARGS__)
-#endif
+	Font__PrintFormatted(*(void**)MAINFONT, formatted, false);
+}
+
+void FONT_PrintFormatted(const char* formatted)
+{
+	Font__PrintFormatted(*(void**)MAINFONT, formatted, false);
+}
 
 void SetCursor(float x, float y)
 {
@@ -174,7 +178,7 @@ void __cdecl EVENT_DisplayStringXY(char* str, int time, int x, int y)
 	if (!Hooking::GetInstance().GetMenu()->m_drawSettings.drawDebug) return;
 
 	SetCursor((float)x, (float)y);
-	Font__Print(*(DWORD*)MAINFONT, str);
+	FONT_PrintFormatted(str);
 }
 
 void __cdecl EVENT_FontPrint(char* fmt, ...)
@@ -186,20 +190,18 @@ void __cdecl EVENT_FontPrint(char* fmt, ...)
 	char str[1024]; // size same as game buffer
 	vsprintf(str, fmt, vl);
 
-	Font__Print(*(DWORD*)MAINFONT, str);
+	FONT_PrintFormatted(str);
 }
 
 void __cdecl EVENT_PrintScalarExpression(int val, int time)
 {
 	if (!Hooking::GetInstance().GetMenu()->m_drawSettings.drawDebug) return;
 
-	char v3[11];
-	sprintf(v3, "%d", val);
-	Font__Print(*(DWORD*)MAINFONT, v3);
+	FONT_Print("%d", val);
 }
 #endif
 
-bool(__cdecl* objCheckFamily)(DWORD instance, unsigned __int16 family);
+bool(__cdecl* objCheckFamily)(Instance* instance, unsigned __int16 family);
 
 #if TRAE || TR7
 void(__cdecl* TRANS_TransToDrawVertexV4f)(DRAWVERTEX* v, cdc::Vector* vec);
@@ -370,12 +372,12 @@ void __cdecl Font__Flush()
 			{
 				// draw portal id and destination
 				SetCursor(srcVector.x, srcVector.y);
-				Font__Print(*(DWORD*)MAINFONT, "portal %d", i);
+				FONT_Print("portal %d", i);
 
 				srcVector.y += 15.f;
 				SetCursor(srcVector.x, srcVector.y);
 
-				Font__Print(*(DWORD*)MAINFONT, "to %s", portal.tolevelname);
+				FONT_Print("to %s", portal.tolevelname);
 
 				// mark portal dimensions by line
 				DrawQuads(&portal.min, &portal.max);
@@ -429,7 +431,7 @@ void __cdecl Font__Flush()
 
 					// display the markup flags
 					SetCursor(srcVector.x, srcVector.y);
-					Font__Print(*(DWORD*)MAINFONT, "%s", FlagToFlags(flags).c_str());
+					FONT_Print("%s", FlagToFlags(flags).c_str());
 				}
 
 				if (polyline)
@@ -459,28 +461,17 @@ void __cdecl Font__Flush()
 		}
 	}
 	
-	// TODO refactor instance loop
-#if TRAE
-	auto instance = *(DWORD*)0x817D64;
-#elif TR7
-	auto instance = *(DWORD*)INSTANCELIST;
-#endif
-
 	auto settings = Hooking::GetInstance().GetMenu()->m_drawSettings;
 
 	// draw instances
-	if ((settings.draw || settings.drawPath) && instance)
+	if (settings.draw || settings.drawPath)
 	{
 		// loop trough all instances
-		while (1)
+		for (auto instance = *(Instance**)INSTANCELIST; instance != nullptr; instance = instance->next)
 		{
-			auto next = *(DWORD*)(instance + 8);
-			auto object = *(DWORD*)(instance + 0x94);
-
-			auto instanceObj = (Instance*)instance;
-
-			auto data = *(DWORD*)(instance + 448);
-			auto extraData = *(DWORD*)(instance + 572);
+			auto object = instance->object;
+			auto data = *(DWORD*)((DWORD)instance + 448);
+			auto extraData = *(DWORD*)((DWORD)instance + 572);
 
 			if (settings.drawPath)
 			{
@@ -507,7 +498,7 @@ void __cdecl Font__Flush()
 			}
 
 			// TODO filter only pickups
-			auto show = [](DrawSettings settings, DWORD instance, DWORD data)
+			auto show = [](DrawSettings settings, Instance* instance, DWORD data)
 			{
 				if (!settings.filter) return true;
 
@@ -518,13 +509,13 @@ void __cdecl Font__Flush()
 			};
 
 			auto srcVector = cdc::Vector{};
-			srcVector = instanceObj->position;
+			srcVector = instance->position;
 			TRANS_RotTransPersVectorf((DWORD)&srcVector, (DWORD)&srcVector);
 
 			if (settings.draw && show(settings, instance, data) && srcVector.z > 16.f /* only draw when on screen */)
 			{
 				SetCursor(srcVector.x, srcVector.y);
-				Font__Print(*(DWORD*)MAINFONT, "%s", (char*)*(DWORD*)(object + 0x48));
+				FONT_Print("%s", object->name);
 
 				if (settings.drawHealth && extraData && data && *(unsigned __int16*)(data + 2) == 56048)
 				{
@@ -535,44 +526,39 @@ void __cdecl Font__Flush()
 #endif
 					srcVector.y += 15.f;
 					SetCursor(srcVector.x, srcVector.y);
-					Font__Print(*(DWORD*)MAINFONT, "%8.2f", health);
+					FONT_Print("%8.2f", health);
 				}
 
 				if (settings.drawIntro)
 				{
 					srcVector.y += 15.f;
 					SetCursor(srcVector.x, srcVector.y);
-					Font__Print(*(DWORD*)MAINFONT, "Intro %d", *(int*)(instance + 0x1D0));
+					FONT_Print("Intro %d", instance->introUniqueID);
 				}
 
 				if (settings.drawAddress)
 				{
 					srcVector.y += 15.f;
 					SetCursor(srcVector.x, srcVector.y);
-					Font__Print(*(DWORD*)MAINFONT, "%p", instance);
+					FONT_Print("%p", instance);
 				}
 
 				if (settings.drawFamily && data)
 				{
 					srcVector.y += 15.f;
 					SetCursor(srcVector.x, srcVector.y);
-					Font__Print(*(DWORD*)MAINFONT, "Family %d", *(unsigned __int16*)(data + 2));
+					FONT_Print("Family %d", *(unsigned __int16*)(data + 2));
 				}
 
 				if (settings.drawAnim)
 				{
-					auto anim = G2EmulationInstanceQueryAnimation(instanceObj, 0);
+					auto anim = G2EmulationInstanceQueryAnimation(instance, 0);
 
 					srcVector.y += 15.f;
 					SetCursor(srcVector.x, srcVector.y);
-					Font__Print(*(DWORD*)MAINFONT, "Anim %d", anim);
+					FONT_Print("Anim %d", anim);
 				}
 			}
-
-			if (!next)
-				break;
-
-			instance = next;
 		}
 	}
 
@@ -634,12 +620,11 @@ void Hooking::GotDevice()
 #endif
 
 #if TRAE
-	objCheckFamily = reinterpret_cast<bool(__cdecl*)(DWORD instance, unsigned __int16 family)>(0x534660);
+	objCheckFamily = reinterpret_cast<bool(__cdecl*)(Instance* instance, unsigned __int16 family)>(0x534660);
 
 	MH_CreateHook((void*)0x00434C40, Font__Flush, (void**)&org_Font__Flush);
 
-	auto pFound = FindPattern((PBYTE)"\xE8\x00\x00\x00\x00\x68\x00\x00\x00\x00\xE8\x00\x00\x00\x00\xA0\x00\x00\x00\x00\x83\xC4\x00\x84\xC0\x0F\x84", "x????x????x????x????xx?xxxx");
-	org_Font__Print = (void(__cdecl*)(DWORD, const char*, ...))GetAddress(pFound, 0x1, 0x5); // 0x00434C10
+	Font__PrintFormatted = reinterpret_cast<void(__thiscall*)(void*, const char*, bool)>(0x434A70);
 
 	TRANS_RotTransPersVectorf = reinterpret_cast<float*(__cdecl*)(DWORD, DWORD)>(0x00402B50);
 
@@ -655,11 +640,7 @@ void Hooking::GotDevice()
 
 	MH_CreateHook((void*)ADDR(0x435050, 0x432570), Font__Flush, (void**)&org_Font__Flush);
 
-	#if RETAIL_VERSION
-		org_Font__Print = reinterpret_cast<void(__cdecl*)(const char*, ...)>(0x432860);
-	#else
-		org_Font__Print = reinterpret_cast<void(__cdecl*)(DWORD, const char*, ...)>(0x435020);
-	#endif
+	Font__PrintFormatted = reinterpret_cast<void(__thiscall*)(void*, const char*, bool)>(ADDR(0x434E80, 0x4323D0));
 
 	TRANS_RotTransPersVectorf = reinterpret_cast<float* (__cdecl*)(DWORD, DWORD)>(ADDR(0x402D00, 0x402B20));
 
@@ -667,7 +648,7 @@ void Hooking::GotDevice()
 
 	DRAW_DrawQuads = reinterpret_cast<void(__cdecl*)(int flags, int tpage, DRAWVERTEX * verts, int numquads)>(ADDR(0x406720, 0x406240));
 
-	objCheckFamily = reinterpret_cast<bool(__cdecl*)(DWORD instance, unsigned __int16 family)>(ADDR(0x5369C0, 0x531B10));
+	objCheckFamily = reinterpret_cast<bool(__cdecl*)(Instance* instance, unsigned __int16 family)>(ADDR(0x5369C0, 0x531B10));
 
 	#if !RETAIL_VERSION
 		// nop out useless F3 mouse toggle to be replaced by our F3
