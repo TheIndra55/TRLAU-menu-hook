@@ -29,6 +29,7 @@
 
 	#define DISKFS 0x9CE27C
 	#define CONFIGNAME "TR8"
+	#define MAINFONT 0
 	#define INSTANCELIST 0xD98D54
 	#define GLOBALDATA 0
 #elif TR7
