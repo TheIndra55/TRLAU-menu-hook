@@ -1,5 +1,11 @@
 #include "filesystem.hpp"
 
+#include <string.h>
+#include <ctype.h>
+
+// so we don't need to include <Windows.h>
+#define _MAX_PATH 260
+
 class HookFileSystem : public cdc::FileSystem
 {
 private:
@@ -13,41 +19,60 @@ public:
 		m_pDiskFS = pDiskFS;
 	}
 
-	cdc::FileSystem* GetBestFileSystem(const char* fileName)
+	cdc::FileSystem* GetBestFileSystem(const char* fileName, char** outFilename)
 	{
-		// check if file exists on disk, if so return the diskFS
-		if (m_pDiskFS->FileExists(fileName))
+		// suffix pc-w to mods folder
+		char path[_MAX_PATH];
+		strcpy_s(path, fileName);
+
+		for (char* p = path; *p; ++p) *p = tolower(*p);
+
+		if (strncmp(path, "pc-w", 4) == 0)
 		{
+			strncpy(path, "mods", 4);
+		}
+
+		// check if file exists on disk, if so return the diskFS
+		if (m_pDiskFS->FileExists(path))
+		{
+			*outFilename = path;
 			return m_pDiskFS;
 		}
 
+		*outFilename = (char*)fileName;
 		return m_pFS;
 	}
 
 	virtual void* RequestRead(void* receiver, const char* fileName, unsigned int startOffset)
 	{
-		auto pFS = GetBestFileSystem(fileName);
+		char* path;
+		auto pFS = GetBestFileSystem(fileName, &path);
 
-		return pFS->RequestRead(receiver, fileName, startOffset);
+		return pFS->RequestRead(receiver, path, startOffset);
 	}
 
 	virtual void* OpenFile(char const* fileName)
 	{
-		auto pFS = GetBestFileSystem(fileName);
+		char* path;
+		auto pFS = GetBestFileSystem(fileName, &path);
 
-		return pFS->OpenFile(fileName);
+		return pFS->OpenFile(path);
 	}
 
 	virtual bool FileExists(char const* fileName)
 	{
-		return (m_pFS->FileExists(fileName) || m_pDiskFS->FileExists(fileName));
+		char* path;
+		auto pFS = GetBestFileSystem(fileName, &path);
+
+		return pFS->FileExists(path);
 	}
 
 	virtual unsigned int GetFileSize(char const* fileName)
 	{
-		auto pFS = GetBestFileSystem(fileName);
+		char* path;
+		auto pFS = GetBestFileSystem(fileName, &path);
 
-		return pFS->GetFileSize(fileName);
+		return pFS->GetFileSize(path);
 	}
 
 	virtual void SetSpecialisationMask(unsigned int specMask)
