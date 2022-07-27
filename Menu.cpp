@@ -40,123 +40,7 @@ char IsPs2()
     return Game::m_binoculars;
 }
 
-bool isDiskFS = false;
 bool switchPlayerNextFrame = false;
-
-extern int(__thiscall* MSFileSystem_FileExists)(int _this, const char* file);
-
-int(__cdecl* origIMAGE_LoadImage)(char* name);
-int __cdecl IMAGE_LoadImage(char* name)
-{
-    char string[256];
-    sprintf_s(string, "\\" CONFIGNAME "\\units\\%s.raw", name);
-
-    if (MSFileSystem_FileExists(*(int*)DISKFS, string))
-    {
-        Hooking::GetInstance().GetMenu()->Log("%s exists, loading that one instead\n", string);
-        isDiskFS = true;
-    }
-
-    auto ret = origIMAGE_LoadImage(name);
-    isDiskFS = false;
-
-    return ret;
-}
-
-int(__cdecl* origInsertGlobalObject)(int a1, char a2);
-int __cdecl InsertGlobalObject(int a1, char a2)
-{
-#if TRAE
-    auto objects = *(int*)0x842C70;
-#elif TR7
-    auto objects = *(int*)ADDR(0x10F9110, 0x10EFC90);
-#elif TR8
-    auto objects = *(int*)0xDB94D0;
-#endif
-
-#if TRAE || TR7
-    auto name = (char*)*(int*)(objects + 8 * a1 - 4);
-#elif TR8
-    auto name = (char*)*(int*)(objects + 8 * a1);
-#endif
-
-    char string[256];
-    sprintf_s(string, "\\" CONFIGNAME "\\units\\%s.drm", name);
-
-    //Hooking::GetInstance().GetMenu()->Log("InsertGlobalObject: %s\n", name);
-    if (MSFileSystem_FileExists(*(int*)DISKFS, string))
-    {
-        Hooking::GetInstance().GetMenu()->Log("%s exists, loading that one instead\n", string);
-        isDiskFS = true;
-    }
-
-    auto ret = origInsertGlobalObject(a1, a2);
-    isDiskFS = false;
-
-    return ret;
-}
-
-void(__cdecl* origUnitFileName)(char*, char*, char*);
-void unitFileName(char* name, char* unit, char* ext)
-{
-    if (isDiskFS)
-    {
-        sprintf(name, "\\" CONFIGNAME "\\units\\%s.drm", unit);
-        return;
-    }
-
-    origUnitFileName(name, unit, ext);
-}
-
-void(__cdecl* origImageFileName)(char*, char*);
-void __cdecl imageFileName(char* name, char* image)
-{
-    if (isDiskFS)
-    {
-        sprintf(name, "\\" CONFIGNAME "\\units\\%s.raw", image);
-        return;
-    }
-
-    origImageFileName(name, image);
-}
-
-int getFS()
-{
-    if (isDiskFS)
-    {
-        return *(int*)DISKFS;
-    }
-
-#if TRAE
-    return *(int*)0x83888C;
-#elif TR8
-    return *(int*)0x9CE278;
-#elif TR7
-    return *(int*)ADDR(0x10EEC7C, 0x10E58BC);
-#endif
-}
-
-int(__cdecl* origSTREAM_LoadLevel)(char* a1, int a2, char a3);
-
-int __cdecl STREAM_LoadLevel(char* a1, int a2, char a3)
-{
-    Hooking::GetInstance().GetMenu()->Log(__FUNCTION__ " Loading %s\n", a1);
-
-    char string[256];
-    sprintf_s(string, "\\" CONFIGNAME "\\units\\%s.drm", a1);
-
-    if (MSFileSystem_FileExists(*(int*)DISKFS, string))
-    {
-        // load this unit from disk
-        Hooking::GetInstance().GetMenu()->Log("%s exists, loading this unit from disk\n", string);
-        isDiskFS = true;
-    }
-
-    auto unit = origSTREAM_LoadLevel(a1, a2, a3);
-    isDiskFS = false;
-
-    return unit;
-}
 
 void(__cdecl* origSTREAM_FinishLoad)(StreamUnit* unit);
 void STREAM_FinishLoad(StreamUnit* unit)
@@ -219,22 +103,12 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
     MH_CreateHook((void*)0x0046F080, hooked_Subtitle_Add, (void**)&orginal_Subtitle_Add);
 
     MH_CreateHook((void*)0x004E6EC0, IsPs2, nullptr);
-    MH_CreateHook((void*)0x005DBBA0, STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
     MH_CreateHook((void*)0x005DB680, STREAM_FinishLoad, (void**)&origSTREAM_FinishLoad);
 
     MH_CreateHook((void*)0x00424FE0, CinematicHandlerImpl_NextFrame, (void**)&origCinematicHandlerImpl_NextFrame);
 #endif
 
 #if TRAE
-    MH_CreateHook((void*)0x0045F640, getFS, nullptr);
-    MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(0x005E52C0);
-
-    MH_CreateHook((void*)0x00401480, IMAGE_LoadImage, (void**)&origIMAGE_LoadImage);
-
-    MH_CreateHook((void*)0x45F650, unitFileName, (void**)&origUnitFileName);
-    MH_CreateHook((void*)0x5DB360, InsertGlobalObject, (void**)&origInsertGlobalObject);
-    MH_CreateHook((void*)0x0045F6A0, imageFileName, (void**)&origImageFileName);
-
     INSTANCE_ReallyRemoveInstance = reinterpret_cast<int(__cdecl*)(Instance*, int, char)>(0x0045A3A0);
     INSTANCE_SetModel = reinterpret_cast<void(__cdecl*)(Instance * instance, int model)>(0x00458A90);
 
@@ -246,19 +120,8 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
     RELOC_GetProcAddress = reinterpret_cast<int(*__cdecl)(int, const char*)>(0x004680C0);
 #elif TR7
-    MH_CreateHook((void*)ADDR(0x45F420, 0x45C700), getFS, nullptr);
-    MH_CreateHook((void*)ADDR(0x45F4D0, 0x45C730), unitFileName, (void**)&origUnitFileName);
-
-    MH_CreateHook((void*)ADDR(0x5DB550, 0x5D5390), InsertGlobalObject, (void**)&origInsertGlobalObject);
-    MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(ADDR(0x0047DC70, 0x47AB50));
-
     MH_CreateHook((void*)ADDR(0x457730, 0x454A00), newinstance, (void**)&INSTANCE_NewInstance);
-
-    MH_CreateHook((void*)ADDR(0x5DBD20, 0x5D5B60), STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
     MH_CreateHook((void*)ADDR(0x5DB800, 0x5D5640), STREAM_FinishLoad, (void**)&origSTREAM_FinishLoad);
-
-    MH_CreateHook((void*)ADDR(0x401480, 0x401480), IMAGE_LoadImage, (void**)&origIMAGE_LoadImage);
-    MH_CreateHook((void*)ADDR(0x45F520, 0x45C780), imageFileName, (void**)&origImageFileName);
 
     INSTANCE_ReallyRemoveInstance = reinterpret_cast<int(__cdecl*)(Instance*, int, char)>(ADDR(0x45A330, 0x4575B0));
     INSTANCE_SetModel = reinterpret_cast<void(__cdecl*)(Instance * instance, int model)>(ADDR(0x458C80, 0x455F40));
@@ -273,14 +136,6 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 #endif
 
 #if TR8
-    MH_CreateHook((void*)0x00472B50, getFS, nullptr);
-    MH_CreateHook((void*)0x00477970, unitFileName, (void**)&origUnitFileName);
-
-    MH_CreateHook((void*)0x005C1550, InsertGlobalObject, (void**)&origInsertGlobalObject);
-    MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(0x00473FB0);
-
-    MH_CreateHook((void*)0x005D23F0, STREAM_LoadLevel, (void**)&origSTREAM_LoadLevel);
-
     INSTANCE_ReallyRemoveInstance = reinterpret_cast<int(__cdecl*)(Instance*, int, char)>(0x005BC4E0);
     INSTANCE_SetModel = reinterpret_cast<void(__cdecl*)(Instance * instance, int model)>(0x005B9170);
 

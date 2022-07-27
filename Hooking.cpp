@@ -4,7 +4,6 @@
 #include "ControlHooks.hpp"
 #include "Camera.hpp"
 
-#include "sound/multiplexstream.hpp"
 #include "game/reloc.hpp"
 #include "game/d3d/d3dterrain.hpp"
 #include "game/script/script.hpp"
@@ -57,9 +56,7 @@ Hooking::Hooking()
 	InstallCameraHooks();
 	InsertTerrainDrawableHooks();
 
-#if TRAE // TODO
-	//InstallSoundHooks();
-
+#if TRAE
 	MH_CreateHook((void*)0x467E60, MakePeHandle, nullptr);
 #elif TR7
 	MH_CreateHook((void*)ADDR(0x467310, 0x4642F0), MakePeHandle, nullptr);
@@ -103,25 +100,6 @@ char __fastcall PCDeviceManager__CreateDevice(DWORD* _this, DWORD _, DWORD a2)
 	Hooking::GetInstance().GetMenu()->SetDevice(pDevice);
 
 	return val;
-}
-
-int(__thiscall* MSFileSystem_FileExists)(int _this, const char* file);
-
-int(__cdecl* origOBTABLE_Init)(int a1);
-
-int __cdecl OBTABLE_Init(int a1)
-{
-	auto exists = MSFileSystem_FileExists(*(int*)DISKFS, "\\" CONFIGNAME "\\pc-w\\objectlist.txt");
-	if (exists)
-	{
-		Hooking::GetInstance().GetMenu()->Log("objectlist.txt exists outside bigfile, the game will use that one.\n");
-		isDiskFS = true;
-	}
-
-	auto ret = origOBTABLE_Init(a1);
-
-	isDiskFS = false;
-	return ret;
 }
 
 void(__thiscall* orginal_PCDeviceManager__ReleaseDevice)(DWORD* _this, int status);
@@ -631,13 +609,7 @@ void Hooking::GotDevice()
 	TRANS_TransToDrawVertexV4f = reinterpret_cast<void(__cdecl*)(DRAWVERTEX* v, cdc::Vector * vec)>(0x00402F20);
 
 	DRAW_DrawQuads = reinterpret_cast<void(__cdecl*)(int flags, int tpage, DRAWVERTEX * verts, int numquads)>(0x00406D70);
-
-	MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(0x005E52C0);
-	MH_CreateHook((void*)0x465E30, OBTABLE_Init, (void**)&origOBTABLE_Init);
 #elif TR7
-	MSFileSystem_FileExists = reinterpret_cast<int(__thiscall*)(int _this, const char* file)>(ADDR(0x47DC70, 0x47AB50));
-	MH_CreateHook((void*)ADDR(0x465320, 0x462300), OBTABLE_Init, (void**)&origOBTABLE_Init);
-
 	MH_CreateHook((void*)ADDR(0x435050, 0x432570), Font__Flush, (void**)&org_Font__Flush);
 
 	Font__PrintFormatted = reinterpret_cast<void(__thiscall*)(void*, const char*, bool)>(ADDR(0x434E80, 0x4323D0));

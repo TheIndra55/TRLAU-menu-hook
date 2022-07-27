@@ -57,8 +57,6 @@ static LRESULT hooked_RegularWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 static BOOL(WINAPI* original_SetCursorPos)(int, int);
 static BOOL WINAPI hooked_SetCursorPos(int x, int y);
 
-extern bool isDiskFS;
-
 void NOP(void* address, int num);
 
 uint8_t __declspec(noinline)* FindPattern(BYTE* bMask, char* szMask);
