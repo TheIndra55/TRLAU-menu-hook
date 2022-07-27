@@ -16,3 +16,6 @@ namespace cdc
 		virtual void Synchronize() = 0;
 	};
 }
+
+cdc::FileSystem* GetFS();
+cdc::FileSystem* CreateHookFileSystem(cdc::FileSystem* pFS, cdc::FileSystem* pDiskFS);

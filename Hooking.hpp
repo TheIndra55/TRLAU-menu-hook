@@ -5,6 +5,8 @@
 #include "Game.hpp"
 #include "Menu.hpp"
 
+#include "game/filesystem.hpp"
+
 namespace mh
 {
 	struct Config

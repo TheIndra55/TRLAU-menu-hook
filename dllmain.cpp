@@ -2,12 +2,21 @@
 
 static bool hit = false;
 
-BOOL (WINAPI* dGetVersionExA)(LPOSVERSIONINFOA  lpStartupInfo);
+BOOL (WINAPI* dGetVersionExA)(LPSTARTUPINFOA lpStartupInfo);
 
-BOOL  WINAPI hGetVersionExA(LPOSVERSIONINFOA  lpStartupInfo)
+BOOL  WINAPI hGetVersionExA(LPSTARTUPINFOA lpStartupInfo)
 {
     if (!hit)
     {
+        // insert this hook early
+        // TODO underworld implement + testing
+#if TRAE
+        MH_CreateHook((void*)0x45F640, GetFS, nullptr);
+#elif TR7
+        MH_CreateHook((void*)ADDR(0x45F420, 0x45C700), GetFS, nullptr);
+#endif
+        MH_EnableHook(GetFS);
+
         Hooking::GetInstance(); // Will call the ctor
         hit = true;
 
@@ -38,7 +47,7 @@ DWORD WINAPI Hook(LPVOID lpParam)
 #if TRAE || TR7
     // we cannot insert our hooks now since game is not done yet unpacking
     // hook one of the first functions called from unpacked code and insert our hooks then
-    MH_CreateHookApi(L"Kernel32", "GetStartupInfoW", hGetVersionExA, reinterpret_cast<void**>(&dGetVersionExA));
+    MH_CreateHookApi(L"Kernel32", "GetStartupInfoA", hGetVersionExA, reinterpret_cast<void**>(&dGetVersionExA));
     MH_EnableHook(MH_ALL_HOOKS);
 #else
     Hooking::GetInstance(); // Will call the ctor
@@ -61,7 +70,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
     switch (ul_reason_for_call)
     {
         case DLL_PROCESS_ATTACH:
-            CreateThread(nullptr, 0, Hook, NULL, 0, NULL);
+            //CreateThread(nullptr, 0, Hook, NULL, 0, NULL);
+            Hook(NULL);
             break;
         case DLL_THREAD_ATTACH:
         case DLL_THREAD_DETACH:

@@ -76,3 +76,8 @@ public:
 		m_pFS->Synchronize();
 	}
 };
+
+cdc::FileSystem* CreateHookFileSystem(cdc::FileSystem* pFS, cdc::FileSystem* pDiskFS)
+{
+	return new HookFileSystem(pFS, pDiskFS);
+}

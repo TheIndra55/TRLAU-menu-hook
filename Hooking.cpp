@@ -118,6 +118,13 @@ float* (__cdecl* TRANS_RotTransPersVectorf)(DWORD a1, DWORD a2);
 void(__cdecl* org_Font__Flush)();
 void(__thiscall* Font__PrintFormatted)(void* font, const char* formatted, bool backdrop);
 
+cdc::FileSystem* GetFS()
+{
+	static cdc::FileSystem* pFS = CreateHookFileSystem(*(cdc::FileSystem**)ARCHIVEFS, *(cdc::FileSystem**)DISKFS);
+
+	return pFS;
+}
+
 void FONT_Print(const char* fmt, ...)
 {
 	va_list va;
