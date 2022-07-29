@@ -12,6 +12,7 @@ namespace mh
 	struct Config
 	{
 		bool remove_legal_screen = true;
+		bool remove_quit_message = true;
 	};
 }
 

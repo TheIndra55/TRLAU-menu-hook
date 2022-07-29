@@ -1,4 +1,7 @@
 {
 	// Removes the ~5 seconds legal screen while starting the game (Legend, Anniversary).
-	"remove_legal_screen": true
+	"remove_legal_screen": true,
+	
+	// Removes the "Are you sure you want to quit?" message while pressing Alt+F4
+	"remove_quit_message": true
 }

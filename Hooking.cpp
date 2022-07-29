@@ -720,8 +720,14 @@ LRESULT hooked_RegularWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		menu->SetVisibility(!focus);
 	}
 
+	if (msg == WM_CLOSE
+		&& Hooking::GetInstance().GetConfig().remove_quit_message)
+	{
+		PostQuitMessage(0);
+	}
+
 	// pass input to menu
-	Hooking::GetInstance().GetMenu()->Process(hwnd, msg, wparam, lparam);
+	menu->Process(hwnd, msg, wparam, lparam);
 
 	// pass input to orginal game wndproc
 	return original_RegularWndProc(hwnd, msg, wparam, lparam);
