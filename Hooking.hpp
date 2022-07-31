@@ -13,6 +13,7 @@ namespace mh
 	{
 		bool remove_legal_screen = true;
 		bool remove_quit_message = true;
+		bool hide_menu_on_start = false;
 	};
 }
 

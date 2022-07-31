@@ -1,4 +1,3 @@
 future todo
 
-- should replace all offload code with custom cdc::FileSystem
 - being able to replace some section types by id e.g. textures without entire drm

@@ -554,6 +554,7 @@ void __cdecl Font__Flush()
 void Hooking::GotDevice()
 {
 	this->m_menu = std::make_unique<Menu>(pDevice, pHwnd);
+	this->m_menu->SetVisibility(!m_config.hide_menu_on_start);
 
 	// hook game's d3d9 present function and wndproc function
 #if TRAE
@@ -720,11 +721,13 @@ LRESULT hooked_RegularWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		menu->SetVisibility(!focus);
 	}
 
+#if TRAE
 	if (msg == WM_CLOSE
 		&& Hooking::GetInstance().GetConfig().remove_quit_message)
 	{
 		PostQuitMessage(0);
 	}
+#endif
 
 	// pass input to menu
 	menu->Process(hwnd, msg, wparam, lparam);

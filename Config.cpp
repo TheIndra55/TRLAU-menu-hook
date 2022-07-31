@@ -5,7 +5,10 @@
 
 namespace mh
 {
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(Config, remove_legal_screen, remove_quit_message);
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(Config,
+		remove_legal_screen,
+		remove_quit_message,
+		hide_menu_on_start);
 };
 
 mh::Config& Hooking::GetConfig()

@@ -3,5 +3,8 @@
 	"remove_legal_screen": true,
 	
 	// Removes the "Are you sure you want to quit?" message while pressing Alt+F4
-	"remove_quit_message": true
+	"remove_quit_message": true,
+	
+	// Doesn't show the menu automatically while starting the game
+	"hide_menu_on_start": false
 }
