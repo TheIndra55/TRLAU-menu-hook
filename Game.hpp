@@ -22,6 +22,7 @@
 	#define MAINFONT 0x007D1800
 	#define INSTANCELIST 0x817D64
 	#define GLOBALDATA 0x007C8A50
+	#define CAMERAMODE 0x850984
 #elif TR8
 	#define GAMETRACKER 0x00E7F088
 	#define GAMETRACKER_BASE_AREA (GAMETRACKER + 56)
@@ -47,6 +48,7 @@
 	#define MAINFONT ADDR(0x01088A2C, 0x107F680)
 	#define INSTANCELIST ADDR(0x10CEE64, 0x10C5AA4)
 	#define GLOBALDATA ADDR(0x107F920, 0x1076980)
+	#define CAMERAMODE ADDR(0, 0x10FC974)
 #else
 	#error "No game specified, set TRAE for Anniversary, TR7 for Legend or TR8 for Underworld"
 #endif

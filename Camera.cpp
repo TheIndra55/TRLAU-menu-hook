@@ -17,6 +17,11 @@ double(__thiscall* InputSystem_GetAxisValue)(int _this, int a2);
 
 void CAMERA_Fly(Camera* camera)
 {
+	if (Hooking::GetInstance().GetMenu()->GetFreeCamMode() == FreeCameraMode::nocontrol)
+	{
+		return;
+	}
+
 	auto speed = EVENT_InputActionOn(18);
 
 	if (EVENT_InputActionOn(1)) // forward

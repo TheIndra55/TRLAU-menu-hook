@@ -251,23 +251,20 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
     if (msg == WM_KEYUP && wparam == VK_F4)
     {
-#if TRAE
-        auto cameraMode = (__int16*)0x850984;
-        *cameraMode = *cameraMode == 7 ? 2 : 7;
-#elif TR7 && RETAIL_VERSION
-        auto cameraMode = (__int16*)0x10FC974;
-        *cameraMode = *cameraMode == 7 ? 2 : 7;
-#elif TR8
         if (m_freeCamMode == FreeCameraMode::disabled)
         {
             // enable free camera
             m_freeCamMode = FreeCameraMode::enabled;
 
             // switch to camera
+#if TR8
             CAMERA_SetMode(11);
 
             auto camera = *(int*)0xE80534;
             *(cdc::Vector*)(camera + 0x40) = (*(Instance**)PLAYERINSTANCE)->position;
+#elif TRAE || (TR7 && RETAIL_VERSION)
+            *(__int16*)CAMERAMODE = 7;
+#endif
         }
         else if (m_freeCamMode == FreeCameraMode::enabled)
         {
@@ -279,9 +276,12 @@ void Menu::Process(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
             m_freeCamMode = FreeCameraMode::disabled;
 
             // switch back to gameplay camera
+#if TR8
             _setToGameplayCamera(0xE804F0 /* AVCameraManager */);
-        }
+#elif TRAE || (TR7 && RETAIL_VERSION)
+            *(__int16*)CAMERAMODE = 2;
 #endif
+        }
     }
 
     // pause the game with F3
