@@ -471,6 +471,8 @@ void Menu::Draw()
     {
         *(int*)(GAMETRACKER + 0x18) /*debugFlags2*/ |= 0x100;
     }
+
+    ImGui::Checkbox("Show load queue", &m_drawSettings.printFileRequests);
 #endif
 
 #if TRAE

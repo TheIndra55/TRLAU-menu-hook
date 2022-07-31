@@ -31,6 +31,7 @@ struct DrawSettings
 	bool drawCollision = false;
 	bool drawPortals = false;
 	bool drawSignals = false;
+	bool printFileRequests = false;
 
 	// "DrawSettings"
 	bool noRespawn = false;

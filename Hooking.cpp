@@ -278,6 +278,19 @@ void __cdecl Font__Flush()
 	auto level = *(Level**)(GAMETRACKER + 8);
 	auto drawSettings = Hooking::GetInstance().GetMenu()->m_drawSettings;
 
+	// prints queued file requests
+	if (drawSettings.printFileRequests && g_pDiskFS)
+	{
+		SetCursor(15.f, 15.f);
+
+		auto queue = g_pDiskFS->m_queue;
+		for (auto request = queue; request != nullptr; request = request->m_next)
+		{
+			FONT_Print("%s (%d/%d)\n", request->m_pFileName, request->m_bytesRead, request->m_size);
+		}
+	}
+
+	// draws collision mesh
 	if (drawSettings.drawCollision && level)
 	{
 		auto terrain = (Terrain*)level->terrain;
@@ -309,6 +322,7 @@ void __cdecl Font__Flush()
 		}
 	}
 
+	// draws signal mesh
 	if (level && drawSettings.drawSignals)
 	{
 		auto terrain = (Terrain*)level->terrain;
@@ -336,6 +350,7 @@ void __cdecl Font__Flush()
 		}
 	}
 
+	// draws portals
 	if (drawSettings.drawPortals && level)
 	{
 		auto terrain = *(Terrain*)level->terrain;
