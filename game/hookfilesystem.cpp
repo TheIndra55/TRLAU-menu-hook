@@ -109,6 +109,23 @@ public:
 	{
 		m_pFS->Synchronize();
 	}
+
+#if TR8
+	virtual void Suspend()
+	{
+		m_pFS->Suspend();
+	}
+
+	virtual bool Resume()
+	{
+		return m_pFS->Resume();
+	}
+
+	virtual bool IsSuspended()
+	{
+		return m_pFS->IsSuspended();
+	}
+#endif
 };
 
 cdc::FileSystem* CreateHookFileSystem(cdc::FileSystem* pFS, cdc::FileSystem* pDiskFS)

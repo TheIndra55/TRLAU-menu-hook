@@ -9,7 +9,6 @@ BOOL  WINAPI hGetVersionExA(LPSTARTUPINFOA lpStartupInfo)
     if (!hit)
     {
         // insert this hook early
-        // TODO underworld implement + testing
 #if TRAE
         MH_CreateHook((void*)0x45F640, GetFS, nullptr);
 #elif TR7

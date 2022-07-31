@@ -14,6 +14,11 @@ namespace cdc
 		virtual int GetStatus() = 0;
 		virtual void Update() = 0;
 		virtual void Synchronize() = 0;
+#if TR8
+		virtual void Suspend() = 0;
+		virtual bool Resume() = 0;
+		virtual bool IsSuspended() = 0;
+#endif
 	};
 }
 
