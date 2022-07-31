@@ -88,6 +88,20 @@ bool HookedWipe11_WantsNormalFading()
 	return UIScreenManager_WantsNormalFading();
 }
 
+void(__cdecl* RenderG2_MotionBlur)(int blur, int time, int timeout);
+
+void HookedRenderG2_MotionBlur(int blur, int time, int timeout)
+{
+	if (Hooking::GetInstance().GetMenu()->m_drawSettings.noMotionBlur)
+	{
+		RenderG2_MotionBlur(0, 0, 0);
+		
+		return;
+	}
+
+	RenderG2_MotionBlur(blur, time, timeout);
+}
+
 void Game::Initialize()
 {
 #if TRAE
@@ -149,6 +163,7 @@ void Game::Initialize()
 	NOP((void*)0x005584DC, 5);
 	MH_CreateHook((void*)0x005699C0, DeathStateProcess, (void**)&DeathState_Process);
 	MH_CreateHook((void*)0x005581D0, DeathStateEntry, (void**)&DeathState_Entry);
+	MH_CreateHook((void*)0x0043AB40, HookedRenderG2_MotionBlur, (void**)&RenderG2_MotionBlur);
 
 	UIScreenManager_WantsNormalFading = reinterpret_cast<bool(__cdecl*)()>(0x004FC1F0);
 
@@ -166,6 +181,7 @@ void Game::Initialize()
 	NOP((void*)ADDR(0x563478, 0x55E188), 5);
 	MH_CreateHook((void*)ADDR(0x574320, 0x56EC70), DeathStateProcess, (void**)&DeathState_Process);
 	MH_CreateHook((void*)ADDR(0x5631B0, 0x55DEC0), DeathStateEntry, (void**)&DeathState_Entry);
+	MH_CreateHook((void*)ADDR(0x40D060, 0x40CA80), HookedRenderG2_MotionBlur, (void**)&RenderG2_MotionBlur);
 
 	UIScreenManager_WantsNormalFading = reinterpret_cast<bool(__cdecl*)()>(ADDR(0x4FC130, 0x4F7480));
 

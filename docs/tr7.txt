@@ -83,3 +83,4 @@ MAIN_FailAbort 00401F20
 cdc__FatalError 005DA0C0
 EVENT_DebugInputActionPressed 0042E420
 DisplayExceptionInfo 00401A50
+RenderG2_MotionBlur 0040CA80

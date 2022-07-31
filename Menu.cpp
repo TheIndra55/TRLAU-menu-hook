@@ -444,6 +444,11 @@ void Menu::Draw()
     {
         SaveSettings();
     }
+
+    if (ImGui::Checkbox("No motion blur", &m_drawSettings.noMotionBlur))
+    {
+        SaveSettings();
+    }
 #endif
 
 #if TRAE
@@ -1010,11 +1015,14 @@ void Menu::LoadSettings() noexcept
     HKEY phkResult;
     if (!RegOpenKeyA(HKEY_CURRENT_USER, "SOFTWARE\\TRAE-Menu-Hook", &phkResult))
     {
-        DWORD noCinematicBars;
-        DWORD len = sizeof(noCinematicBars);
+        DWORD value;
+        DWORD len = sizeof(value);
 
-        RegQueryValueExA(phkResult, "NoCinematicBars", 0, 0, (LPBYTE)&noCinematicBars, &len);
-        m_drawSettings.noMovieBars = noCinematicBars;
+        RegQueryValueExA(phkResult, "NoCinematicBars", 0, 0, (LPBYTE)&value, &len);
+        m_drawSettings.noMovieBars = value;
+
+        RegQueryValueExA(phkResult, "NoMotionBlur", 0, 0, (LPBYTE)&value, &len);
+        m_drawSettings.noMotionBlur = value;
 
         RegCloseKey(phkResult);
     }
@@ -1025,8 +1033,11 @@ void Menu::SaveSettings() const noexcept
     HKEY phkResult;
     if (!RegCreateKeyA(HKEY_CURRENT_USER, "SOFTWARE\\TRAE-Menu-Hook", &phkResult))
     {
-        DWORD noCinematicBars = m_drawSettings.noMovieBars;
-        RegSetValueExA(phkResult, "NoCinematicBars", 0, REG_DWORD, (LPBYTE)&noCinematicBars, 4);
+        DWORD value = m_drawSettings.noMovieBars;
+        RegSetValueExA(phkResult, "NoCinematicBars", 0, REG_DWORD, (LPBYTE)&value, 4);
+
+        value = m_drawSettings.noMotionBlur;
+        RegSetValueExA(phkResult, "NoMotionBlur", 0, REG_DWORD, (LPBYTE)&value, 4);
 
         RegCloseKey(phkResult);
     }

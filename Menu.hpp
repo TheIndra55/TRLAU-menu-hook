@@ -35,6 +35,7 @@ struct DrawSettings
 	// "DrawSettings"
 	bool noRespawn = false;
 	bool noMovieBars = false;
+	bool noMotionBlur = false;
 };
 
 class Menu
