@@ -27,8 +27,17 @@ public:
 
 		for (char* p = path; *p; ++p) *p = tolower(*p);
 
+		// rewrite pc-w to mods folder
 		if (strncmp(path, "pc-w", 4) == 0)
 		{
+			strncpy(path, "mods", 4);
+		}
+
+		// rewrite root to mods folder
+ 		if (strncmp(path, "\\", 1) == 0)
+		{
+			// move string 4 bytes
+			memmove(path + 4, path, sizeof(path) - 4);
 			strncpy(path, "mods", 4);
 		}
 
