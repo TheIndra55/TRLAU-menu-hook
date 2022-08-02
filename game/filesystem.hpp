@@ -44,7 +44,7 @@ namespace cdc
 }
 
 #define g_pDiskFS VAR_U_(DISKFS, cdc::MSFileSystem*)
-#define g_pFS VAR_U_(ARCHIVEFS, cdc::MSFileSystem*)
+#define g_pFS VAR_U_(ARCHIVEFS, cdc::FileSystem*)
 
 cdc::FileSystem* GetFS();
 cdc::FileSystem* CreateHookFileSystem(cdc::FileSystem* pFS, cdc::FileSystem* pDiskFS);

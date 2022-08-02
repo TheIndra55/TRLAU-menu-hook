@@ -71,9 +71,24 @@ struct ObjectTracker
 };
 
 #if TRAE || TR7
+struct Model;
+
+struct AnimListEntry
+{
+	__int16 animationID;
+	__int16 animationNumber;
+};
+
 struct Object
 {
-	char padding[72];
+	char pad1[24];
+	__int16 numModels;
+	__int16 numAnims;
+	__int16 numAnimPatterns;
+	__int16 pad2;
+	Model** modelList;
+	AnimListEntry* animList;
+	char pad3[32];
 	char* name;
 };
 

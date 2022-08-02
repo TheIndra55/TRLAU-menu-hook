@@ -550,13 +550,13 @@ void __cdecl Font__Flush()
 					FONT_Print("Family %d", *(unsigned __int16*)(data + 2));
 				}
 
-				if (settings.drawAnim)
+				if (settings.drawAnim && instance->object->numAnims > 0)
 				{
 					auto anim = G2EmulationInstanceQueryAnimation(instance, 0);
 
 					srcVector.y += 15.f;
 					SetCursor(srcVector.x, srcVector.y);
-					FONT_Print("Anim %d", anim);
+					FONT_Print("Anim %d (%X)", anim, instance->object->animList[anim].animationID);
 				}
 			}
 		}
