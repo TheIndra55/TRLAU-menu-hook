@@ -493,7 +493,9 @@ void Menu::Draw()
 
     if (ImGui::CollapsingHeader("Draw settings"))
     {
-        ImGui::Checkbox("Filter", &m_drawSettings.filter);
+        ImGui::InputText("filter", m_drawSettings.filterName, 100);
+
+        ImGui::Checkbox("Filter family", &m_drawSettings.filter);
         ImGui::Checkbox("Draw intro id", &m_drawSettings.drawIntro);
         ImGui::Checkbox("Draw animation", &m_drawSettings.drawAnim);
         ImGui::Checkbox("Draw pointer address", &m_drawSettings.drawAddress);

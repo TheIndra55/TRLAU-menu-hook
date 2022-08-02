@@ -500,6 +500,11 @@ void __cdecl Font__Flush()
 			// TODO filter only pickups
 			auto show = [](DrawSettings settings, Instance* instance, DWORD data)
 			{
+				if (strlen(settings.filterName) > 0)
+				{
+					return strstr(instance->object->name, settings.filterName) != 0;
+				}
+
 				if (!settings.filter) return true;
 
 				// if selected 'draw enemy health' and instance is an enemy continue

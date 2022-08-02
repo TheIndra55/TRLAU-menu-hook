@@ -24,6 +24,7 @@ struct DrawSettings
 	bool drawFamily = false;
 	bool drawHealth = false;
 	bool drawAnim = false;
+	char filterName[100] = "";
 
 	bool drawDebug = false;
 	bool drawMarkup = false;
