@@ -14,137 +14,49 @@ Reverse engineering project for Tomb Raider LAU games, this repo contains the co
 
 ## Features
 
-### Tomb Raider: Anniversary
-
-**Supported version**: 4.58MB exe, Steam, GOG.com
-
 * Skew/flight cheat
-* Restore full health
-* Switch player character
-* Binoculars from Legend brought back
-* Disable level script
-* Debug log/draw from levels restored
-* Enable debug keypad to trigger debug input actions (e.g. killing bosses, skipping depending on level)
-* Wireframe rendering
-* Entity ESP to show entities (including intro id, "family", health and pointer address)
-* Switch chapter
-* Switch unit
-* Loading units from a folder outside of bigfile.000
-* List units
-* List instances in a window with properties
-* Turn lara into gold
-* Give items and weapons
-* Spawn instances (entities)
-* Delete instances
-* Load replacement or new objects outside bigfile.000
-* Load objectlist.txt outside bigfile.000
-* Load .raw files outside bigfile.000
 * Free camera
-* See info about instance models
-* Play animations
-* Slow down game (slow motion)
-* See level markup
-* See enemy navigation
-* See collision mesh
-* See portals
-* Skip intros/copyright screen
+* Switch player character
+* Load files from outside the bigfile
+* View and manipulate instances
+* Spawn instances
+* Level debug restored
+* Switch levels
+* Show level collisions, markup, portals, triggers (signals), enemy navigation
 * Disable death fade/respawn
 * Disable cinematic bars
-
-### Tomb Raider: Underworld
-
-**Supported version**: Steam, GOG.com
-
-* Skew/flight cheat
-* Switch player character
-* Switch unit
-* List units
-* Debug log from level scripts restored
-* Loading units from a folder outside of bigfile.000
-* List instances
-* Spawn instances
-* Delete instances
-* Load replacement objects outside bigfile.000
-* Play animations
 * Slow down game (slow motion)
-* Free camera
-* Disable death fade/respawn
-
-### Tomb Raider: Legend
-
-**Supported version**: nextgen demo debug exe
-
-* Skew/flight cheat
-* Switch player character
-* Switch unit
-* List units
-* List instances
-* Spawn instances
-* Delete instances
-* Entity ESP to show entities (including intro id, "family", health and pointer address)
-* Loading units from a folder outside of bigfile.000
-* Load replacement or new objects outside bigfile.000
-* Load objectlist.txt outside bigfile.000
-* Load .raw files outside bigfile.000
-* See info about instance models
-* Play animations
-* Slow down game (slow motion)
-* See level markup
-* See enemy navigation
 * Wireframe rendering
-* See collision mesh
-* See portals
-* Disable death fade/respawn
-* Disable cinematic bars
 
-## How to
+## Fixes/improvements
 
-Detailed installation instructions can be found on every release.
-
-Use [Ultimate ASI Loader](https://github.com/ThirteenAG/Ultimate-ASI-Loader/releases) by replacing `binkw32.dll` and drop the compiled .asi in your game folder.
+* Game no longer crashes while DEP is enabled
+* Game legal screen can be skipped
 
 ## Build
 
-Make sure you have [premake5](https://premake.github.io/) installed and in your PATH then run
-```
-premake5 vs2019
-```
-Open the solution file and build the project. Make sure you have [MinHook.x86.lib](https://github.com/TsudaKageyu/minhook/releases) and d3d9
+Make sure you have [premake5](https://premake.github.io/) installed and in your PATH.
 
-Make sure to set TRAE, TR7 or TR8 preprocessor definition for the target game.
-
-## Todo
-
-Other todo items can be found in the 'Projects' tab on GitHub
-
-- Code should be refactored
-- Support retail version of Legend
-- Make use of patterns to support more executables
+1. Clone the repository and all submodules
+2. Include [MinHook.x86.lib](https://github.com/TsudaKageyu/minhook/releases) in the folder.
+3. Run `premake5 vs2019` in your terminal.
+4. Open the generated solution (.sln) and build for the right game.
 
 ## FAQ
 
-### How to load files outside bigfile.000
+### How to load files outside bigfile
 
-Create a folder at the root of your disk \TRAE\units on which the game is installed for example D:\TRAE\units and add the files.
-
-|Game         | Folder | Support                                        |
-|-------------|--------|------------------------------------------------|
-| Anniversary | \TRAE\ | .raw, .drm (units and objects), objectlist.txt |
-| Legend      | \TR7\  | .raw, .drm (units and objects), objectlist.txt |
-| Underworld  | \TR8\  | .drm (units and objects)                       |
-
-Objects have to be defined in objectlist.txt to birth them ingame (see below), units don't and can always be loaded.
-
-### How to load custom objectlist.txt
-
-Use the same folder as above but instead of \units create a folder \pc-w and put your objectlist.txt inside, if it finds your objectlist.txt it will tell so in the Log window.
+Create a folder named 'mods' in your game folder, inside any files can be placed the game should load as replacement. The folder structure in the 'mods' folder is the same as in the PC-W folder in the bigfile.
 
 ### How to add new objects
 
-Start by adding the .drm file of your object to the units folder (see above), next open your objectlist.txt and add +1 to the number on the first line. Then scroll to the last line and add a new line
+Start by adding the .drm file of your object to the mods folder, next copy the orginal objectlist.txt to mods\(game codename)\pc-w\ and open it in notepad.
+Now add a new line with your object name and the new number.
 ```
 959,yourobjectwithoutdotdrm
 ```
+
+Go back to the start of the file and increase the first number and save the file.
 
 **Note** objectlist.txt must always end with a line ending (empty line) else the game will crash on start.
 
@@ -167,7 +79,7 @@ Start by adding the .drm file of your object to the units folder (see above), ne
 
 Flight controls depend on QWERTY/AZERTY keyboard layout
 
-### Thanks
+## Thanks to
 
 * SunBeam906
 * Xwilarg
