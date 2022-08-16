@@ -2,6 +2,7 @@
 
 #include <string.h>
 #include <ctype.h>
+#include <stdio.h>
 
 // so we don't need to include <Windows.h>
 #define _MAX_PATH 260
@@ -12,11 +13,14 @@ private:
 	cdc::FileSystem* m_pFS;
 	cdc::FileSystem* m_pDiskFS;
 
+	unsigned int m_specMask;
+
 public:
 	HookFileSystem(cdc::FileSystem* pFS, cdc::FileSystem* pDiskFS)
 	{
 		m_pFS = pFS;
 		m_pDiskFS = pDiskFS;
+		m_specMask = 1;
 	}
 
 	cdc::FileSystem* GetBestFileSystem(const char* fileName, char** outFilename)
@@ -39,6 +43,16 @@ public:
 			// move string 4 bytes
 			memmove(path + 4, path, sizeof(path) - 4);
 			strncpy(path, "mods", 4);
+		}
+
+		// check first for file on disk suffixed by our specialisation mask
+		char specPath[_MAX_PATH];
+		sprintf_s(specPath, "%s_%03d", path, m_specMask);
+
+		if (m_pDiskFS->FileExists(specPath))
+		{
+			*outFilename = specPath;
+			return m_pDiskFS;
 		}
 
 		// check if file exists on disk, if so return the diskFS
@@ -87,6 +101,9 @@ public:
 	virtual void SetSpecialisationMask(unsigned int specMask)
 	{
 		m_pFS->SetSpecialisationMask(specMask);
+
+		// unset next generation bit and set our spec mask
+		m_specMask = specMask & ~0x80000000;
 	}
 
 	virtual unsigned int GetSpecialisationMask()
