@@ -120,9 +120,14 @@ void(__thiscall* Font__PrintFormatted)(void* font, const char* formatted, bool b
 
 cdc::FileSystem* GetFS()
 {
+#ifndef TR8
 	static cdc::FileSystem* pFS = CreateHookFileSystem(*(cdc::FileSystem**)ARCHIVEFS, *(cdc::FileSystem**)DISKFS);
 
 	return pFS;
+#else
+	// return regular FS in Underworld since this function is used by our code too
+	return g_pFS;
+#endif
 }
 
 void FONT_Print(const char* fmt, ...)

@@ -83,6 +83,8 @@ int(__thiscall* _setToGameplayCamera)(int _this);
 
 int(*__cdecl RELOC_GetProcAddress)(int reloc, const char* symbol);
 
+void(__cdecl* LOAD_UnitFileName)(char* name, char* unit, char* extension);
+
 Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 {
 	m_pd3dDevice = pd3dDevice;
@@ -118,7 +120,8 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
     INSTANCE_HideUnhideDrawGroup = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x004319B0);
 
-    RELOC_GetProcAddress = reinterpret_cast<int(*__cdecl)(int, const char*)>(0x004680C0);
+    RELOC_GetProcAddress = reinterpret_cast<int(*__cdecl)(int, const char*)>(0x4680C0);
+    LOAD_UnitFileName = reinterpret_cast<void(__cdecl*)(char*, char*, char*)>(0x45F650);
 #elif TR7
     MH_CreateHook((void*)ADDR(0x457730, 0x454A00), newinstance, (void**)&INSTANCE_NewInstance);
     MH_CreateHook((void*)ADDR(0x5DB800, 0x5D5640), STREAM_FinishLoad, (void**)&origSTREAM_FinishLoad);
@@ -133,9 +136,8 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
     INSTANCE_HideUnhideDrawGroup = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(ADDR(0x458FB0, 0x456230));
 
     RELOC_GetProcAddress = reinterpret_cast<int(*__cdecl)(int, const char*)>(ADDR(0x467570, 0x464550));
-#endif
-
-#if TR8
+    LOAD_UnitFileName = reinterpret_cast<void(__cdecl*)(char*, char*, char*)>(ADDR(0x45F4D0, 0x45C730));
+#elif TR8
     INSTANCE_ReallyRemoveInstance = reinterpret_cast<int(__cdecl*)(Instance*, int, char)>(0x005BC4E0);
     INSTANCE_SetModel = reinterpret_cast<void(__cdecl*)(Instance * instance, int model)>(0x005B9170);
 
@@ -144,6 +146,8 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
     CAMERA_SetMode = reinterpret_cast<void(__cdecl*)(int mode)>(0x005F39F0);
     _setToGameplayCamera = reinterpret_cast<int(__thiscall*)(int _this)>(0x5EDF50);
+
+    LOAD_UnitFileName = reinterpret_cast<void(__cdecl*)(char*, char*, char*)>(0x477970);
 #endif
 }
 
@@ -508,9 +512,20 @@ void Menu::Draw()
     ImGui::InputText("unit", unit, MAX_UNIT_LEN);
     if (ImGui::Button("Load unit"))
     {
-        // change current unit
-        strcpy_s((char*)GAMETRACKER_BASE_AREA, MAX_UNIT_LEN, unit);
-        Game::ResetGame(4);
+        // check if any file exists, this does not check if file is actually a unit
+        char drmName[256];
+        LOAD_UnitFileName(drmName, unit, "drm");
+
+        if (GetFS()->FileExists(drmName))
+        {
+            // change current unit
+            strcpy_s((char*)GAMETRACKER_BASE_AREA, MAX_UNIT_LEN, unit);
+            Game::ResetGame(4);
+        }
+        else
+        {
+            Log("Failed to switch to unit '%s', unit does not exists.\n", unit);
+        }
     }
 
 #if TRAE
