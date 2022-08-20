@@ -154,6 +154,7 @@ void __cdecl EVENT_FontPrint(char* fmt, ...)
 	va_start(vl, fmt);
 	char str[1024]; // size same as game buffer
 	vsprintf_s(str, fmt, vl);
+	va_end(vl);
 
 	FONT_PrintFormatted(str);
 }

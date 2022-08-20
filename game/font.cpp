@@ -46,6 +46,7 @@ void FONT_Print(const char* fmt, ...)
 
 	va_start(va, fmt);
 	vsprintf_s(formatted, fmt, va);
+	va_end(va);
 
 	Font__PrintFormatted(gMainFont, formatted, false);
 }

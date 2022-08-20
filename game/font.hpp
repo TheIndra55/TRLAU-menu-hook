@@ -14,4 +14,6 @@ void  FONT_SetCursor(float x, float y);
 	#define gMainFont *(void**)0x7D1800
 #elif TR7
 	#define gMainFont *(void**)ADDR(0x1088A2C, 0x107F680)
+#elif TR8
+	#define gMainFont *(void**)0x9DE6D4
 #endif
