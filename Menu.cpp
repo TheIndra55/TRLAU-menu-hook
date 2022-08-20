@@ -81,7 +81,7 @@ void(__cdecl* CAMERA_SetMode)(int mode);
 int(__thiscall* _setToGameplayCamera)(int _this);
 #endif
 
-int(*__cdecl RELOC_GetProcAddress)(int reloc, const char* symbol);
+int(__cdecl* RELOC_GetProcAddress)(int reloc, const char* symbol);
 
 void(__cdecl* LOAD_UnitFileName)(char* name, char* unit, char* extension);
 
@@ -120,7 +120,7 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
     INSTANCE_HideUnhideDrawGroup = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(0x004319B0);
 
-    RELOC_GetProcAddress = reinterpret_cast<int(*__cdecl)(int, const char*)>(0x4680C0);
+    RELOC_GetProcAddress = reinterpret_cast<int(__cdecl*)(int, const char*)>(0x4680C0);
     LOAD_UnitFileName = reinterpret_cast<void(__cdecl*)(char*, char*, char*)>(0x45F650);
 #elif TR7
     MH_CreateHook((void*)ADDR(0x457730, 0x454A00), newinstance, (void**)&INSTANCE_NewInstance);
@@ -135,7 +135,7 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
     INSTANCE_HideUnhideDrawGroup = reinterpret_cast<void(__cdecl*)(Instance*, int, int)>(ADDR(0x458FB0, 0x456230));
 
-    RELOC_GetProcAddress = reinterpret_cast<int(*__cdecl)(int, const char*)>(ADDR(0x467570, 0x464550));
+    RELOC_GetProcAddress = reinterpret_cast<int(__cdecl*)(int, const char*)>(ADDR(0x467570, 0x464550));
     LOAD_UnitFileName = reinterpret_cast<void(__cdecl*)(char*, char*, char*)>(ADDR(0x45F4D0, 0x45C730));
 #elif TR8
     INSTANCE_ReallyRemoveInstance = reinterpret_cast<int(__cdecl*)(Instance*, int, char)>(0x005BC4E0);
@@ -508,7 +508,7 @@ void Menu::Draw()
     }
 #endif
 
-    static char unit[32] = "";
+    static char unit[MAX_UNIT_LEN] = "";
     ImGui::InputText("unit", unit, MAX_UNIT_LEN);
     if (ImGui::Button("Load unit"))
     {

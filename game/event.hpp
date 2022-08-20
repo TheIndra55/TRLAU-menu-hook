@@ -14,4 +14,4 @@ struct UnsavedVar
     int* var;
 };
 
-extern int(*__cdecl RELOC_GetProcAddress)(int reloc, const char* symbol);
+extern int(__cdecl* RELOC_GetProcAddress)(int reloc, const char* symbol);

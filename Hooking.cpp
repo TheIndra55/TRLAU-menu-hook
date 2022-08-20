@@ -136,7 +136,7 @@ void FONT_Print(const char* fmt, ...)
 	char formatted[1024];
 
 	va_start(va, fmt);
-	vsprintf(formatted, fmt, va);
+	vsprintf_s(formatted, fmt, va);
 
 	Font__PrintFormatted(*(void**)MAINFONT, formatted, false);
 }
@@ -178,7 +178,7 @@ void __cdecl EVENT_FontPrint(char* fmt, ...)
 	va_list vl;
 	va_start(vl, fmt);
 	char str[1024]; // size same as game buffer
-	vsprintf(str, fmt, vl);
+	vsprintf_s(str, fmt, vl);
 
 	FONT_PrintFormatted(str);
 }

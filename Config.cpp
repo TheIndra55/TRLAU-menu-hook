@@ -29,7 +29,7 @@ void Hooking::LoadConfig()
 
 		ifs.close();
 	}
-	catch (std::exception& e)
+	catch (std::exception&)
 	{
 		return;
 	}

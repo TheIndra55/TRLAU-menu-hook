@@ -32,17 +32,19 @@ project "TRAE-menu-hook"
 	files "vendor/MinHook.h"
 
     language "C++"
-	links { "MinHook.x86.lib", "d3d9.lib" }
+	links { "d3d9.lib" }
 	
 	-- Xinput disabled since it causes issues with Windows 7
 	defines { "IMGUI_IMPL_WIN32_DISABLE_GAMEPAD", "GENERAL_FIXES" }
 	
     filter "configurations:Debug"
         defines { "DEBUG", "_DEBUG" }
+        links { "libMinHook-mdd-x86.lib" }
         symbols "On"
 
     filter "configurations:Release"
         defines { "NDEBUG" }
+        links { "libMinHook-md-x86.lib" }
         optimize "On"
         symbols "On"
 
