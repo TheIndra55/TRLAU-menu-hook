@@ -7,6 +7,7 @@
 #include "game/reloc.hpp"
 #include "game/d3d/d3dterrain.hpp"
 #include "game/script/script.hpp"
+#include "game/font.hpp"
 
 LPDIRECT3DDEVICE9 pDevice;
 HWND pHwnd;
@@ -55,6 +56,8 @@ Hooking::Hooking()
 	InstallControlHooks();
 	InstallCameraHooks();
 	InsertTerrainDrawableHooks();
+
+	FONT_Init();
 
 #if TRAE
 	MH_CreateHook((void*)0x467E60, MakePeHandle, nullptr);
@@ -116,7 +119,6 @@ void __fastcall PCDeviceManager__ReleaseDevice(DWORD* _this, DWORD _, int status
 
 float* (__cdecl* TRANS_RotTransPersVectorf)(DWORD a1, DWORD a2);
 void(__cdecl* org_Font__Flush)();
-void(__thiscall* Font__PrintFormatted)(void* font, const char* formatted, bool backdrop);
 
 cdc::FileSystem* GetFS()
 {
@@ -130,33 +132,6 @@ cdc::FileSystem* GetFS()
 #endif
 }
 
-void FONT_Print(const char* fmt, ...)
-{
-	va_list va;
-	char formatted[1024];
-
-	va_start(va, fmt);
-	vsprintf_s(formatted, fmt, va);
-
-	Font__PrintFormatted(*(void**)MAINFONT, formatted, false);
-}
-
-void FONT_PrintFormatted(const char* formatted)
-{
-	Font__PrintFormatted(*(void**)MAINFONT, formatted, false);
-}
-
-void SetCursor(float x, float y)
-{
-#if TRAE
-	/* CursorX */ *(float*)0x007D180C = x;
-	/* CursorY */ *(float*)0x007D1810 = y;
-#elif TR7
-	/* CursorX */* (float*)ADDR(0x1088A38, 0x107F68C) = x;
-	/* CursorY */ *(float*)ADDR(0x1088A3C, 0x107F690) = y;
-#endif
-}
-
 #if TRAE || (TR7 && RETAIL_VERSION)
 void __cdecl EVENT_DisplayString(char* str, int time)
 {
@@ -167,7 +142,7 @@ void __cdecl EVENT_DisplayStringXY(char* str, int time, int x, int y)
 {
 	if (!Hooking::GetInstance().GetMenu()->m_drawSettings.drawDebug) return;
 
-	SetCursor((float)x, (float)y);
+	FONT_SetCursor((float)x, (float)y);
 	FONT_PrintFormatted(str);
 }
 
@@ -278,6 +253,7 @@ cdc::Vector GetVertice(unsigned int vertice, Mesh* mesh, cdc::Vector mapposition
 		mapposition.z + vertex.z };
 }
 
+// TODO move this to font.cpp and add some sort of function to subcribe before Font::Flush
 void __cdecl Font__Flush()
 {
 	auto level = *(Level**)(GAMETRACKER + 8);
@@ -286,7 +262,7 @@ void __cdecl Font__Flush()
 	// prints queued file requests
 	if (drawSettings.printFileRequests && g_pDiskFS)
 	{
-		SetCursor(15.f, 15.f);
+		FONT_SetCursor(15.f, 15.f);
 
 		auto queue = g_pDiskFS->m_queue;
 		for (auto request = queue; request != nullptr; request = request->m_next)
@@ -376,11 +352,11 @@ void __cdecl Font__Flush()
 			if (srcVector.z > 16.f)
 			{
 				// draw portal id and destination
-				SetCursor(srcVector.x, srcVector.y);
+				FONT_SetCursor(srcVector.x, srcVector.y);
 				FONT_Print("portal %d", i);
 
 				srcVector.y += 15.f;
-				SetCursor(srcVector.x, srcVector.y);
+				FONT_SetCursor(srcVector.x, srcVector.y);
 
 				FONT_Print("to %s", portal.tolevelname);
 
@@ -435,7 +411,7 @@ void __cdecl Font__Flush()
 #endif
 
 					// display the markup flags
-					SetCursor(srcVector.x, srcVector.y);
+					FONT_SetCursor(srcVector.x, srcVector.y);
 					FONT_Print("%s", FlagToFlags(flags).c_str());
 				}
 
@@ -524,7 +500,7 @@ void __cdecl Font__Flush()
 
 			if (settings.draw && show(settings, instance, data) && srcVector.z > 16.f /* only draw when on screen */)
 			{
-				SetCursor(srcVector.x, srcVector.y);
+				FONT_SetCursor(srcVector.x, srcVector.y);
 				FONT_Print("%s", object->name);
 
 				if (settings.drawHealth && extraData && data && *(unsigned __int16*)(data + 2) == 56048)
@@ -535,28 +511,28 @@ void __cdecl Font__Flush()
 					auto health = *(float*)(extraData + 5040);
 #endif
 					srcVector.y += 15.f;
-					SetCursor(srcVector.x, srcVector.y);
+					FONT_SetCursor(srcVector.x, srcVector.y);
 					FONT_Print("%8.2f", health);
 				}
 
 				if (settings.drawIntro)
 				{
 					srcVector.y += 15.f;
-					SetCursor(srcVector.x, srcVector.y);
+					FONT_SetCursor(srcVector.x, srcVector.y);
 					FONT_Print("Intro %d", instance->introUniqueID);
 				}
 
 				if (settings.drawAddress)
 				{
 					srcVector.y += 15.f;
-					SetCursor(srcVector.x, srcVector.y);
+					FONT_SetCursor(srcVector.x, srcVector.y);
 					FONT_Print("%p", instance);
 				}
 
 				if (settings.drawFamily && data)
 				{
 					srcVector.y += 15.f;
-					SetCursor(srcVector.x, srcVector.y);
+					FONT_SetCursor(srcVector.x, srcVector.y);
 					FONT_Print("Family %d", *(unsigned __int16*)(data + 2));
 				}
 
@@ -565,7 +541,7 @@ void __cdecl Font__Flush()
 					auto anim = G2EmulationInstanceQueryAnimation(instance, 0);
 
 					srcVector.y += 15.f;
-					SetCursor(srcVector.x, srcVector.y);
+					FONT_SetCursor(srcVector.x, srcVector.y);
 					FONT_Print("Anim %d (%X)", anim, instance->object->animList[anim].animationID);
 				}
 			}
@@ -635,8 +611,6 @@ void Hooking::GotDevice()
 
 	MH_CreateHook((void*)0x00434C40, Font__Flush, (void**)&org_Font__Flush);
 
-	Font__PrintFormatted = reinterpret_cast<void(__thiscall*)(void*, const char*, bool)>(0x434A70);
-
 	TRANS_RotTransPersVectorf = reinterpret_cast<float*(__cdecl*)(DWORD, DWORD)>(0x00402B50);
 
 	TRANS_TransToDrawVertexV4f = reinterpret_cast<void(__cdecl*)(DRAWVERTEX* v, cdc::Vector * vec)>(0x00402F20);
@@ -644,8 +618,6 @@ void Hooking::GotDevice()
 	DRAW_DrawQuads = reinterpret_cast<void(__cdecl*)(int flags, int tpage, DRAWVERTEX * verts, int numquads)>(0x00406D70);
 #elif TR7
 	MH_CreateHook((void*)ADDR(0x435050, 0x432570), Font__Flush, (void**)&org_Font__Flush);
-
-	Font__PrintFormatted = reinterpret_cast<void(__thiscall*)(void*, const char*, bool)>(ADDR(0x434E80, 0x4323D0));
 
 	TRANS_RotTransPersVectorf = reinterpret_cast<float* (__cdecl*)(DWORD, DWORD)>(ADDR(0x402D00, 0x402B20));
 
