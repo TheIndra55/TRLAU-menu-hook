@@ -699,7 +699,7 @@ void Menu::Draw()
     ImGui::BeginChild("LogRegion", ImVec2(), true);
 
     ImGui::TextUnformatted(this->logBuffer.begin());
-    ImGui::SetScrollHere(1.0f);
+    ImGui::SetScrollHereY(1.0f);
     ImGui::EndChild();
 
     ImGui::End();

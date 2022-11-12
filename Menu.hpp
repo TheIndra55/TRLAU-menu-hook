@@ -3,8 +3,8 @@
 #include <d3d9.h>
 
 #include "imgui.h"
-#include "vendor/imgui/examples/imgui_impl_dx9.h"
-#include "vendor/imgui/examples/imgui_impl_win32.h"
+#include "vendor/imgui/backends/imgui_impl_dx9.h"
+#include "vendor/imgui/backends/imgui_impl_win32.h"
 
 #include "Game.hpp"
 

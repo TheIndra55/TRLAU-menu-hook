@@ -21,10 +21,10 @@ project "TRAE-menu-hook"
 	files {
 		"vendor/imgui/*.cpp",
 		"vendor/imgui/*.h",
-		"vendor/imgui/examples/imgui_impl_win32.cpp",
-		"vendor/imgui/examples/imgui_impl_win32.h",
-		"vendor/imgui/examples/imgui_impl_dx9.cpp",
-		"vendor/imgui/examples/imgui_impl_dx9.h"
+		"vendor/imgui/backends/imgui_impl_win32.cpp",
+		"vendor/imgui/backends/imgui_impl_win32.h",
+		"vendor/imgui/backends/imgui_impl_dx9.cpp",
+		"vendor/imgui/backends/imgui_impl_dx9.h"
 	}
 	
 	includedirs { "vendor/imgui", "vendor/json/include" }
