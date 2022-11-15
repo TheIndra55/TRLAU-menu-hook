@@ -17,23 +17,6 @@ Instance* newinstance()
     return 0;
 }
 
-// most of this code is written in 2 minutes to confirm finds
-char(__cdecl* pushscreen)(int, bool);
-
-char pushscreenhooked(int screen, bool unk2)
-{
-    Hooking::GetInstance().GetMenu()->Log("Screen pushed: %d\n", screen);
-    return pushscreen(screen, unk2);
-}
-
-void(__thiscall* orginal_Subtitle_Add)(DWORD*, char* str, int duration);
-void __fastcall hooked_Subtitle_Add(DWORD* _this, void* _, char* str, int duration)
-{
-    Hooking::GetInstance().GetMenu()->Log("%s %d\n", str, duration);
-
-    orginal_Subtitle_Add(_this, str, duration);
-}
-
 char IsPs2()
 {
     // somewhat the zoom code for binoculars is inside an 'if IsPs2()' in TRAE so we have to hook that function
@@ -101,8 +84,6 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
 #if TRAE
     MH_CreateHook((void*)0x00457580, newinstance, (void**)&INSTANCE_NewInstance);
-    MH_CreateHook((void*)0x4FCB60, pushscreenhooked, (void**)&pushscreen);
-    MH_CreateHook((void*)0x0046F080, hooked_Subtitle_Add, (void**)&orginal_Subtitle_Add);
 
     MH_CreateHook((void*)0x004E6EC0, IsPs2, nullptr);
     MH_CreateHook((void*)0x005DB680, STREAM_FinishLoad, (void**)&origSTREAM_FinishLoad);
