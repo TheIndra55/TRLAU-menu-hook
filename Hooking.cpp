@@ -361,9 +361,12 @@ void __cdecl Font__Flush()
 
 				FONT_Print("to %s", portal.tolevelname);
 
-				// mark portal dimensions by line
-				DrawQuads(&portal.min, &portal.max);
-				DrawQuads(&portal.max, &portal.min);
+				// draw portal bounds
+				auto v2 = cdc::Vector{ portal.min.x, portal.min.y, portal.max.z };
+				auto v4 = cdc::Vector{ portal.max.x, portal.max.y, portal.min.z };
+
+				DrawQuads(&portal.min, &v2, &portal.max, &portal.min, 184483840); // rgba(0, 0, 255, 10)
+				DrawQuads(&portal.min, &v4, &portal.max, &portal.min, 184483840);
 			}
 		}
 	}
