@@ -263,12 +263,16 @@ void __cdecl Font__Flush()
 	// prints queued file requests
 	if (drawSettings.printFileRequests && g_pDiskFS)
 	{
-		FONT_SetCursor(15.f, 15.f);
-
 		auto queue = g_pDiskFS->m_queue;
+
+		auto y = 15.f;
+
 		for (auto request = queue; request != nullptr; request = request->m_next)
 		{
-			FONT_Print("%s (%d/%d)\n", request->m_pFileName, request->m_bytesRead, request->m_size);
+			FONT_SetCursor(15.f, y);
+			FONT_Print("%s (%d/%d KB)\n", request->m_pFileName, request->m_bytesRead / 1000, request->m_size / 1000);
+
+			y += FONT_GetHeight();
 		}
 	}
 
