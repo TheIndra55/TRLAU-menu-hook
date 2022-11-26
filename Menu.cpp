@@ -3,6 +3,8 @@
 #include "Hooking.hpp"
 
 #include "game/event.hpp"
+#include "game/stream/stream.hpp"
+#include "game/obtable.hpp"
 
 static bool shouldInstance = true;
 static bool shouldReloc = true;
@@ -489,23 +491,42 @@ void Menu::Draw()
     }
 #endif
 
-    static char unit[MAX_UNIT_LEN] = "";
-    ImGui::InputText("unit", unit, MAX_UNIT_LEN);
+    // unit switch
+    static char* unit = nullptr;
+    if (ImGui::BeginCombo("##Unit", unit))
+    {
+        auto unitList = gUnitList;
+
+        for (int i = 0; i < unitList->numUnits; i++)
+        {
+            auto x = &unitList->units[i];
+
+            if (strlen(x->name) > 0)
+            {
+                bool selected = unit == x->name;
+
+                if (ImGui::Selectable(x->name, selected))
+                    unit = x->name;
+
+                if (selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+        }
+
+        ImGui::EndCombo();
+    }
+
     if (ImGui::Button("Load unit"))
     {
         // check if any file exists, this does not check if file is actually a unit
         char drmName[256];
         LOAD_UnitFileName(drmName, unit, "drm");
 
-        if (GetFS()->FileExists(drmName))
+        if (unit && GetFS()->FileExists(drmName))
         {
             // change current unit
             strcpy_s((char*)GAMETRACKER_BASE_AREA, MAX_UNIT_LEN, unit);
             Game::ResetGame(4);
-        }
-        else
-        {
-            Log("Failed to switch to unit '%s', unit does not exists.\n", unit);
         }
     }
 
@@ -524,36 +545,6 @@ void Menu::Draw()
 
     if (ImGui::Button("Clear")) {
         this->logBuffer.clear();
-    }
-
-    if (ImGui::Button("List units"))
-    {
-#if TRAE
-        auto unitList = *(DWORD*)0x8AF44C;
-#elif TR8
-        auto unitList = *(DWORD*)0xDBA188;
-#elif TR7
-        auto unitList = *(DWORD*)ADDR(0x1162C54, 0x1159314);
-#endif
-        auto numUnits = *(int*)unitList;
-        Log("numUnits: %d\n", numUnits);
-
-        int offset = 0;
-        int count = 0;
-        while (true)
-        {
-            Log("%s\n", (char*)(unitList + 4 + offset));
-
-#if TRAE || TR7
-            offset += 20;
-#elif TR8
-            offset += 132;
-#endif
-            count++;
-            if (count >= numUnits) break;
-        }
-
-        ImGui::SetClipboardText(this->logBuffer.begin());
     }
 
 #if TR8
@@ -622,15 +613,34 @@ void Menu::Draw()
     }
 #endif
 
-    static char name[100] = "";
-    ImGui::InputText("name", name, 100);
+    // object select for birthing
+    static char* name = nullptr;
+    if (ImGui::BeginCombo("##Instance", name))
+    {
+        auto objectList = gObjectList;
+
+        for (int i = 0; i < objectList->numObjects; i++)
+        {
+            auto object = &objectList->objects[i];
+            auto selected = object->name == name;
+
+            if (ImGui::Selectable(object->name, selected))
+                name = object->name;
+
+            if (selected)
+                ImGui::SetItemDefaultFocus();
+        }
+
+        ImGui::EndCombo();
+    }
+
     if (ImGui::Button("Birth instance"))
     {
-        if (Game::GetObjectID(name) == 0)
-        {
-            Log("Failed to load '%s', make sure it exists.\nIf you are trying to birth a new object make sure you added it to objectlist.txt\nSee README FAQ for more info\n", name);
-        }
-        else
+        // check if object actually exists as file
+        char drmName[256];
+        LOAD_UnitFileName(drmName, name, "drm");
+
+        if (name && GetFS()->FileExists(drmName))
         {
             cdc::Vector position;
             cdc::Vector rotation;
