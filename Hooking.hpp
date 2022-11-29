@@ -69,3 +69,8 @@ uint8_t __declspec(noinline)* GetAddress(uint8_t* ptr, uint8_t offset, uint8_t i
 void DrawQuads(int flags, int tpage, DRAWVERTEX* verts, int numquads);
 
 extern int(__cdecl* G2EmulationInstanceQueryAnimation)(Instance* instance, int section);
+
+bool InitPatchArchive(const char* name);
+
+extern bool(__cdecl* orgInitPatchArchive)(const char* name);
+extern void(__thiscall* MultiFileSystem_Add)(void* _this, cdc::FileSystem* filesystem, bool unk, bool insertFirst);

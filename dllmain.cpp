@@ -14,6 +14,7 @@ BOOL  WINAPI hGetVersionExA(LPSTARTUPINFOA lpStartupInfo)
 #elif TR7
         MH_CreateHook((void*)ADDR(0x45F420, 0x45C700), GetFS, nullptr);
 #endif
+
         MH_EnableHook(GetFS);
 
         Hooking::GetInstance(); // Will call the ctor
@@ -49,6 +50,9 @@ DWORD WINAPI Hook(LPVOID lpParam)
     MH_CreateHookApi(L"Kernel32", "GetStartupInfoA", hGetVersionExA, reinterpret_cast<void**>(&dGetVersionExA));
     MH_EnableHook(MH_ALL_HOOKS);
 #else
+    MH_CreateHook((void*)0x478930, InitPatchArchive, (void**)&orgInitPatchArchive);
+    MH_EnableHook(InitPatchArchive);
+
     Hooking::GetInstance(); // Will call the ctor
 #endif
 

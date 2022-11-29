@@ -65,6 +65,10 @@ Hooking::Hooking()
 	MH_CreateHook((void*)ADDR(0x467310, 0x4642F0), MakePeHandle, nullptr);
 #endif
 
+#if TR8
+	MultiFileSystem_Add = reinterpret_cast<void(__thiscall*)(void*, cdc::FileSystem*, bool, bool)>(0x472C50);
+#endif
+
 	Game::Initialize();
 
 	MH_EnableHook(MH_ALL_HOOKS);
@@ -123,13 +127,28 @@ void(__cdecl* org_Font__Flush)();
 cdc::FileSystem* GetFS()
 {
 #ifndef TR8
-	static cdc::FileSystem* pFS = CreateHookFileSystem(*(cdc::FileSystem**)ARCHIVEFS, *(cdc::FileSystem**)DISKFS);
+	static cdc::FileSystem* pFS = CreateMultiFileSystem(*(cdc::FileSystem**)ARCHIVEFS, *(cdc::FileSystem**)DISKFS);
 
 	return pFS;
 #else
 	// return regular FS in Underworld since this function is used by our code too
 	return g_pFS;
 #endif
+}
+
+bool(__cdecl* orgInitPatchArchive)(const char* name);
+void(__thiscall* MultiFileSystem_Add)(void* _this, cdc::FileSystem* filesystem, bool unk, bool insertFirst);
+
+bool InitPatchArchive(const char* name)
+{
+	// init the orginal patch archive, let the game add it to the multi filesystem
+	auto ret = orgInitPatchArchive(name);
+
+	// create the hook filesystem and add it front to the multi filesystem
+	auto pFS = CreateHookFileSystem(*(cdc::FileSystem**)DISKFS);
+	MultiFileSystem_Add(GetFS(), pFS, false, true);
+
+	return ret;
 }
 
 #if TRAE || (TR7 && RETAIL_VERSION)

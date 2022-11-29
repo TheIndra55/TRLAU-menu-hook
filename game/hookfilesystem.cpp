@@ -7,27 +7,27 @@
 // so we don't need to include <Windows.h>
 #define _MAX_PATH 260
 
+// the HookFileSystem will look for a file in the mods folder and rewrite the path
+// for the disk filesystem to open, allowing it to load files without a bigfile
+
 class HookFileSystem : public cdc::FileSystem
 {
 private:
-	cdc::FileSystem* m_pFS;
 	cdc::FileSystem* m_pDiskFS;
 
 	unsigned int m_specMask;
 
 public:
-	HookFileSystem(cdc::FileSystem* pFS, cdc::FileSystem* pDiskFS)
+	HookFileSystem(cdc::FileSystem* pDiskFS)
 	{
-		m_pFS = pFS;
 		m_pDiskFS = pDiskFS;
 		m_specMask = 1;
 	}
 
-	cdc::FileSystem* GetBestFileSystem(const char* fileName, char** outFilename)
+	// finds a file in the mods folder and rewrites path to it
+	bool FindFile(const char* fileName, char* path)
 	{
-		// suffix pc-w to mods folder
-		char path[_MAX_PATH];
-		strcpy_s(path, fileName);
+		strcpy_s(path, _MAX_PATH, fileName);
 
 		for (char* p = path; *p; ++p) *p = tolower(*p);
 
@@ -38,7 +38,7 @@ public:
 		}
 
 		// rewrite root to mods folder
- 		if (strncmp(path, "\\", 1) == 0)
+		if (strncmp(path, "\\", 1) == 0)
 		{
 			// move string 4 bytes
 			memmove(path + 4, path, sizeof(path) - 4);
@@ -51,56 +51,53 @@ public:
 
 		if (m_pDiskFS->FileExists(specPath))
 		{
-			*outFilename = specPath;
-			return m_pDiskFS;
+			strcpy_s(path, _MAX_PATH, specPath);
+
+			return true;
 		}
 
 		// check if file exists on disk, if so return the diskFS
 		if (m_pDiskFS->FileExists(path))
 		{
-			*outFilename = path;
-			return m_pDiskFS;
+			return true;
 		}
 
-		*outFilename = (char*)fileName;
-		return m_pFS;
+		return false;
 	}
 
 	virtual void* RequestRead(void* receiver, const char* fileName, unsigned int startOffset)
 	{
-		char* path;
-		auto pFS = GetBestFileSystem(fileName, &path);
+		char path[_MAX_PATH];
+		FindFile(fileName, path);
 
-		return pFS->RequestRead(receiver, path, startOffset);
+		return m_pDiskFS->RequestRead(receiver, path, startOffset);
 	}
 
 	virtual void* OpenFile(char const* fileName)
 	{
-		char* path;
-		auto pFS = GetBestFileSystem(fileName, &path);
+		char path[_MAX_PATH];
+		FindFile(fileName, path);
 
-		return pFS->OpenFile(path);
+		return m_pDiskFS->OpenFile(path);
 	}
 
 	virtual bool FileExists(char const* fileName)
 	{
-		char* path;
-		auto pFS = GetBestFileSystem(fileName, &path);
-
-		return pFS->FileExists(path);
+		char path[_MAX_PATH];
+		return FindFile(fileName, path);
 	}
 
 	virtual unsigned int GetFileSize(char const* fileName)
 	{
-		char* path;
-		auto pFS = GetBestFileSystem(fileName, &path);
+		char path[_MAX_PATH];
+		FindFile(fileName, path);
 
-		return pFS->GetFileSize(path);
+		return m_pDiskFS->GetFileSize(path);
 	}
 
 	virtual void SetSpecialisationMask(unsigned int specMask)
 	{
-		m_pFS->SetSpecialisationMask(specMask);
+		m_pDiskFS->SetSpecialisationMask(specMask);
 
 		// unset next generation bit and set our spec mask
 		m_specMask = specMask & ~0x80000000;
@@ -108,44 +105,43 @@ public:
 
 	virtual unsigned int GetSpecialisationMask()
 	{
-		return m_pFS->GetSpecialisationMask();
+		return 0;
 	}
 
-	// these below don't need to call diskFS, the archive filesystem will do so
 	virtual int GetStatus()
 	{
-		return m_pFS->GetStatus();
+		return m_pDiskFS->GetStatus();
 	}
 
 	virtual void Update()
 	{
-		m_pFS->Update();
+		m_pDiskFS->Update();
 	}
 
 	virtual void Synchronize()
 	{
-		m_pFS->Synchronize();
+		m_pDiskFS->Synchronize();
 	}
 
 #if TR8
 	virtual void Suspend()
 	{
-		m_pFS->Suspend();
+		m_pDiskFS->Suspend();
 	}
 
 	virtual bool Resume()
 	{
-		return m_pFS->Resume();
+		return m_pDiskFS->Resume();
 	}
 
 	virtual bool IsSuspended()
 	{
-		return m_pFS->IsSuspended();
+		return m_pDiskFS->IsSuspended();
 	}
 #endif
 };
 
-cdc::FileSystem* CreateHookFileSystem(cdc::FileSystem* pFS, cdc::FileSystem* pDiskFS)
+cdc::FileSystem* CreateHookFileSystem(cdc::FileSystem* pDiskFS)
 {
-	return new HookFileSystem(pFS, pDiskFS);
+	return new HookFileSystem(pDiskFS);
 }
