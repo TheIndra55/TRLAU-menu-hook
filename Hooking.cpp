@@ -8,6 +8,7 @@
 #include "game/d3d/d3dterrain.hpp"
 #include "game/script/script.hpp"
 #include "game/font.hpp"
+#include "game/msfilesystem.hpp"
 
 LPDIRECT3DDEVICE9 pDevice;
 HWND pHwnd;
@@ -282,7 +283,7 @@ void __cdecl Font__Flush()
 	// prints queued file requests
 	if (drawSettings.printFileRequests && g_pDiskFS)
 	{
-		auto queue = g_pDiskFS->m_queue;
+		auto queue = ((cdc::MSFileSystem*)g_pDiskFS)->m_queue;
 
 		auto y = 15.f;
 
