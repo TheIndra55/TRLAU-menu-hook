@@ -492,8 +492,11 @@ void Menu::Draw()
 #endif
 
     // unit switch
-    static char* unit = nullptr;
-    if (ImGui::BeginCombo("##Unit", unit))
+    static char unit[MAX_UNIT_LEN] = "";
+    ImGui::InputText("##unit", unit, MAX_UNIT_LEN);
+    ImGui::SameLine();
+
+    if (ImGui::BeginCombo("##Unit", nullptr, ImGuiComboFlags_NoPreview))
     {
         auto unitList = gUnitList;
 
@@ -506,7 +509,7 @@ void Menu::Draw()
                 bool selected = unit == x->name;
 
                 if (ImGui::Selectable(x->name, selected))
-                    unit = x->name;
+                    strcpy_s(unit, x->name);
 
                 if (selected)
                     ImGui::SetItemDefaultFocus();
@@ -614,8 +617,11 @@ void Menu::Draw()
 #endif
 
     // object select for birthing
-    static char* name = nullptr;
-    if (ImGui::BeginCombo("##Instance", name))
+    static char name[100] = "";
+    ImGui::InputText("##object", name, 100);
+    ImGui::SameLine();
+
+    if (ImGui::BeginCombo("##Instance", nullptr, ImGuiComboFlags_NoPreview))
     {
         auto objectList = gObjectList;
 
@@ -625,7 +631,7 @@ void Menu::Draw()
             auto selected = object->name == name;
 
             if (ImGui::Selectable(object->name, selected))
-                name = object->name;
+                strcpy_s(name, object->name);
 
             if (selected)
                 ImGui::SetItemDefaultFocus();
