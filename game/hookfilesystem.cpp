@@ -41,7 +41,7 @@ public:
 		if (strncmp(path, "\\", 1) == 0)
 		{
 			// move string 4 bytes
-			memmove(path + 4, path, sizeof(path) - 4);
+			memmove(path + 4, path, _MAX_PATH - 4);
 			strncpy(path, "mods", 4);
 		}
 
