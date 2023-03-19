@@ -208,9 +208,7 @@ void DrawQuads(cdc::Vector* v0, cdc::Vector* v1)
 	TRANS_TransToDrawVertexV4f(&vertex[2], &v3);
 	TRANS_TransToDrawVertexV4f(&vertex[3], &v4);
 
-	// 4 bytes integer, each r, g, b, a
-	// e.g. FF 00 00 FF is 255, 0, 0, 255
-	auto color = 4278190335; // red
+	auto color = RGBA(255, 0, 0, 255);
 
 	vertex[0].color = color;
 	vertex[1].color = color;
@@ -322,7 +320,8 @@ void __cdecl Font__Flush()
 					DrawQuads(&y, &z);
 					DrawQuads(&z, &x);
 
-					DrawQuads(&x, &y, &z, &x, 167837440);
+					auto color = (terraingroup.flags & 0x4042) != 0 ? RGBA(255, 0, 255, 20) : RGBA(0, 255, 0, 20);
+					DrawQuads(&x, &y, &z, &x, color);
 				}
 			}
 		}
@@ -350,7 +349,7 @@ void __cdecl Font__Flush()
 					auto y = GetVertice<MeshVertex32>(face.i1, mesh, mesh->m_position);
 					auto z = GetVertice<MeshVertex32>(face.i2, mesh, mesh->m_position);
 
-					DrawQuads(&x, &y, &z, &x, 167772415);
+					DrawQuads(&x, &y, &z, &x, RGBA(255, 0, 0, 10));
 				}
 			}
 		}
@@ -389,8 +388,8 @@ void __cdecl Font__Flush()
 				auto v2 = cdc::Vector{ portal.min.x, portal.min.y, portal.max.z };
 				auto v4 = cdc::Vector{ portal.max.x, portal.max.y, portal.min.z };
 
-				DrawQuads(&portal.min, &v2, &portal.max, &portal.min, 184483840); // rgba(0, 0, 255, 10)
-				DrawQuads(&portal.min, &v4, &portal.max, &portal.min, 184483840);
+				DrawQuads(&portal.min, &v2, &portal.max, &portal.min, RGBA(0, 0, 255, 10));
+				DrawQuads(&portal.min, &v4, &portal.max, &portal.min, RGBA(0, 0, 255, 10));
 			}
 		}
 	}

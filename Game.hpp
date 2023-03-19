@@ -287,6 +287,8 @@ struct DRAWVERTEX
 	__int64 anPad;
 };
 
+#define RGBA(r, g, b, a) r | (g << 8) | (b << 16) | (a << 24)
+
 // taken from TRAE.pdb
 // should be compatible with TR7
 enum MUD_FLAGS
