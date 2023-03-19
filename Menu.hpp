@@ -30,6 +30,7 @@ struct DrawSettings
 	bool drawMarkup = false;
 	bool drawPath = false;
 	bool drawCollision = false;
+	bool drawEnemyCollision = false;
 	bool drawPortals = false;
 	bool drawSignals = false;
 	bool printFileRequests = false;

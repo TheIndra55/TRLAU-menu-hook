@@ -295,7 +295,7 @@ void __cdecl Font__Flush()
 	}
 
 	// draws collision mesh
-	if (drawSettings.drawCollision && level)
+	if (level && (drawSettings.drawCollision || drawSettings.drawEnemyCollision))
 	{
 		auto terrain = (Terrain*)level->terrain;
 		
@@ -316,12 +316,27 @@ void __cdecl Font__Flush()
 					auto y = GetVertice<MeshVertex>(face.i1, mesh, mesh->m_position);
 					auto z = GetVertice<MeshVertex>(face.i2, mesh, mesh->m_position);
 
-					DrawQuads(&x, &y);
-					DrawQuads(&y, &z);
-					DrawQuads(&z, &x);
+					if ((terraingroup.flags & 0x4000) != 0)
+					{
+						if (drawSettings.drawEnemyCollision)
+						{
+							DrawQuads(&x, &y);
+							DrawQuads(&y, &z);
+							DrawQuads(&z, &x);
 
-					auto color = (terraingroup.flags & 0x4042) != 0 ? RGBA(255, 0, 255, 20) : RGBA(0, 255, 0, 20);
-					DrawQuads(&x, &y, &z, &x, color);
+							DrawQuads(&x, &y, &z, &x, RGBA(255, 69, 0, 20));
+						}
+					}
+					else if (drawSettings.drawCollision)
+					{
+						auto color = (terraingroup.flags & 0x42) != 0 ? RGBA(255, 0, 255, 20) : RGBA(0, 255, 0, 20);
+
+						DrawQuads(&x, &y);
+						DrawQuads(&y, &z);
+						DrawQuads(&z, &x);
+
+						DrawQuads(&x, &y, &z, &x, color);
+					}
 				}
 			}
 		}

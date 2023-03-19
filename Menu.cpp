@@ -474,7 +474,8 @@ void Menu::Draw()
     ImGui::Checkbox("Draw instances", &m_drawSettings.draw);
     ImGui::Checkbox("Draw markup", &m_drawSettings.drawMarkup);
     ImGui::Checkbox("Draw enemy path", &m_drawSettings.drawPath);
-    ImGui::Checkbox("Draw collision mesh", &m_drawSettings.drawCollision);
+    ImGui::Checkbox("Draw collision", &m_drawSettings.drawCollision);
+    ImGui::Checkbox("Draw enemy collision", &m_drawSettings.drawEnemyCollision);
     ImGui::Checkbox("Draw portals", &m_drawSettings.drawPortals);
     ImGui::Checkbox("Draw signals", &m_drawSettings.drawSignals);
 
