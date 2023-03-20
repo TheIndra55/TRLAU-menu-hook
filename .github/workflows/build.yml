@@ -1,6 +1,5 @@
 name: Build
 
-# manually trigger
 on: [push, pull_request]
 
 jobs:
@@ -9,16 +8,16 @@ jobs:
     
     steps:
     # setup
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: true
     
-    - uses: microsoft/setup-msbuild@v1.0.2
+    - uses: microsoft/setup-msbuild@v1.1
     - uses: ilammy/msvc-dev-cmd@v1
 
     - name: Download premake5
       run: |
-        curl.exe -o premake5.zip -L https://github.com/premake/premake-core/releases/download/v5.0.0-alpha16/premake-5.0.0-alpha16-windows.zip
+        curl.exe -o premake5.zip -L https://github.com/premake/premake-core/releases/download/v5.0.0-beta2/premake-5.0.0-beta2-windows.zip
         tar -xf premake5.zip
 
     - name: Download libraries
@@ -43,28 +42,28 @@ jobs:
       run: MSBuild /p:Configuration=Release /p:Platform=TR7DEBUG
 
     # upload
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: Anniversary
         path: |
           bin/TRAE/Release/TRAE-Menu-Hook.asi
           bin/TRAE/Release/TRAE-Menu-Hook.pdb
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: Underworld
         path: |
           bin/TR8/Release/TR8-Menu-Hook.asi
           bin/TR8/Release/TR8-Menu-Hook.pdb
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: Legend
         path: |
           bin/TR7/Release/TR7-Menu-Hook.asi
           bin/TR7/Release/TR7-Menu-Hook.pdb
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: Legend Nextgen Demo
         path: |
