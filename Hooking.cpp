@@ -9,6 +9,7 @@
 #include "game/script/script.hpp"
 #include "game/font.hpp"
 #include "game/msfilesystem.hpp"
+#include "game/markup.hpp"
 
 LPDIRECT3DDEVICE9 pDevice;
 HWND pHwnd;
@@ -194,7 +195,7 @@ void(__cdecl* TRANS_TransToDrawVertexV4f)(DRAWVERTEX* v, cdc::Vector* vec);
 
 void(__cdecl* DRAW_DrawQuads)(int flags, int tpage, DRAWVERTEX* verts, int numquads);
 
-void DrawQuads(cdc::Vector* v0, cdc::Vector* v1)
+void DrawQuads(cdc::Vector* v0, cdc::Vector* v1, int color = RGBA(255, 0, 0, 255))
 {
 	DRAWVERTEX vertex[4];
 
@@ -202,13 +203,13 @@ void DrawQuads(cdc::Vector* v0, cdc::Vector* v1)
 	cdc::Vector v4 = *v0;
 	v3.z += 20.f;
 	v4.z += 20.f;
+	v3.y += 20.f;
+	v4.y += 20.f;
 
 	TRANS_TransToDrawVertexV4f(vertex, v0);
 	TRANS_TransToDrawVertexV4f(&vertex[1], v1);
 	TRANS_TransToDrawVertexV4f(&vertex[2], &v3);
 	TRANS_TransToDrawVertexV4f(&vertex[3], &v4);
-
-	auto color = RGBA(255, 0, 0, 255);
 
 	vertex[0].color = color;
 	vertex[1].color = color;
@@ -216,6 +217,34 @@ void DrawQuads(cdc::Vector* v0, cdc::Vector* v1)
 	vertex[3].color = color;
 
 	DRAW_DrawQuads(2, 0, vertex, 1);
+}
+
+void DrawBoundingBox(cdc::Vector* v0, cdc::Vector* v1, int color = RGBA(0, 0, 255, 255))
+{
+	auto a1 = cdc::Vector{ v0->x, v0->y, v0->z };
+	auto a2 = cdc::Vector{ v1->x, v0->y, v0->z };
+	auto a3 = cdc::Vector{ v1->x, v1->y, v0->z };
+	auto a4 = cdc::Vector{ v0->x, v1->y, v0->z };
+
+	auto b1 = cdc::Vector{ v0->x, v0->y, v1->z };
+	auto b2 = cdc::Vector{ v1->x, v0->y, v1->z };
+	auto b3 = cdc::Vector{ v1->x, v1->y, v1->z };
+	auto b4 = cdc::Vector{ v0->x, v1->y, v1->z };
+
+	DrawQuads(&a1, &a2, color);
+	DrawQuads(&a2, &a3, color);
+	DrawQuads(&a3, &a4, color);
+	DrawQuads(&a4, &a1, color);
+
+	DrawQuads(&b1, &b2, color);
+	DrawQuads(&b2, &b3, color);
+	DrawQuads(&b3, &b4, color);
+	DrawQuads(&b4, &b1, color);
+
+	DrawQuads(&b1, &a1, color);
+	DrawQuads(&b2, &a2, color);
+	DrawQuads(&b3, &a3, color);
+	DrawQuads(&b4, &a4, color);
 }
 
 void DrawQuads(cdc::Vector* v0, cdc::Vector* v1, cdc::Vector* v2, cdc::Vector* v3, int color)
@@ -418,69 +447,51 @@ void __cdecl Font__Flush()
 		auto markUpManager = *(int*)0x86CD14;
 #endif
 
-		auto box = *(int*)(markUpManager + 0x18);
-		while(1)
+		for (auto box = *(MarkUpBox**)(markUpManager + 0x18); box != nullptr; box = box->next)
 		{
-			auto next = *(int*)(box + 4);
+			auto markup = box->markup;
 
-#if TR7
-			auto markup = *(int*)(box + 0x20);
-#elif TRAE
-			auto markup = *(int*)(box + 0xC);
-#endif
-			if (markup)
+			// filter our instance markup except for water
+			if (markup && !(box->instance && (box->flags & MUD_FLAG_WATER) == 0))
 			{
-#if TR7
-				auto polyline = *(int*)(markup + 0x2C);
-#elif TRAE
-				auto polyline = *(int*)(markup + 0x48);
-#endif
+				auto polyLine = markup->polyLine;
+				auto position = markup->position;
 
-				auto srcVector = cdc::Vector{};
-#if TR7
-				srcVector = *(cdc::Vector*)(markup + 0x14);
-#elif TRAE
-				srcVector = *(cdc::Vector*)(markup + 0x30);
-#endif
+				auto srcVector = cdc::Vector{ position[0], position[1], position[2] };
 				TRANS_RotTransPersVectorf((DWORD)&srcVector, (DWORD)&srcVector);
 
 				if (srcVector.z > 16.f)
 				{
-#if TRAE
-					auto flags = *(int*)(box + 0x28);
-#elif TR7
-					auto flags = *(int*)(box + 0x24);
-#endif
-
 					// display the markup flags
 					FONT_SetCursor(srcVector.x, srcVector.y);
-					FONT_Print("%s", FlagToFlags(flags).c_str());
+					FONT_Print("%s", FlagToFlags(box->flags).c_str());
 				}
 
-				if (polyline)
+				if (polyLine)
 				{
 					// draw the polyline
-					auto numPoints = *(int*)(polyline);
-
-					auto x = (cdc::Vector*)(polyline + 0x10);
-					for (int j = 0; j < numPoints; j++)
+					auto x = &polyLine->points[0];
+					for (int i = 0; i < polyLine->numPoints - 1; i++)
 					{
-						auto y = (cdc::Vector*)(polyline + 16 * (j + 1));
+						auto y = &polyLine->points[i + 1];
 
-						// no known drawline for TRAE without writing lot of manual code
-						// so write quads
-						// if you want to try, s_pLinePool is 0x7545E0 in TRAE
 						DrawQuads(x, y);
 
 						x = y;
 					}
 				}
+
+				// draw the bounding sphere for water and perch markup
+				if ((box->flags & (MUD_FLAG_WATER | MUD_FLAG_PERCH)) != 0)
+				{
+					auto bbox = markup->bbox;
+
+					auto srcVector1 = cdc::Vector{ markup->position[0] + static_cast<float>(bbox[0]), markup->position[1] + static_cast<float>(bbox[1]), markup->position[2] + static_cast<float>(bbox[2]) };
+					auto srcVector2 = cdc::Vector{ markup->position[0] + static_cast<float>(bbox[3]), markup->position[1] + static_cast<float>(bbox[4]), markup->position[2] + static_cast<float>(bbox[5]) };
+
+					DrawBoundingBox(&srcVector1, &srcVector2);
+				}
 			}
-
-			if (!next)
-				break;
-
-			box = next;
 		}
 	}
 	
