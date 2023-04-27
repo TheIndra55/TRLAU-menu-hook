@@ -6,18 +6,7 @@
 #include "game/stream/stream.hpp"
 #include "game/obtable.hpp"
 
-static bool shouldInstance = true;
 static bool shouldReloc = true;
-
-Instance*(__cdecl* INSTANCE_NewInstance)();
-
-Instance* newinstance()
-{
-    if (shouldInstance)
-        return INSTANCE_NewInstance();
-
-    return 0;
-}
 
 char IsPs2()
 {
@@ -85,8 +74,6 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
 
 
 #if TRAE
-    MH_CreateHook((void*)0x00457580, newinstance, (void**)&INSTANCE_NewInstance);
-
     MH_CreateHook((void*)0x004E6EC0, IsPs2, nullptr);
     MH_CreateHook((void*)0x005DB680, STREAM_FinishLoad, (void**)&origSTREAM_FinishLoad);
 
@@ -106,7 +93,6 @@ Menu::Menu(LPDIRECT3DDEVICE9 pd3dDevice, HWND hwnd)
     RELOC_GetProcAddress = reinterpret_cast<int(__cdecl*)(int, const char*)>(0x4680C0);
     LOAD_UnitFileName = reinterpret_cast<void(__cdecl*)(char*, char*, char*)>(0x45F650);
 #elif TR7
-    MH_CreateHook((void*)ADDR(0x457730, 0x454A00), newinstance, (void**)&INSTANCE_NewInstance);
     MH_CreateHook((void*)ADDR(0x5DB800, 0x5D5640), STREAM_FinishLoad, (void**)&origSTREAM_FinishLoad);
 
     INSTANCE_ReallyRemoveInstance = reinterpret_cast<int(__cdecl*)(Instance*, int, char)>(ADDR(0x45A330, 0x4575B0));
@@ -378,12 +364,6 @@ void Menu::ProcessFlight(UINT msg, WPARAM wparam)
     }
 }
 
-// used for PushOkDialog so it pops the dialog away after pressing OK
-void __cdecl DialogFn()
-{
-    Game::PopScreen();
-}
-
 void Menu::Draw()
 {
     static bool show_instance_viewer = false;
@@ -451,7 +431,6 @@ void Menu::Draw()
 #endif
 
 #if TRAE || TR7
-    ImGui::Checkbox("Should instance?", &shouldInstance);
     ImGui::Checkbox("Load unit script", &shouldReloc);
 
     if (ImGui::Checkbox("Enable debug draw", &m_drawSettings.drawDebug))
@@ -475,7 +454,7 @@ void Menu::Draw()
     ImGui::Checkbox("Draw markup", &m_drawSettings.drawMarkup);
     ImGui::Checkbox("Draw enemy path", &m_drawSettings.drawPath);
     ImGui::Checkbox("Draw collision", &m_drawSettings.drawCollision);
-    ImGui::Checkbox("Draw enemy collision", &m_drawSettings.drawEnemyCollision);
+    ImGui::Checkbox("Draw non-player collision", &m_drawSettings.drawEnemyCollision);
     ImGui::Checkbox("Draw portals", &m_drawSettings.drawPortals);
     ImGui::Checkbox("Draw signals", &m_drawSettings.drawSignals);
 
@@ -577,16 +556,6 @@ void Menu::Draw()
 
     auto player = *reinterpret_cast<Instance**>(PLAYERINSTANCE);
 #if TRAE
-    if (ImGui::Button("Trigger All Fade Groups"))
-    {
-        for (int i = 0; i <= 28; i++)
-        {
-            Game::TriggerUiFadeGroup(i);
-        }
-
-        Game::SetGameValue(126, 10.0, 1);
-    }
-
     if (ImGui::Button("Real gold lara"))
     {
         Game::PlayerTurnGold();
