@@ -2,10 +2,16 @@
 #include <imgui_impl_dx9.h>
 #include <imgui_impl_win32.h>
 
+#include <MinHook.h>
+
 #include "Menu.h"
 #include "render/RenderContext.h"
+#include "input/MouseHook.h"
+#include "input/Input.h"
 
 #include "cdc/render/PCDeviceManager.h"
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 Menu::Menu() : PCInternalResource()
 {
@@ -15,7 +21,8 @@ Menu::Menu() : PCInternalResource()
 	ImGui_ImplWin32_Init(cdc::PCDeviceManager::s_pInstance->GetWindow());
 
 	// Add present callback to draw the UI
-	RenderContext::OnPresent([this] { OnPresent(); });
+	RenderContext::OnPresent(std::bind(&Menu::OnPresent, this));
+	MouseHook::Init();
 
 	OnConstruct();
 }
@@ -44,13 +51,20 @@ void Menu::OnDestroyDevice()
 
 void Menu::OnPresent()
 {
+	// Set the mouse cursor visible when we have focus
+	ImGui::GetIO().MouseDrawCursor = m_focus;
+
+	// Start the frame
 	ImGui_ImplDX9_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 
 	ImGui::NewFrame();
 
 	// Draw the menu
-	Draw();
+	if (m_focus)
+	{
+		Draw();
+	}
 
 	// End the frame
 	ImGui::EndFrame();
@@ -59,9 +73,37 @@ void Menu::OnPresent()
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 }
 
+void Menu::OnMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	if (msg == WM_KEYUP && wParam == VK_F8)
+	{
+		SetFocus(!m_focus);
+	}
+
+	if (m_focus)
+	{
+		ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam);
+	}
+}
+
 void Menu::Draw()
 {
-	ImGui::Begin("Menu");
-	ImGui::Text("Hello, World!");
-	ImGui::End();
+	if (ImGui::BeginMainMenuBar())
+	{
+		ImGui::EndMainMenuBar();
+	}
+}
+
+void Menu::SetFocus(bool focus)
+{
+	m_focus = focus;
+
+	// Disable the cursor lock and game input
+	MouseHook::DisableCursorLock(focus);
+	Input::DisableInput(focus);
+}
+
+bool Menu::HasFocus()
+{
+	return m_focus;
 }

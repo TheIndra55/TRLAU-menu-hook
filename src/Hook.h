@@ -10,6 +10,9 @@ private:
 	std::unique_ptr<Menu> m_menu;
 
 	void Initialize();
+	void PostInitialize();
+
+	void OnMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 public:
 	Hook();
