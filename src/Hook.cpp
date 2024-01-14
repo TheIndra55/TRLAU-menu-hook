@@ -2,9 +2,12 @@
 
 #include "Hook.h"
 #include "input/MessageHook.h"
+#include "instance/Instances.h"
+#include "game/Game.h"
 
 // Modules
 #include "modules/InstanceViewer.h"
+#include "modules/Skew.h"
 
 #include "cdc/render/PCDeviceManager.h"
 
@@ -29,6 +32,9 @@ Hook::Hook() : m_menu(nullptr), m_modules()
 
 void Hook::Initialize()
 {
+	Instances::Init();
+	Game::Init();
+
 	RegisterModules();
 
 	MH_Initialize();
@@ -75,6 +81,7 @@ void Hook::RegisterModule()
 void Hook::RegisterModules()
 {
 	RegisterModule<InstanceViewer>();
+	RegisterModule<Skew>();
 }
 
 Hook& Hook::GetInstance()
