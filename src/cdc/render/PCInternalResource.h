@@ -17,5 +17,11 @@ namespace cdc
 		virtual ~PCInternalResource();
 		virtual bool OnCreateDevice() = 0;
 		virtual void OnDestroyDevice() = 0;
+
+#if TR8
+		virtual bool OnPostResetDevice();
+		virtual void OnPreResetDevice();
+		virtual void OnSettingsChanged();
+#endif
 	};
 }
