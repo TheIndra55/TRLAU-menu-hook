@@ -3,6 +3,9 @@
 #include "Hook.h"
 #include "input/MessageHook.h"
 
+// Modules
+#include "modules/InstanceViewer.h"
+
 #include "cdc/render/PCDeviceManager.h"
 
 using namespace std::placeholders;
@@ -19,13 +22,15 @@ static bool D3D_Init()
 	return ret;
 }
 
-Hook::Hook() : m_menu(nullptr)
+Hook::Hook() : m_menu(nullptr), m_modules()
 {
 	Initialize();
 }
 
 void Hook::Initialize()
 {
+	RegisterModules();
+
 	MH_Initialize();
 	MH_CreateHook((void*)0x4153E0, D3D_Init, (void**)&s_D3D_Init);
 	MH_EnableHook(MH_ALL_HOOKS);
@@ -43,6 +48,11 @@ void Hook::PostInitialize()
 void Hook::OnMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	m_menu->OnMessage(hWnd, msg, wParam, lParam);
+
+	for (auto& mod : m_modules)
+	{
+		mod->OnInput(hWnd, msg, wParam, lParam);
+	}
 }
 
 void Hook::OnDevice()
@@ -52,6 +62,19 @@ void Hook::OnDevice()
 
 	// Initialize the hook
 	PostInitialize();
+}
+
+template<typename T>
+void Hook::RegisterModule()
+{
+	auto module = std::make_shared<T>();
+
+	m_modules.push_back(module);
+}
+
+void Hook::RegisterModules()
+{
+	RegisterModule<InstanceViewer>();
 }
 
 Hook& Hook::GetInstance()

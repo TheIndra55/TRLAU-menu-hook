@@ -8,6 +8,7 @@
 #include "render/RenderContext.h"
 #include "input/MouseHook.h"
 #include "input/Input.h"
+#include "Hook.h"
 
 #include "cdc/render/PCDeviceManager.h"
 
@@ -88,9 +89,23 @@ void Menu::OnMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 void Menu::Draw()
 {
+	auto& modules = Hook::GetInstance().GetModules();
+
 	if (ImGui::BeginMainMenuBar())
 	{
+		// Draw all modules menus
+		for (auto& mod : modules)
+		{
+			mod->OnMenu();
+		}
+
 		ImGui::EndMainMenuBar();
+	}
+
+	// Draw all menus
+	for (auto& mod : modules)
+	{
+		mod->OnDraw();
 	}
 }
 
