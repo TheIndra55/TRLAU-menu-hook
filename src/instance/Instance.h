@@ -15,6 +15,14 @@ struct Intro
 {
 };
 
+struct ObjectData
+{
+	unsigned __int16 version;
+	unsigned __int16 family;
+	unsigned __int16 id;
+	unsigned __int16 type;
+};
+
 struct HModel;
 struct SoundInstanceData;
 struct Body;
@@ -49,7 +57,11 @@ struct BaseInstance
 	Object* object;
 	Intro* intro;
 
-	char pad2[100];
+	char pad2[64];
+
+	unsigned int noDrawGroups;
+
+	char pad3[32];
 };
 
 struct Instance : BaseInstance
@@ -62,3 +74,6 @@ struct Instance : BaseInstance
 
 	int introUniqueID;
 };
+
+void INSTANCE_Post(Instance* instance, int message, int data);
+void INSTANCE_HideUnhideDrawGroup(Instance* instance, int drawGroup, int on);

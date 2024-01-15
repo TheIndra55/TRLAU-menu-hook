@@ -32,7 +32,6 @@ Hook::Hook() : m_menu(nullptr), m_modules()
 
 void Hook::Initialize()
 {
-	Instances::Init();
 	Game::Init();
 
 	RegisterModules();
