@@ -1,19 +1,28 @@
 #include <MinHook.h>
+#include <Hooking.Patterns.h>
 
 #include "Hook.h"
 #include "input/MessageHook.h"
 #include "instance/Instances.h"
 #include "game/Game.h"
+#include "render/Font.h"
 
 // Modules
+#include "modules/MainMenu.h"
 #include "modules/InstanceViewer.h"
 #include "modules/Skew.h"
+#include "modules/Render.h"
+#include "modules/Draw.h"
+#include "modules/Log.h"
 
 #include "cdc/render/PCDeviceManager.h"
 
 using namespace std::placeholders;
 
 static bool(*s_D3D_Init)();
+
+// Pointer to the cdc::DeviceManager::s_pInstance pointer
+static void* s_deviceManager;
 
 static bool D3D_Init()
 {
@@ -32,12 +41,19 @@ Hook::Hook() : m_menu(nullptr), m_modules()
 
 void Hook::Initialize()
 {
-	Game::Init();
-
 	RegisterModules();
 
+#ifndef TR8
+	auto match = hook::pattern("A1 ? ? ? ? 8B 0D ? ? ? ? 68 ? ? ? ? 50 E8").count(1);
+	s_deviceManager = *match.get_first<void*>(7);
+#else
+	auto match = hook::pattern("8B 0D ? ? ? ? 8B 01 8B 15 ? ? ? ? 8B 00 68").count(1);
+	s_deviceManager = *match.get_first<void*>(2);
+#endif
+
+	// Create the initial hook
 	MH_Initialize();
-	MH_CreateHook((void*)0x4153E0, D3D_Init, (void**)&s_D3D_Init);
+	MH_CreateHook(match.get_first(), D3D_Init, (void**)&s_D3D_Init);
 	MH_EnableHook(MH_ALL_HOOKS);
 }
 
@@ -48,6 +64,10 @@ void Hook::PostInitialize()
 
 	// Register the message hook
 	MessageHook::OnMessage(std::bind(&Hook::OnMessage, this, _1, _2, _3, _4));
+
+#ifndef TR8
+	Font::OnFlush(std::bind(&Hook::OnFrame, this));
+#endif
 }
 
 void Hook::OnMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -60,10 +80,18 @@ void Hook::OnMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 }
 
+void Hook::OnFrame()
+{
+	for (auto& mod : m_modules)
+	{
+		mod->OnFrame();
+	}
+}
+
 void Hook::OnDevice()
 {
 	// Assign the DeviceManager instance
-	cdc::PCDeviceManager::s_pInstance = *(cdc::PCDeviceManager**)0xA6669C;
+	cdc::PCDeviceManager::s_pInstance = *(cdc::PCDeviceManager**)s_deviceManager;
 
 	// Initialize the hook
 	PostInitialize();
@@ -79,8 +107,14 @@ void Hook::RegisterModule()
 
 void Hook::RegisterModules()
 {
+	RegisterModule<MainMenu>();
 	RegisterModule<InstanceViewer>();
 	RegisterModule<Skew>();
+#ifndef TR8
+	RegisterModule<Render>();
+	RegisterModule<Draw>();
+	RegisterModule<Log>();
+#endif
 }
 
 Hook& Hook::GetInstance()

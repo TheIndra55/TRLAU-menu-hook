@@ -1,8 +1,6 @@
 #include "Game.h"
 
-void Game::Init()
-{
-}
+#include "util/Hooking.h"
 
 Instance* Game::GetPlayerInstance()
 {
@@ -12,4 +10,9 @@ Instance* Game::GetPlayerInstance()
 GameTracker* Game::GetGameTracker()
 {
 	return (GameTracker*)0x838330;
+}
+
+void GAMELOOP_ExitGame(char* name, GameTracker* gameTracker, int doneType)
+{
+	Hooking::Call(0xC61CFA, name, gameTracker, doneType);
 }

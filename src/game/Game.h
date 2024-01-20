@@ -54,8 +54,8 @@ struct GameTracker
 class Game
 {
 public:
-	static void Init();
-
 	static Instance* GetPlayerInstance();
 	static GameTracker* GetGameTracker();
 };
+
+void GAMELOOP_ExitGame(char* name, GameTracker* gameTracker, int doneType);

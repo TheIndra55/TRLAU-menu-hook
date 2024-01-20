@@ -1,5 +1,5 @@
 #include <Windows.h>
-
+#include <Hooking.Patterns.h>
 #include <MinHook.h>
 
 #include "RenderContext.h"
@@ -19,7 +19,13 @@ void RenderContext::OnPresent(std::function<void()> callback)
 {
 	if (!s_callback)
 	{
-		MH_CreateHook((void*)0x61BB80, Present, (void**)&s_Present);
+#ifndef TR8
+		auto match = hook::pattern("8B 41 14 85 C0 74 19 8B 54 24 0C").count(1);
+#else
+		auto match = hook::pattern("A1 ? ? ? ? 83 78 10 00 75 39 80 B8").count(1);
+#endif
+
+		MH_CreateHook(match.get_first(), Present, (void**)&s_Present);
 		MH_EnableHook(MH_ALL_HOOKS);
 	}
 

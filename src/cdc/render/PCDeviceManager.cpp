@@ -1,3 +1,5 @@
+#include <Hooking.Patterns.h>
+
 #include "PCDeviceManager.h"
 
 cdc::PCDeviceManager* cdc::PCDeviceManager::s_pInstance = nullptr;
@@ -24,7 +26,12 @@ HWND cdc::PCDeviceManager::GetWindow()
 
 void cdc::PCDeviceManager::AddDeviceResource(PCInternalResource* resource)
 {
-	auto func = reinterpret_cast<void(__thiscall*)(PCDeviceManager*, PCInternalResource*)>(0x00616F10);
+#ifndef TR8
+	auto match = hook::pattern("8B 41 08 33 D2 3B C2 8B 44 24 04").count(1);
+#else
+	auto match = hook::pattern("8B 44 24 04 33 D2 39 51 08 89 50").count(1);
+#endif
 
+	auto func = (void(__thiscall*)(PCDeviceManager*, PCInternalResource*))match.get_first();
 	func(this, resource);
 }

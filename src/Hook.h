@@ -20,6 +20,7 @@ private:
 	void RegisterModules();
 
 	void OnMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	void OnFrame();
 
 public:
 	Hook();
