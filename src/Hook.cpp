@@ -14,6 +14,7 @@
 #include "modules/Render.h"
 #include "modules/Draw.h"
 #include "modules/Log.h"
+#include "modules/ScriptLog.h"
 
 #include "cdc/render/PCDeviceManager.h"
 
@@ -41,6 +42,10 @@ Hook::Hook() : m_menu(nullptr), m_modules()
 
 void Hook::Initialize()
 {
+	// Initialize MinHook
+	MH_Initialize();
+
+	// Register all modules
 	RegisterModules();
 
 #ifndef TR8
@@ -52,7 +57,6 @@ void Hook::Initialize()
 #endif
 
 	// Create the initial hook
-	MH_Initialize();
 	MH_CreateHook(match.get_first(), D3D_Init, (void**)&s_D3D_Init);
 	MH_EnableHook(MH_ALL_HOOKS);
 }
@@ -110,11 +114,16 @@ void Hook::RegisterModules()
 	RegisterModule<MainMenu>();
 	RegisterModule<InstanceViewer>();
 	RegisterModule<Skew>();
+
 #ifndef TR8
 	RegisterModule<Render>();
 	RegisterModule<Draw>();
+#else
+	RegisterModule<ScriptLog>();
 #endif
+
 	RegisterModule<Log>();
+
 }
 
 Hook& Hook::GetInstance()

@@ -25,18 +25,28 @@ void Log::OnDraw()
 		ImGui::BeginChild("Log");
 
 		ImGui::TextUnformatted(m_buffer.begin());
+		ImGui::SetScrollHereY(1.f);
 
 		ImGui::EndChild();
 		ImGui::End();
 	}
 }
 
-void Log::LogMessage(const char* fmt, ...)
+void Log::Write(const char* fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
 
-	// Append-format the log to the buffer
+	m_buffer.appendfv(fmt, args);
+
+	va_end(args);
+}
+
+void Log::WriteLine(const char* fmt, ...)
+{
+	va_list args;
+	va_start(args, fmt);
+
 	m_buffer.appendfv(fmt, args);
 	m_buffer.append("\n");
 

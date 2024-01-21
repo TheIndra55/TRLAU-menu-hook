@@ -14,8 +14,10 @@ public:
 	void OnMenu();
 	void OnDraw();
 
-	// Logs a message
-	void LogMessage(const char* fmt, ...);
+	// Writes to the log
+	void Write(const char* fmt, ...);
+	// Writes a line to the log
+	void WriteLine(const char* fmt, ...);
 
 	// Clears the log
 	void Clear();
