@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "Module.h"
 
 #include "instance/Instance.h"
@@ -13,6 +15,8 @@ private:
 
 	void DrawInstance();
 	void SkewTo(Instance* instance);
+
+	std::string GetBinary(int value);
 
 public:
 	void OnMenu();

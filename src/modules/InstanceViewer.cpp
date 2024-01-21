@@ -131,6 +131,13 @@ void InstanceViewer::DrawInstance()
 	// Draw groups
 	if (ImGui::CollapsingHeader("Draw groups"))
 	{
+#ifndef TR8
+		// Draw the bit representation
+		auto binary = GetBinary(~instance->noDrawGroups);
+
+		ImGui::Text("%s", binary.c_str());
+#endif
+
 		static int drawGroup = 0;
 		static bool enabled = false;
 
@@ -180,4 +187,17 @@ void InstanceViewer::SkewTo(Instance* instance)
 	auto player = Game::GetPlayerInstance();
 
 	player->position = instance->position;
+}
+
+std::string InstanceViewer::GetBinary(int value)
+{
+	std::string binary;
+
+	// Not actually binary, reversed binary
+	for (int i = 0; i <= 31; i++)
+	{
+		binary += (value & (1 << i)) ? "1" : "0";
+	}
+
+	return binary;
 }
