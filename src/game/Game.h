@@ -1,6 +1,7 @@
 #pragma once
 
 #include "instance/Instance.h"
+#include "level/Stream.h"
 
 struct menu_t;
 struct MemCardInfo;
@@ -111,6 +112,7 @@ class Game
 public:
 	static Instance* GetPlayerInstance();
 	static GameTracker* GetGameTracker();
+	static STracker* GetStreamTracker();
 };
 
 void GAMELOOP_RequestLevelChangeByName(char* name, GameTracker* gameTracker, int doneType);

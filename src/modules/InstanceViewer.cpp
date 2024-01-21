@@ -21,7 +21,7 @@ void InstanceViewer::OnDraw()
 	if (m_show)
 	{
 		ImGui::Begin("Instances", &m_show);
-		ImGui::Columns(2, "instances");
+		ImGui::Columns(2);
 
 		// Filter
 		ImGui::InputText("Name", m_filter, sizeof(m_filter));
