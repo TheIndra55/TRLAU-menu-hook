@@ -9,10 +9,12 @@ Instance* Game::GetPlayerInstance()
 
 GameTracker* Game::GetGameTracker()
 {
-	return (GameTracker*)0x838330;
+	return (GameTracker*)GET_ADDRESS(0x10E5370, 0x838330, 0x00E7F088);
 }
 
-void GAMELOOP_ExitGame(char* name, GameTracker* gameTracker, int doneType)
+void GAMELOOP_RequestLevelChangeByName(char* name, GameTracker* gameTracker, int doneType)
 {
-	Hooking::Call(0xC61CFA, name, gameTracker, doneType);
+	auto addr = GET_ADDRESS(0x451970, 0xC61CFA, 0x5DF8C0);
+
+	Hooking::Call(addr, name, gameTracker, doneType);
 }

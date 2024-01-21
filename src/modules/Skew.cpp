@@ -7,8 +7,19 @@ void Skew::ToggleSkew()
 {
 	auto tracker = Game::GetGameTracker();
 
+	// Ignore if there's no player instance
+	if (tracker->playerInstance == nullptr)
+	{
+		return;
+	}
+
 	tracker->cheatMode = !tracker->cheatMode;
+
+#ifndef TR8
 	INSTANCE_Post(tracker->playerInstance, 1048592, tracker->cheatMode);
+#else
+	INSTANCE_Post(tracker->playerInstance, 12, tracker->cheatMode);
+#endif
 }
 
 void Skew::Process(UINT msg, WPARAM wParam)

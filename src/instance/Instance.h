@@ -15,6 +15,10 @@ struct Intro
 {
 };
 
+struct IntroData
+{
+};
+
 struct ObjectData
 {
 	unsigned __int16 version;
@@ -32,6 +36,7 @@ struct CharacterProxy;
 
 struct Instance;
 
+#ifndef TR8
 struct BaseInstance
 {
 	NodeType node;
@@ -73,7 +78,34 @@ struct Instance : BaseInstance
 	char pad2[12];
 
 	int introUniqueID;
+
+	char pad3[104];
+
+	void* extraData;
 };
+#else
+struct Instance
+{
+	NodeType node;
+
+	Instance* next;
+	Instance* prev;
+
+	Object* object;
+
+	char pad1[12];
+
+	cdc::Vector3 position;
+	cdc::Euler rotation;
+
+	char pad2[24];
+
+	int introUniqueID;
+};
+#endif
 
 void INSTANCE_Post(Instance* instance, int message, int data);
 void INSTANCE_HideUnhideDrawGroup(Instance* instance, int drawGroup, int on);
+void INSTANCE_ReallyRemoveInstance(Instance* instance, int reset, bool keepSave);
+
+Instance* INSTANCE_BirthObjectNoParent(unsigned int unitID, cdc::Vector3* position, cdc::Euler* rotation, IntroData* introData, Object* object, int modelNum, int initEffects);

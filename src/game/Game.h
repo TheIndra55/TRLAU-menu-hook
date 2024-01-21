@@ -14,6 +14,7 @@ struct WipeInfo
 	float wipeStep;
 };
 
+#ifndef TR8
 struct GameTracker
 {
 	menu_t* menu;
@@ -50,6 +51,57 @@ struct GameTracker
 
 	float timeMult;
 };
+#else
+struct GameTracker
+{
+	int field_0;
+	int field_4;
+	Level* level;
+	Instance* playerInstance;
+
+	int debugFlags;
+	int debugFlags2;
+	int debugFlags3;
+	int debugFlags4;
+
+	int displayFrameCount;
+	int field_24;
+	int field_28;
+	int field_2C;
+	int field_30;
+	int field_34;
+
+	char baseAreaName[128];
+	char field_B8;
+	char field_B9;
+	char field_BA;
+
+	char gameMode;
+	char cheatMode;
+
+	char field_BD;
+	char field_BE;
+	char field_BF;
+	int StreamUnitID;
+	int field_C4;
+	int field_C8;
+	int field_CC;
+	int field_D0;
+	int field_D4;
+	int field_D8;
+	int field_DC;
+	int field_E0;
+	int field_E4;
+	int field_E8;
+	int field_EC;
+	int field_F0;
+	int field_F4;
+	int field_F8;
+	int field_FC;
+
+	float timeMult;
+};
+#endif
 
 class Game
 {
@@ -58,4 +110,4 @@ public:
 	static GameTracker* GetGameTracker();
 };
 
-void GAMELOOP_ExitGame(char* name, GameTracker* gameTracker, int doneType);
+void GAMELOOP_RequestLevelChangeByName(char* name, GameTracker* gameTracker, int doneType);

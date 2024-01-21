@@ -9,6 +9,7 @@ struct AnimFxHeader;
 struct AnimScriptObject;
 struct ObjectBase;
 
+#ifndef TR8
 struct Object
 {
 	int oflags;
@@ -40,3 +41,16 @@ struct Object
 	void* data;
 	char* name;
 };
+#else
+struct Object
+{
+	char pad1[58];
+
+	__int16 numModels;
+	__int16 numAnims;
+
+	char pad2[34];
+
+	char* name;
+};
+#endif

@@ -9,8 +9,10 @@ class InstanceViewer : public Module
 private:
 	bool m_show = false;
 	Instance* m_selected = nullptr;
+	char m_filter[64] = "";
 
 	void DrawInstance();
+	void SkewTo(Instance* instance);
 
 public:
 	void OnMenu();

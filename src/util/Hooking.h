@@ -15,7 +15,7 @@ public:
 	template<typename T, typename... Args>
 	static inline T CallReturn(unsigned int address, Args... args)
 	{
-		reinterpret_cast<T(*)(Args...)>(address)(args...);
+		return reinterpret_cast<T(*)(Args...)>(address)(args...);
 	}
 
 	// Calls a class function
@@ -29,6 +29,14 @@ public:
 	template<typename T, typename... Args>
 	static inline T ThisCallReturn(unsigned int address, Args... args)
 	{
-		reinterpret_cast<T(__thiscall*)(Args...)>(address)(args...);
+		return reinterpret_cast<T(__thiscall*)(Args...)>(address)(args...);
 	}
 };
+
+#if TR7
+#define GET_ADDRESS(tr7, trae, tr8) trl
+#elif TRAE
+#define GET_ADDRESS(tr7, trae, tr8) trae
+#elif TR8
+#define GET_ADDRESS(tr7, trae, tr8) tr8
+#endif
