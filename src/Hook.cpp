@@ -11,8 +11,8 @@
 #include "modules/MainMenu.h"
 #include "modules/InstanceViewer.h"
 #include "modules/Skew.h"
-#include "modules/Render.h"
-#include "modules/Draw.h"
+//#include "modules/Render.h"
+//#include "modules/Draw.h"
 #include "modules/Log.h"
 #include "modules/ScriptLog.h"
 
@@ -116,8 +116,8 @@ void Hook::RegisterModules()
 	RegisterModule<Skew>();
 
 #ifndef TR8
-	RegisterModule<Render>();
-	RegisterModule<Draw>();
+	//RegisterModule<Render>();
+	//RegisterModule<Draw>();
 #else
 	RegisterModule<ScriptLog>();
 #endif

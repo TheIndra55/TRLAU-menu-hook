@@ -46,8 +46,11 @@ struct GameTracker
 	char gameMode;
 	char cheatMode;
 	char savingGame;
+	__int16 postSaveScreenID;
 
-	char pad1[66];
+	int StreamUnitID;
+
+	char pad1[60];
 
 	float timeMult;
 };

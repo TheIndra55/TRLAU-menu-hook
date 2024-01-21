@@ -34,7 +34,7 @@ public:
 };
 
 #if TR7
-#define GET_ADDRESS(tr7, trae, tr8) trl
+#define GET_ADDRESS(tr7, trae, tr8) tr7
 #elif TRAE
 #define GET_ADDRESS(tr7, trae, tr8) trae
 #elif TR8

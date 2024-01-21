@@ -1,6 +1,7 @@
 workspace "TRAE-menu-hook"
     architecture "x86"
     configurations { "Debug", "Release" }
+    platforms { "TR7", "TRAE", "TR8" }
 
 project "TRAE-menu-hook"
     kind "SharedLib"
@@ -32,6 +33,8 @@ project "TRAE-menu-hook"
         "vendor/json/include"
     }
 
+    defines { "IMGUI_IMPL_WIN32_DISABLE_GAMEPAD" }
+
     -- Build configurations
     symbols "On"
 
@@ -41,3 +44,16 @@ project "TRAE-menu-hook"
     filter "configurations:Release"
         defines { "NDEBUG" }
         optimize "On"
+
+    -- Game configurations
+    filter "platforms:TR7"
+        defines { "TR7" }
+        targetname "TR7-Menu-Hook"
+
+    filter "platforms:TRAE"
+        defines { "TRAE" }
+        targetname "TRAE-Menu-Hook"
+
+    filter "platforms:TR8"
+        defines { "TR8" }
+        targetname "TR8-Menu-Hook"
