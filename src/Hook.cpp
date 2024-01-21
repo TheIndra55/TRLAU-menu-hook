@@ -9,7 +9,7 @@
 
 // Modules
 #include "modules/MainMenu.h"
-#include "modules/InstanceViewer.h"
+#include "modules/Instance.h"
 #include "modules/Skew.h"
 //#include "modules/Render.h"
 //#include "modules/Draw.h"
@@ -113,7 +113,7 @@ void Hook::RegisterModule()
 void Hook::RegisterModules()
 {
 	RegisterModule<MainMenu>();
-	RegisterModule<InstanceViewer>();
+	RegisterModule<InstanceModule>();
 	RegisterModule<Skew>();
 
 #ifndef TR8

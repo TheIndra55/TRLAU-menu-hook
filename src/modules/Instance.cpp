@@ -1,12 +1,12 @@
 #include <string>
 #include <imgui.h>
 
-#include "InstanceViewer.h"
+#include "Instance.h"
 #include "instance/Instances.h"
 #include "instance/Animation.h"
 #include "game/Game.h"
 
-void InstanceViewer::OnMenu()
+void InstanceModule::OnMenu()
 {
 	if (ImGui::BeginMenu("Instance"))
 	{
@@ -16,7 +16,7 @@ void InstanceViewer::OnMenu()
 	}
 }
 
-void InstanceViewer::OnDraw()
+void InstanceModule::OnDraw()
 {
 	if (m_show)
 	{
@@ -70,7 +70,7 @@ void InstanceViewer::OnDraw()
 	}
 }
 
-void InstanceViewer::DrawInstance()
+void InstanceModule::DrawInstance()
 {
 	auto instance = m_selected;
 
@@ -182,14 +182,14 @@ void InstanceViewer::DrawInstance()
 	}
 }
 
-void InstanceViewer::SkewTo(Instance* instance)
+void InstanceModule::SkewTo(Instance* instance)
 {
 	auto player = Game::GetPlayerInstance();
 
 	player->position = instance->position;
 }
 
-std::string InstanceViewer::GetBinary(int value)
+std::string InstanceModule::GetBinary(int value)
 {
 	std::string binary;
 

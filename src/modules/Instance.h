@@ -6,7 +6,7 @@
 
 #include "instance/Instance.h"
 
-class InstanceViewer : public Module
+class InstanceModule : public Module
 {
 private:
 	bool m_show = false;
