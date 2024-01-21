@@ -94,7 +94,7 @@ void Menu::Draw()
 	if (ImGui::BeginMainMenuBar())
 	{
 		// Draw all modules menus
-		for (auto& mod : modules)
+		for (auto& [hash, mod] : modules)
 		{
 			mod->OnMenu();
 		}
@@ -103,7 +103,7 @@ void Menu::Draw()
 	}
 
 	// Draw all menus
-	for (auto& mod : modules)
+	for (auto& [hash, mod] : modules)
 	{
 		mod->OnDraw();
 	}

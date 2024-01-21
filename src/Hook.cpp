@@ -74,7 +74,7 @@ void Hook::OnMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	m_menu->OnMessage(hWnd, msg, wParam, lParam);
 
-	for (auto& mod : m_modules)
+	for (auto& [hash, mod] : m_modules)
 	{
 		mod->OnInput(hWnd, msg, wParam, lParam);
 	}
@@ -82,7 +82,7 @@ void Hook::OnMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 void Hook::OnFrame()
 {
-	for (auto& mod : m_modules)
+	for (auto& [hash, mod] : m_modules)
 	{
 		mod->OnFrame();
 	}
@@ -100,9 +100,9 @@ void Hook::OnDevice()
 template<typename T>
 void Hook::RegisterModule()
 {
-	auto module = std::make_shared<T>();
+	auto mod = std::make_shared<T>();
 
-	m_modules.push_back(module);
+	m_modules.insert({ typeid(T).hash_code(), mod });
 }
 
 void Hook::RegisterModules()
@@ -113,8 +113,8 @@ void Hook::RegisterModules()
 #ifndef TR8
 	RegisterModule<Render>();
 	RegisterModule<Draw>();
-	RegisterModule<Log>();
 #endif
+	RegisterModule<Log>();
 }
 
 Hook& Hook::GetInstance()
