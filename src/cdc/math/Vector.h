@@ -19,6 +19,14 @@ namespace cdc
 				float w;
 			};
 		};
+
+		void operator +=(Vector* b);
+		void operator -=(Vector* b);
+		void operator *=(Vector* b);
+		void operator /=(Vector* b);
+
+		void operator *=(float b);
+		void operator /=(float b);
 	};
 
 	class Vector2 : public Vector

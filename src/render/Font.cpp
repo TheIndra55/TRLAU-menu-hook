@@ -29,6 +29,11 @@ void Font::SetCursor(float x, float y)
 	Hooking::Call(0x433C70, x, y);
 }
 
+void Font::GetCursor(float* x, float* y)
+{
+	Hooking::Call(0x433C90, x, y);
+}
+
 void Font::SetScale(float scaleX, float scaleY)
 {
 	Hooking::Call(0x433E60, scaleX, scaleY);
@@ -45,9 +50,31 @@ void Font::Print(const char* fmt, ...)
 	PrintFormatted(s_formatted);
 }
 
+void Font::PrintCentered(const char* fmt, ...)
+{
+	va_list va;
+
+	va_start(va, fmt);
+	vsprintf_s(s_formatted, fmt, va);
+	va_end(va);
+
+	float x, y;
+	GetCursor(&x, &y);
+
+	auto width = GetTextWidth(s_formatted);
+	SetCursor(x - width / 2, y);
+
+	PrintFormatted(s_formatted);
+}
+
 void Font::PrintFormatted(const char* formatted, int backdrop)
 {
 	Hooking::ThisCall(0x434A70, this, formatted, backdrop);
+}
+
+float Font::GetTextWidth(const char* text)
+{
+	return Hooking::ThisCallReturn<float>(0x434510, this, text);
 }
 
 void Font::OnFlush(std::function<void()> callback)
