@@ -16,6 +16,7 @@
 #include "modules/Log.h"
 #include "modules/ScriptLog.h"
 #include "modules/Level.h"
+#include "modules/ModLoader.h"
 
 #include "cdc/render/PCDeviceManager.h"
 
@@ -115,6 +116,7 @@ void Hook::RegisterModules()
 	RegisterModule<MainMenu>();
 	RegisterModule<InstanceModule>();
 	RegisterModule<Skew>();
+	RegisterModule<ModLoader>();
 
 #ifndef TR8
 	RegisterModule<LevelModule>();
