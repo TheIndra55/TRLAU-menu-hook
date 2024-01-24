@@ -1,5 +1,7 @@
 #pragma once
 
+#include <initializer_list>
+
 // Helpers for hooking and calling functions
 class Hooking
 {
@@ -31,6 +33,15 @@ public:
 	{
 		return reinterpret_cast<T(__thiscall*)(Args...)>(address)(args...);
 	}
+
+	// Sets a memory region to no-op
+	static void Nop(void* address, unsigned int length);
+
+	// Patches data at a memory region
+	static void Patch(void* address, std::initializer_list<unsigned char> data);
+
+	// Patches data at a memory region
+	static void Patch(void* address, unsigned int data);
 };
 
 #if TR7
