@@ -9,4 +9,5 @@ private:
 
 public:
 	void OnDraw();
+	void OnFrame();
 };

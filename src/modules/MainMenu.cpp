@@ -3,6 +3,8 @@
 #include "MainMenu.h"
 #include "level/Stream.h"
 #include "game/Game.h"
+#include "util/Hooking.h"
+#include "render/Font.h"
 
 void MainMenu::OnDraw()
 {
@@ -45,4 +47,17 @@ void MainMenu::BirthObject(char* name)
 
 	// Birth the instance at the player position
 	INSTANCE_BirthObjectNoParent(game->StreamUnitID, &player->position, &player->rotation, nullptr, tracker->object, 0, 1);
+}
+
+void MainMenu::OnFrame()
+{
+	auto mainState = *(int*)GET_ADDRESS(0x10E5868, 0x838838, 0x000000);
+
+	if (mainState == MS_DISPLAY_MAIN_MENU)
+	{
+		auto font = Font::GetMainFont();
+
+		font->SetCursor(5.f, 430.f);
+		font->Print("TRLAU-Menu-Hook");
+	}
 }
