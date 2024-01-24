@@ -22,3 +22,14 @@ void Patches::RemoveIntro()
 	Hooking::Patch(match.get_first(), { 0xC7, 0x05, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00 });
 	Hooking::Patch(match.get_first(2), mainState);
 }
+
+void Patches::OnInput(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	// Remove the quit message
+#ifdef TRAE
+	if (msg == WM_CLOSE)
+	{
+		PostQuitMessage(0);
+	}
+#endif
+}

@@ -69,6 +69,14 @@ struct GameTracker
 	char pad1[60];
 
 	float timeMult;
+	float unmodifiedActualTimeMult;
+	float actualTimeMult;
+	float globalTimeMult;
+
+	float scrollProgress;
+	float timeDilation;
+
+	int debugTimeMult;
 };
 #else
 struct GameTracker

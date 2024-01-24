@@ -18,6 +18,7 @@
 #include "modules/Level.h"
 #include "modules/ModLoader.h"
 #include "modules/Patches.h"
+#include "modules/Frontend.h"
 
 #include "cdc/render/PCDeviceManager.h"
 
@@ -122,6 +123,7 @@ void Hook::RegisterModules()
 
 #ifndef TR8
 	RegisterModule<LevelModule>();
+	RegisterModule<Frontend>();
 	//RegisterModule<Render>();
 	//RegisterModule<Draw>();
 #else

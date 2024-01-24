@@ -4,8 +4,11 @@
 
 class Patches : public Module
 {
+private:
+	void RemoveIntro();
+
 public:
 	Patches();
 
-	void RemoveIntro();
+	void OnInput(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 };

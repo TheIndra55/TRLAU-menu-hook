@@ -28,6 +28,14 @@ void MainMenu::OnDraw()
 		BirthObject(object);
 	}
 
+	// Time
+	if (ImGui::CollapsingHeader("Time"))
+	{
+		auto gameTracker = Game::GetGameTracker();
+
+		ImGui::SliderFloat("Time multiplier", &gameTracker->timeDilation, 0.f, 10.f, "%.2f");
+	}
+
 	ImGui::End();
 }
 
