@@ -69,3 +69,24 @@ void MainMenu::OnFrame()
 		font->Print("TRLAU-Menu-Hook");
 	}
 }
+
+void MainMenu::OnInput(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	auto gameTracker = Game::GetGameTracker();
+
+	// Freeze the game
+	if (msg == WM_KEYUP && wParam == VK_F3)
+	{
+		gameTracker->streamFlags ^= 0x1000;
+	}
+
+	// Ragdoll death
+	if (msg == WM_KEYUP && wParam == VK_F11)
+	{
+#ifndef TR8
+		INSTANCE_Post(gameTracker->playerInstance, 262167, 3);
+#else
+		INSTANCE_Post(gameTracker->playerInstance, 4, 3);
+#endif
+	}
+}
