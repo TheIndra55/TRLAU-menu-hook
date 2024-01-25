@@ -14,6 +14,9 @@ public:
 	// Called just before a frame ends, Font::Flush to be specific
 	virtual void OnFrame() { };
 
+	// Called every frame before the game loop
+	virtual void OnLoop() { };
+
 	// Called when a message is processed by the window procedure
 	virtual void OnInput(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) { };
 };

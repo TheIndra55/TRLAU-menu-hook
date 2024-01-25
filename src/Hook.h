@@ -21,6 +21,7 @@ private:
 
 	void OnMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	void OnFrame();
+	void OnLoop();
 
 public:
 	Hook();

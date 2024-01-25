@@ -77,6 +77,11 @@ struct GameTracker
 	float timeDilation;
 
 	int debugTimeMult;
+
+	char pad2[752];
+
+	int currentPlayerObjectID;
+	int altPlayerObjectID;
 };
 #else
 struct GameTracker
@@ -143,8 +148,8 @@ struct GameTracker
 	int field_134;
 	int field_138;
 	int field_13C;
-	int field_140;
-	int field_144;
+	int currentPlayerObjectID;
+	int altPlayerObjectID;
 
 	float timeDilation;
 };
@@ -159,3 +164,6 @@ public:
 };
 
 void GAMELOOP_RequestLevelChangeByName(char* name, GameTracker* gameTracker, int doneType);
+
+void PLAYER_DebugSwitchPlayerCharacter();
+int OBTABLE_GetObjectID(char* name);

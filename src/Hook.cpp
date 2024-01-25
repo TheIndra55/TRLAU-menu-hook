@@ -6,6 +6,7 @@
 #include "instance/Instances.h"
 #include "game/Game.h"
 #include "render/Font.h"
+#include "game/GameLoop.h"
 
 // Modules
 #include "modules/MainMenu.h"
@@ -76,6 +77,8 @@ void Hook::PostInitialize()
 #ifndef TR8
 	Font::OnFlush(std::bind(&Hook::OnFrame, this));
 #endif
+
+	GameLoop::OnLoop(std::bind(&Hook::OnLoop, this));
 }
 
 void Hook::OnMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -93,6 +96,14 @@ void Hook::OnFrame()
 	for (auto& [hash, mod] : m_modules)
 	{
 		mod->OnFrame();
+	}
+}
+
+void Hook::OnLoop()
+{
+	for (auto& [hash, mod] : m_modules)
+	{
+		mod->OnLoop();
 	}
 }
 

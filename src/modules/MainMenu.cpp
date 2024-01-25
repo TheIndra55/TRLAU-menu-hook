@@ -28,6 +28,25 @@ void MainMenu::OnDraw()
 		BirthObject(object);
 	}
 
+	// Player
+	if (ImGui::CollapsingHeader("Player"))
+	{
+		static char outfit[64] = "";
+		ImGui::InputText("Outfit", outfit, sizeof(outfit));
+
+		if (ImGui::Button("Change"))
+		{
+			SwitchPlayerCharacter(outfit);
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Next"))
+		{
+			SwitchPlayerCharacter();
+		}
+	}
+
 	// Time
 	if (ImGui::CollapsingHeader("Time"))
 	{
@@ -57,8 +76,22 @@ void MainMenu::BirthObject(char* name)
 	INSTANCE_BirthObjectNoParent(game->StreamUnitID, &player->position, &player->rotation, nullptr, tracker->object, 0, 1);
 }
 
+void MainMenu::SwitchPlayerCharacter(char* name)
+{
+	auto game = Game::GetGameTracker();
+
+	if (name)
+	{
+		auto object = OBTABLE_GetObjectID(name);
+		game->altPlayerObjectID = object;
+	}
+
+	m_switchPlayerNextFrame = true;
+}
+
 void MainMenu::OnFrame()
 {
+	// Shows the watermark in th main menu
 	auto mainState = *(int*)GET_ADDRESS(0x10E5868, 0x838838, 0x000000);
 
 	if (mainState == MS_DISPLAY_MAIN_MENU)
@@ -67,6 +100,15 @@ void MainMenu::OnFrame()
 
 		font->SetCursor(5.f, 430.f);
 		font->Print("TRLAU-Menu-Hook");
+	}
+}
+
+void MainMenu::OnLoop()
+{
+	if (m_switchPlayerNextFrame)
+	{
+		m_switchPlayerNextFrame = false;
+		PLAYER_DebugSwitchPlayerCharacter();
 	}
 }
 

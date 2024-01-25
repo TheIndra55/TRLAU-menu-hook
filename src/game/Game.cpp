@@ -23,3 +23,17 @@ void GAMELOOP_RequestLevelChangeByName(char* name, GameTracker* gameTracker, int
 
 	Hooking::Call(addr, name, gameTracker, doneType);
 }
+
+void PLAYER_DebugSwitchPlayerCharacter()
+{
+	auto addr = GET_ADDRESS(0x5A40B0, 0x5A39A0, 0x79DB50);
+
+	Hooking::Call(addr);
+}
+
+int OBTABLE_GetObjectID(char* name)
+{
+	auto addr = GET_ADDRESS(0x462590, 0x465DE0, 0x5BF770);
+
+	return Hooking::CallReturn<int>(addr, name);
+}
