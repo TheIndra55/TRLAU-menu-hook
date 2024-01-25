@@ -11,7 +11,7 @@
 #include "modules/MainMenu.h"
 #include "modules/Instance.h"
 #include "modules/Skew.h"
-//#include "modules/Render.h"
+#include "modules/Render.h"
 //#include "modules/Draw.h"
 #include "modules/Log.h"
 #include "modules/ScriptLog.h"
@@ -124,7 +124,7 @@ void Hook::RegisterModules()
 #ifndef TR8
 	RegisterModule<LevelModule>();
 	RegisterModule<Frontend>();
-	//RegisterModule<Render>();
+	RegisterModule<Render>();
 	//RegisterModule<Draw>();
 #else
 	RegisterModule<ScriptLog>();
