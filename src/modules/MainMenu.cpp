@@ -5,6 +5,7 @@
 #include "game/Game.h"
 #include "util/Hooking.h"
 #include "render/Font.h"
+#include "level/Event.h"
 
 void MainMenu::OnDraw()
 {
@@ -53,6 +54,22 @@ void MainMenu::OnDraw()
 		auto gameTracker = Game::GetGameTracker();
 
 		ImGui::SliderFloat("Time multiplier", &gameTracker->timeDilation, 0.f, 10.f, "%.2f");
+	}
+
+	if (ImGui::CollapsingHeader("Save"))
+	{
+		static int var = 0;
+		static int value = 0;
+
+		ImGui::InputInt("Event variable", &var);
+		ImGui::InputInt("Value", &value);
+
+		if (ImGui::Button("Update"))
+		{
+			auto globalData = (GlobalData*)GET_ADDRESS(0x1076980, 0x7C8A50, 0x000000);
+
+			globalData->eventVars[var] = value;
+		}
 	}
 
 	ImGui::End();
