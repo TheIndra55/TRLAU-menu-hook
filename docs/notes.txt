@@ -1,3 +1,0 @@
-future todo
-
-- being able to replace some section types by id e.g. textures without entire drm

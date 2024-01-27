@@ -13,7 +13,6 @@
 #include "modules/Instance.h"
 #include "modules/Skew.h"
 #include "modules/Render.h"
-//#include "modules/Draw.h"
 #include "modules/Log.h"
 #include "modules/ScriptLog.h"
 #include "modules/Level.h"
@@ -136,7 +135,6 @@ void Hook::RegisterModules()
 	RegisterModule<LevelModule>();
 	RegisterModule<Frontend>();
 	RegisterModule<Render>();
-	//RegisterModule<Draw>();
 #else
 	RegisterModule<ScriptLog>();
 #endif
