@@ -119,6 +119,13 @@ void InstanceModule::DrawInstance()
 	}
 #endif
 
+	// Transforms
+	if (ImGui::CollapsingHeader("Transforms"))
+	{
+		ImGui::InputFloat3("Position", (float*)&instance->position);
+		ImGui::InputFloat3("Rotation", (float*)&instance->rotation);
+	}
+
 	// Object info
 	if (ImGui::CollapsingHeader("Object"))
 	{
@@ -153,6 +160,26 @@ void InstanceModule::DrawInstance()
 	// Animations
 	if (ImGui::CollapsingHeader("Animations"))
 	{
+#ifndef TR8
+		// Show all allocated animation sections with the current playing animation
+		for (int section = 0; section < instance->animComponent->mAnimProcessor->mSectionsAllocated; section++)
+		{
+			// Query the current animation
+			auto currentAnim = G2EmulationInstanceQueryAnimation(instance, section);
+
+			// Can be null for some reason
+			if (instance->object->animList)
+			{
+				// (Section): (Anim index) (Anim ID)
+				ImGui::Text("Section %d: %d (%X)", section, currentAnim, instance->object->animList[currentAnim].animationID);
+			}
+			else
+			{
+				ImGui::Text("Section %d: %d", section, currentAnim);
+			}
+		}
+#endif
+
 		static int animation = 0;
 		static bool loop = true;
 

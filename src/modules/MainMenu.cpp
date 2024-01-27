@@ -86,6 +86,8 @@ void MainMenu::SwitchPlayerCharacter(char* name)
 		game->altPlayerObjectID = object;
 	}
 
+	// We can't do this here since switching the player character waits a couple of frames
+	// and we're in the middle of a frame
 	m_switchPlayerNextFrame = true;
 }
 

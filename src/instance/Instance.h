@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Object.h"
+#include "Animation.h"
 
 #include "cdc/math/Vector.h"
 #include "cdc/math/Matrix.h"
@@ -31,7 +32,6 @@ struct HModel;
 struct SoundInstanceData;
 struct Body;
 struct AnimatedGeoms;
-struct AnimComponent;
 struct CharacterProxy;
 
 struct Instance;
@@ -66,7 +66,11 @@ struct BaseInstance
 
 	unsigned int noDrawGroups;
 
-	char pad3[32];
+	char pad3[20];
+
+	AnimComponent* animComponent;
+
+	char pad4[8];
 };
 
 struct Instance : BaseInstance

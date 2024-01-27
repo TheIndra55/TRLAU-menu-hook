@@ -142,7 +142,6 @@ void Hook::RegisterModules()
 #endif
 
 	RegisterModule<Log>();
-
 }
 
 Hook& Hook::GetInstance()
