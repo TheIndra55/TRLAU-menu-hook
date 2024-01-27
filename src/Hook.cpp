@@ -46,9 +46,6 @@ Hook::Hook() : m_menu(nullptr), m_modules()
 
 void Hook::Initialize()
 {
-	// Initialize MinHook
-	MH_Initialize();
-
 	// Register all modules
 	RegisterModules();
 
