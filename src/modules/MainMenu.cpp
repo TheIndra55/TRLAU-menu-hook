@@ -56,6 +56,8 @@ void MainMenu::OnDraw()
 		ImGui::SliderFloat("Time multiplier", &gameTracker->timeDilation, 0.f, 10.f, "%.2f");
 	}
 
+	// Save
+#ifndef TR8
 	if (ImGui::CollapsingHeader("Save"))
 	{
 		static int var = 0;
@@ -71,6 +73,7 @@ void MainMenu::OnDraw()
 			globalData->eventVars[var] = value;
 		}
 	}
+#endif
 
 	ImGui::End();
 }
