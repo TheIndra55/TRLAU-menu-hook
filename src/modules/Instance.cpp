@@ -108,6 +108,10 @@ void InstanceModule::DrawInstance()
 	if (ImGui::Button("Delete"))
 	{
 		INSTANCE_ReallyRemoveInstance(instance, 0, false);
+
+		// Code below might crash if the instance got removed
+		// so return early
+		return;
 	}
 
 #ifdef TR8

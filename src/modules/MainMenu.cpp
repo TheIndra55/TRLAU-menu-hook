@@ -54,6 +54,11 @@ void MainMenu::OnDraw()
 		auto gameTracker = Game::GetGameTracker();
 
 		ImGui::SliderFloat("Time multiplier", &gameTracker->timeDilation, 0.f, 10.f, "%.2f");
+
+		if (ImGui::Button("Reset"))
+		{
+			gameTracker->timeDilation = 1.f;
+		}
 	}
 
 	// Save
