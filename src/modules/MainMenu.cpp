@@ -6,6 +6,7 @@
 #include "util/Hooking.h"
 #include "render/Font.h"
 #include "level/Event.h"
+#include "input/Input.h"
 
 void MainMenu::OnDraw()
 {
@@ -147,6 +148,12 @@ void MainMenu::OnInput(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	if (msg == WM_KEYUP && wParam == VK_F3)
 	{
 		gameTracker->streamFlags ^= 0x1000;
+	}
+
+	// Toggle player control
+	if (msg == WM_KEYUP && wParam == VK_F5)
+	{
+		Input::DisablePlayerControl(Input::IsPlayerControlEnabled());
 	}
 
 	// Ragdoll death

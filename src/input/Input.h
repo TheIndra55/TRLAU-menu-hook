@@ -32,6 +32,7 @@ class Input
 public:
 	static void DisableInput(bool disable);
 	static void DisablePlayerControl(bool disable);
+	static bool IsPlayerControlEnabled();
 	static bool IsInputActionPressed(int action);
 
 	static InputSystem* GetInputSystem();

@@ -12,6 +12,11 @@ void Input::DisablePlayerControl(bool disable)
 	*(bool*)GET_ADDRESS(0xF15AB4, 0x666C34, 0x8AB4E6) = !disable;
 }
 
+bool Input::IsPlayerControlEnabled()
+{
+	return *(bool*)GET_ADDRESS(0xF15AB4, 0x666C34, 0x8AB4E6);
+}
+
 bool Input::IsInputActionPressed(int action)
 {
 	auto inputSystem = GetInputSystem();

@@ -50,6 +50,7 @@ void LegendCamera::MoveLeft(float distance)
 	auto rotation = camera->rotation;
 
 	rotation.x = 0.f;
+	rotation.y = 0.f;
 	rotation.z += static_cast<float>(M_PI) / 2.f;
 
 	CAMERA_CalcPosition(&camera->position, &camera->position, &rotation, distance);
