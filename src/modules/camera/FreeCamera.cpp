@@ -42,8 +42,8 @@ void FreeCameraBase::OnControl()
 	auto gameTracker = Game::GetGameTracker();
 
 	// Camera rotation based on mouse/controller axis
-	auto rotX = input->GetAxisValue(17) * gameTracker->timeMult;
-	auto rotZ = input->GetAxisValue(16) * gameTracker->timeMult;
+	auto rotX = input->GetAxisValue(INPUTAXIS_MOUSEY) * gameTracker->timeMult;
+	auto rotZ = input->GetAxisValue(INPUTAXIS_MOUSEX) * gameTracker->timeMult;
 
 	Rotate(rotX, rotZ);
 
@@ -57,40 +57,51 @@ void FreeCameraBase::OnControl()
 	}
 
 	// Change the speed depending on if shift/alt is pressed
-	auto shift = Input::IsInputActionPressed(18);
-	auto control = Input::IsInputActionPressed(23);
+	auto shift = Input::IsInputActionPressed(INPUTACTION_CAMERA_FAST);
+	auto control = Input::IsInputActionPressed(INPUTACTION_CAMERA_SLOW);
 
 	auto speed = shift ? 200.f : control ? 20.f : 80.f;
 
 	// Camera forward/backward
-	if (Input::IsInputActionPressed(1) || Input::IsInputActionPressed(2))
+	if (Input::IsInputActionPressed(INPUTACTION_UP) || Input::IsInputActionPressed(INPUTACTION_DOWN))
 	{
-		auto distance = Input::IsInputActionPressed(1) ? -speed : speed;
+		auto distance = Input::IsInputActionPressed(INPUTACTION_UP) ? -speed : speed;
 
 		MoveForward(distance * gameTracker->timeMult);
 	}
 
 	// Camera left/right
-	if (Input::IsInputActionPressed(3) || Input::IsInputActionPressed(4))
+	if (Input::IsInputActionPressed(INPUTACTION_LEFT) || Input::IsInputActionPressed(INPUTACTION_RIGHT))
 	{
-		auto distance = Input::IsInputActionPressed(3) ? -speed : speed;
+		auto distance = Input::IsInputActionPressed(INPUTACTION_LEFT) ? -speed : speed;
 
 		MoveLeft(distance * gameTracker->timeMult);
 	}
 
 	// Camera up/down
-	if (Input::IsInputActionPressed(16) || Input::IsInputActionPressed(17))
+	if (Input::IsInputActionPressed(INPUTACTION_CAMERA_UP) || Input::IsInputActionPressed(INPUTACTION_CAMERA_DOWN))
 	{
-		auto distance = Input::IsInputActionPressed(16) ? -speed : speed;
+		auto distance = Input::IsInputActionPressed(INPUTACTION_CAMERA_UP) ? -speed : speed;
 
 		MoveUp(distance * gameTracker->timeMult);
 	}
 }
+
+#include "Hook.h"
+#include "modules/Log.h"
 
 void FreeCameraBase::OnLoop()
 {
 	if (m_mode == Enabled)
 	{
 		OnControl();
+	}
+
+	for (int i = 0; i < 100; i++)
+	{
+		if (Input::IsInputActionPressed(i))
+		{
+			Hook::GetInstance().GetModule<Log>()->WriteLine("%d", i);
+		}
 	}
 }

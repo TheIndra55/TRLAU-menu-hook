@@ -3,7 +3,11 @@
 
 Camera* CAMERA_GetCamera()
 {
+#ifndef TR8
 	return (Camera*)GET_ADDRESS(0x000000, 0x850670, 0x000000);
+#else
+	return *(Camera**)0xE80534;
+#endif
 }
 
 void CAMERA_CalcPosition(cdc::Vector3* position, cdc::Vector3* base, cdc::Euler* rotation, float distance)
@@ -12,3 +16,10 @@ void CAMERA_CalcPosition(cdc::Vector3* position, cdc::Vector3* base, cdc::Euler*
 
 	Hooking::Call(addr, position, base, rotation, distance);
 }
+
+#ifdef TR8
+void CAMERA_SetMode(int mode)
+{
+	Hooking::Call(0x5F39F0, mode);
+}
+#endif

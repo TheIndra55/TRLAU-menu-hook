@@ -1,7 +1,9 @@
 #pragma once
 
 #include "cdc/math/Vector.h"
+#include "cdc/math/Matrix.h"
 
+#ifndef TR8
 struct CameraCore
 {
 	cdc::Vector3 position;
@@ -18,6 +20,18 @@ struct Camera : CameraCore
 	int lock;
 	__int16 mode;
 };
+#else
+struct Camera
+{
+	char pad1[16];
+
+	cdc::Matrix transform;
+};
+#endif
 
 Camera* CAMERA_GetCamera();
 void CAMERA_CalcPosition(cdc::Vector3* position, cdc::Vector3* base, cdc::Euler* rotation, float distance);
+
+#ifdef TR8
+void CAMERA_SetMode(int mode);
+#endif

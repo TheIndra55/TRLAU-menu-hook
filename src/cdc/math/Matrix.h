@@ -7,9 +7,11 @@ namespace cdc
 	class Matrix
 	{
 	public:
-		cdc::Vector col0;
-		cdc::Vector col1;
-		cdc::Vector col2;
-		cdc::Vector col3;
+		Vector col0;
+		Vector col1;
+		Vector col2;
+		Vector col3;
+
+		void Build(Euler* euler);
 	};
 }

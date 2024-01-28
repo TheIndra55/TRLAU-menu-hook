@@ -1,3 +1,5 @@
+#ifndef TR8
+
 #define _USE_MATH_DEFINES
 #include <cmath>
 
@@ -62,3 +64,5 @@ void LegendCamera::MoveUp(float distance)
 
 	camera->position.z += distance;
 }
+
+#endif
