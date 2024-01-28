@@ -19,6 +19,7 @@
 #include "modules/ModLoader.h"
 #include "modules/Patches.h"
 #include "modules/Frontend.h"
+#include "modules/camera/FreeCamera.h"
 
 #include "cdc/render/PCDeviceManager.h"
 
@@ -127,6 +128,7 @@ void Hook::RegisterModules()
 	RegisterModule<Skew>();
 	RegisterModule<ModLoader>();
 	RegisterModule<Patches>();
+	RegisterModule<FreeCamera>();
 
 #ifndef TR8
 	RegisterModule<LevelModule>();
