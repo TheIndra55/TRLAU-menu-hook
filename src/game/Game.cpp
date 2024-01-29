@@ -33,7 +33,7 @@ void PLAYER_DebugSwitchPlayerCharacter()
 
 int OBTABLE_GetObjectID(char* name)
 {
-	auto addr = GET_ADDRESS(0x462590, 0x465DE0, 0x5BF770);
+	auto addr = GET_ADDRESS(0x462590, 0x4660C0, 0x5BF770);
 
 	return Hooking::CallReturn<int>(addr, name);
 }
