@@ -11,13 +11,17 @@
 
 static cdc::Vector3 RotationToDirection(cdc::Euler* rotation, float distance)
 {
-	cdc::Matrix m;
-	m.Build(rotation);
+	//cdc::Matrix m;
+	//m.Build(rotation);
 
-	cdc::Vector3 v = { 0.f, -distance, 0.f };
+	//cdc::Vector3 v = { 0.f, -distance, 0.f };
 
-	// TODO fixme
-	return cdc::Mul3x3(&m, &v);
+	//return cdc::Mul3x3(&m, &v);
+	auto x = -sin(rotation->z);
+	auto y = cos(rotation->z);
+	auto z = cos(rotation->x);
+
+	return cdc::Vector3{ static_cast<float>(x * -distance), static_cast<float>(y * -distance), static_cast<float>(z * -distance) };
 }
 
 void UnderworldCamera::ToggleMode()
@@ -31,6 +35,8 @@ void UnderworldCamera::ToggleMode()
 		// Set the camera position to the player position
 		auto camera = CAMERA_GetCamera();
 		camera->transform.col3 = Game::GetPlayerInstance()->position;
+
+		m_rotation = { static_cast<float>(M_PI) / -2.f, 0.f, 0.f };
 	}
 
 	if (m_mode == Disabled)
@@ -73,7 +79,6 @@ void UnderworldCamera::MoveForward(float distance)
 void UnderworldCamera::MoveLeft(float distance)
 {
 	auto rotation = m_rotation;
-	rotation.x = 0.f;
 	rotation.y = 0.f;
 	rotation.z += static_cast<float>(M_PI) / 2.f;
 

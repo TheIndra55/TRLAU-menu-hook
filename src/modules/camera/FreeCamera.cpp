@@ -96,12 +96,4 @@ void FreeCameraBase::OnLoop()
 	{
 		OnControl();
 	}
-
-	for (int i = 0; i < 100; i++)
-	{
-		if (Input::IsInputActionPressed(i))
-		{
-			Hook::GetInstance().GetModule<Log>()->WriteLine("%d", i);
-		}
-	}
 }

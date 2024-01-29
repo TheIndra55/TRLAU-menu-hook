@@ -4,7 +4,7 @@
 Camera* CAMERA_GetCamera()
 {
 #ifndef TR8
-	return (Camera*)GET_ADDRESS(0x000000, 0x850670, 0x000000);
+	return (Camera*)GET_ADDRESS(0x10FC660, 0x850670, 0x000000);
 #else
 	return *(Camera**)0xE80534;
 #endif
