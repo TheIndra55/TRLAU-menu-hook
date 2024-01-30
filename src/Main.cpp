@@ -9,7 +9,8 @@ static void (WINAPI* s_GetStartupInfoA)(LPSTARTUPINFOA);
 static void WINAPI StartupInfoW(LPSTARTUPINFOA lpStartupInfo)
 {
 	// Initialize
-	Hook::GetInstance();
+	auto& hook = Hook::GetInstance();
+	hook.Initialize();
 
 	// Call the original GetStartupInfoA
 	s_GetStartupInfoA(lpStartupInfo);

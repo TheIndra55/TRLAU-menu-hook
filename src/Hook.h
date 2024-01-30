@@ -12,7 +12,6 @@ private:
 	std::unique_ptr<Menu> m_menu;
 	std::map<std::size_t, std::shared_ptr<Module>> m_modules;
 
-	void Initialize();
 	void PostInitialize();
 
 	template<typename T>
@@ -26,6 +25,7 @@ private:
 public:
 	Hook();
 
+	void Initialize();
 	void OnDevice();
 
 	// These need to be defined here, else the linker becomes angry

@@ -42,7 +42,6 @@ static bool D3D_Init()
 
 Hook::Hook() : m_menu(nullptr), m_modules()
 {
-	Initialize();
 }
 
 void Hook::Initialize()
