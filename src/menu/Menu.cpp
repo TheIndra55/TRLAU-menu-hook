@@ -9,6 +9,7 @@
 #include "input/MouseHook.h"
 #include "input/Input.h"
 #include "Hook.h"
+#include "Options.h"
 
 #include "cdc/render/PCDeviceManager.h"
 
@@ -99,6 +100,9 @@ void Menu::Draw()
 			mod->OnMenu();
 		}
 
+		// Draw last menu
+		DrawMenu();
+
 		ImGui::EndMainMenuBar();
 	}
 
@@ -106,6 +110,24 @@ void Menu::Draw()
 	for (auto& [hash, mod] : modules)
 	{
 		mod->OnDraw();
+	}
+}
+
+void Menu::DrawMenu()
+{
+	if (ImGui::BeginMenu("Help"))
+	{
+		if (ImGui::MenuItem("Options"))
+		{
+			Hook::GetInstance().GetModule<Options>()->Show();
+		}
+
+		if (ImGui::MenuItem("GitHub"))
+		{
+			ShellExecuteA(NULL, NULL, "https://github.com/TheIndra55/TRAE-menu-hook", NULL, NULL, SW_SHOW);
+		}
+
+		ImGui::EndMenu();
 	}
 }
 

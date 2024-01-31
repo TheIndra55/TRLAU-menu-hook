@@ -2,6 +2,7 @@
 #include <Hooking.Patterns.h>
 
 #include "Hook.h"
+#include "Options.h"
 #include "input/MessageHook.h"
 #include "instance/Instances.h"
 #include "game/Game.h"
@@ -122,6 +123,10 @@ void Hook::RegisterModule()
 
 void Hook::RegisterModules()
 {
+	// Register these first
+	RegisterModule<Log>();
+	RegisterModule<Options>();
+
 	RegisterModule<MainMenu>();
 	RegisterModule<InstanceModule>();
 	RegisterModule<Skew>();
@@ -136,8 +141,6 @@ void Hook::RegisterModules()
 #else
 	RegisterModule<ScriptLog>();
 #endif
-
-	RegisterModule<Log>();
 }
 
 Hook& Hook::GetInstance()
