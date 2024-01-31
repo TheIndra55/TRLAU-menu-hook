@@ -6,7 +6,10 @@
 Patches::Patches()
 {
 #ifndef TR8
-	RemoveIntro();
+	if (m_disableIntro.GetValue())
+	{
+		RemoveIntro();
+	}
 #endif
 }
 

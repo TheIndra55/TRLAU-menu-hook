@@ -2,6 +2,7 @@
 
 #include "modules/Module.h"
 #include "cdc/math/Vector.h"
+#include "Options.h"
 
 // Base class for both free camera implementations
 class FreeCameraBase : public Module
@@ -16,6 +17,12 @@ public:
 
 private:
 	bool m_vKeys[3];
+
+	// Camera options
+	Option<float> m_slowSpeed  { "CameraSlowSpeed",   20.f };
+	Option<float> m_normalSpeed{ "CameraNormalSpeed", 80.f };
+	Option<float> m_fastSpeed  { "CameraFastSpeed",   200.f };
+	Option<float> m_rollSpeed  { "CameraRollSpeed",   0.02454f };
 
 protected:
 	ControlMode m_mode = Disabled;

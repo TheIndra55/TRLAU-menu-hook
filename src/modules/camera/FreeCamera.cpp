@@ -50,8 +50,8 @@ void FreeCameraBase::OnControl()
 	// Camera roll
 	if (m_vKeys[0] || m_vKeys[2])
 	{
-		// TODO
-		auto roll = m_vKeys[0] ? 0.02454f : -0.02454f;
+		auto value = m_rollSpeed.GetValue();
+		auto roll = m_vKeys[0] ? value : -value;
 
 		Rotate(roll * gameTracker->timeMult);
 	}
@@ -60,7 +60,7 @@ void FreeCameraBase::OnControl()
 	auto shift = Input::IsInputActionPressed(INPUTACTION_CAMERA_FAST);
 	auto control = Input::IsInputActionPressed(INPUTACTION_CAMERA_SLOW);
 
-	auto speed = shift ? 200.f : control ? 20.f : 80.f;
+	auto speed = shift ? m_fastSpeed.GetValue() : control ? m_slowSpeed.GetValue() : m_normalSpeed.GetValue();
 
 	// Camera forward/backward
 	if (Input::IsInputActionPressed(INPUTACTION_UP) || Input::IsInputActionPressed(INPUTACTION_DOWN))

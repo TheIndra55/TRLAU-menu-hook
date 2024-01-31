@@ -25,12 +25,11 @@ void Skew::ToggleSkew()
 void Skew::Process(UINT msg, WPARAM wParam)
 {
 	// TODO different keyboard layouts
-	// TODO configurable horizontal speed
 
 	auto player = Game::GetPlayerInstance();
 	auto tracker = Game::GetGameTracker();
 
-	auto speed = 200.f * tracker->timeMult;
+	auto speed = m_speed.GetValue() * tracker->timeMult;
 
 	if (msg == WM_KEYDOWN && wParam == 0x51)
 	{
