@@ -7,6 +7,8 @@ class Patches : public Module
 {
 private:
 	Option<bool> m_disableIntro{ "DisableIntro", true };
+	Option<bool> m_noCinematicBars{ "NoCinematicBars", true };
+	Option<bool> m_noMotionBlur{ "NoMotionBlur", false };
 
 	void RemoveIntro();
 

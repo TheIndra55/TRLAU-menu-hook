@@ -33,6 +33,7 @@ void MainMenu::OnDraw()
 	// Player
 	if (ImGui::CollapsingHeader("Player"))
 	{
+		// Switch outfit
 		static char outfit[64] = "";
 		ImGui::InputText("Outfit", outfit, sizeof(outfit));
 
@@ -47,6 +48,24 @@ void MainMenu::OnDraw()
 		{
 			SwitchPlayerCharacter();
 		}
+
+#ifndef TR8
+		// Player flags
+		auto flags = (unsigned int*)GET_ADDRESS(0x1075B88, 0x7C7C78, 0x000000);
+
+		static bool noInterp = *flags & 0x80;
+		if (ImGui::Checkbox("No interpolation", &noInterp))
+		{
+			if (noInterp)
+			{
+				*flags |= 0x80;
+			}
+			else
+			{
+				*flags &= ~0x80;
+			}
+		}
+#endif
 	}
 
 	// Time
@@ -122,7 +141,7 @@ void MainMenu::OnFrame()
 	// Shows the watermark in th main menu
 	auto mainState = *(int*)GET_ADDRESS(0x10E5868, 0x838838, 0x000000);
 
-	if (mainState == MS_DISPLAY_MAIN_MENU)
+	if (mainState == MS_DISPLAY_MAIN_MENU && !m_noWatermark.GetValue())
 	{
 		auto font = Font::GetMainFont();
 
