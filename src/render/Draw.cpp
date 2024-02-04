@@ -3,22 +3,30 @@
 
 void TRANS_TransToDrawVertexV4f(DRAWVERTEX* v, cdc::Vector3* vec)
 {
-	Hooking::Call(0x402F20, v, vec);
+	auto addr = GET_ADDRESS(0x402EF0, 0x402F20, 0x000000);
+
+	Hooking::Call(addr, v, vec);
 }
 
 void TRANS_RotTransPersVectorf(cdc::Vector3* srcvector, cdc::Vector3* dstvector)
 {
-	Hooking::Call(0x402B50, srcvector, dstvector);
+	auto addr = GET_ADDRESS(0x402B20, 0x402B50, 0x000000);
+
+	Hooking::Call(addr, srcvector, dstvector);
 }
 
 void DRAW_DrawQuads(int flags, int tpage, DRAWVERTEX* verts, int numquads)
 {
-	Hooking::Call(0x406D70, flags, tpage, verts, numquads);
+	auto addr = GET_ADDRESS(0x406720, 0x406D70, 0x000000);
+
+	Hooking::Call(addr, flags, tpage, verts, numquads);
 }
 
 void DRAW_DrawTriangles(int flags, int tpage, DRAWVERTEX* verts, int numtris)
 {
-	Hooking::Call(0x407570, flags, tpage, verts, numtris);
+	auto addr = GET_ADDRESS(0x406A40, 0x407570, 0x000000);
+
+	Hooking::Call(addr, flags, tpage, verts, numtris);
 }
 
 void DrawPlane(cdc::Vector3* v0, cdc::Vector3* v1, int color)
