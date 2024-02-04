@@ -1,3 +1,5 @@
+#ifndef TR8
+
 #include <string>
 #include <imgui.h>
 
@@ -230,3 +232,5 @@ void Draw::DrawPortals(Level* level)
 void Draw::DrawSignals(Level* level)
 {
 }
+
+#endif
