@@ -19,6 +19,7 @@ public:
 	void PrintFormatted(const char* formatted, int backdrop = 0);
 
 	float GetTextWidth(const char* text);
+	float GetHeight();
 
 	static void OnFlush(std::function<void()> callback);
 };

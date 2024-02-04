@@ -20,6 +20,7 @@
 #include "modules/ModLoader.h"
 #include "modules/Patches.h"
 #include "modules/Frontend.h"
+#include "modules/Draw.h"
 #include "modules/camera/FreeCamera.h"
 
 #include "cdc/render/PCDeviceManager.h"
@@ -138,6 +139,7 @@ void Hook::RegisterModules()
 	RegisterModule<LevelModule>();
 	RegisterModule<Frontend>();
 	RegisterModule<Render>();
+	RegisterModule<Draw>();
 #else
 	RegisterModule<ScriptLog>();
 #endif

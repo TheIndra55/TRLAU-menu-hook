@@ -3,10 +3,10 @@
 #include "cdc/math/Vector.h"
 
 struct Intro;
-struct StreamUnitPortal;
 struct Signal;
 struct Instance;
 struct KDNode;
+struct StreamUnit;
 
 struct IndexedFace
 {
@@ -18,6 +18,18 @@ struct IndexedFace
 	unsigned __int8 collisionFlags;
 	unsigned __int8 clientFlags;
 	unsigned __int8 materialType;
+};
+
+struct SignalFace
+{
+	unsigned __int16 i0;
+	unsigned __int16 i1;
+	unsigned __int16 i2;
+
+	char adjacencyFlags;
+	char collisionFlags;
+
+	unsigned __int16 id;
 };
 
 struct MeshVertex
@@ -79,6 +91,24 @@ struct TerrainGroup
 	char pad1[116];
 };
 
+struct StreamUnitPortal
+{
+	char tolevelname[30];
+
+	__int16 toSignalID;
+	__int16 MSignalID;
+	__int16 streamID;
+
+	unsigned __int16* closeVertList;
+	float activeDistance;
+	StreamUnit* toStreamUnit;
+
+	cdc::Vector3 min;
+	cdc::Vector3 max;
+	cdc::Vector3 quad[4];
+	cdc::Vector3 normal;
+};
+
 struct Terrain
 {
 	__int16 UnitChangeFlags;
@@ -108,4 +138,10 @@ struct Level
 	void* splineCameraData;
 
 	void* relocModule; // Pointer to script executable
+
+	char pad2[84];
+
+	void* pCdcPlannerData;
+	void* pAreaDBase;
+	void* pUnitData;
 };

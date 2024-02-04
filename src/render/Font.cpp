@@ -87,6 +87,13 @@ float Font::GetTextWidth(const char* text)
 	return Hooking::ThisCallReturn<float>(addr, this, text);
 }
 
+float Font::GetHeight()
+{
+	auto addr = GET_ADDRESS(0x431E20, 0x434440, 0x000000);
+
+	return Hooking::ThisCallReturn<float>(addr, this);
+}
+
 void Font::OnFlush(std::function<void()> callback)
 {
 	if (!s_callback)
