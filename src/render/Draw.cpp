@@ -29,6 +29,21 @@ void DRAW_DrawTriangles(int flags, int tpage, DRAWVERTEX* verts, int numtris)
 	Hooking::Call(addr, flags, tpage, verts, numtris);
 }
 
+void DrawTriangle(cdc::Vector3* v0, cdc::Vector3* v1, cdc::Vector3* v2, int color)
+{
+	DRAWVERTEX verts[3];
+
+	TRANS_TransToDrawVertexV4f(verts, v0);
+	TRANS_TransToDrawVertexV4f(&verts[1], v1);
+	TRANS_TransToDrawVertexV4f(&verts[2], v2);
+
+	verts[0].color = color;
+	verts[1].color = color;
+	verts[2].color = color;
+
+	DRAW_DrawTriangles(2, 0, verts, 1);
+}
+
 void DrawPlane(cdc::Vector3* v0, cdc::Vector3* v1, int color)
 {
 	DRAWVERTEX verts[6];

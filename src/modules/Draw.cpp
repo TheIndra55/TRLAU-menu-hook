@@ -10,6 +10,17 @@
 #include "instance/Instances.h"
 #include "instance/Enemy.h"
 
+template <typename T>
+static inline cdc::Vector3 GetVertice(unsigned int vertice, Mesh* mesh, cdc::Vector* offset)
+{
+	auto vertex = &((T*)mesh->m_vertices)[vertice];
+	auto position = cdc::Vector3{ static_cast<float>(vertex->x), static_cast<float>(vertex->y), static_cast<float>(vertex->z) };
+
+	position += offset;
+
+	return position;
+}
+
 void Draw::OnMenu()
 {
 	if (ImGui::BeginMenu("Draw"))
@@ -195,10 +206,40 @@ void Draw::DrawMarkUp()
 
 void Draw::DrawCollision(Level* level)
 {
+	auto terrain = level->terrain;
+
+	// Draw the collision mesh for all terrain groups
+	for (int i = 0; i < terrain->numTerrainGroups; i++)
+	{
+		auto terrainGroup = &terrain->terrainGroups[i];
+
+		if (terrainGroup->mesh)
+		{
+			DrawCollision(terrainGroup);
+		}
+	}
 }
 
 void Draw::DrawCollision(TerrainGroup* terrainGroup)
 {
+	auto mesh = terrainGroup->mesh;
+
+	// Draw all mesh faces
+	for (int i = 0; i < mesh->m_numFaces; i++)
+	{
+		auto face = &mesh->m_faces[i];
+
+		// Get the position of every vertice in world coordinates
+		auto x = GetVertice<MeshVertex>(face->i0, mesh, &mesh->m_position);
+		auto y = GetVertice<MeshVertex>(face->i1, mesh, &mesh->m_position);
+		auto z = GetVertice<MeshVertex>(face->i2, mesh, &mesh->m_position);
+
+		// TODO collision face lines
+		// TODO collision type/mask colors
+
+		// Draw the face
+		DrawTriangle(&x, &y, &z, RGBA(0, 255, 0, 10));
+	}
 }
 
 void Draw::DrawPortals(Level* level)
@@ -231,6 +272,30 @@ void Draw::DrawPortals(Level* level)
 
 void Draw::DrawSignals(Level* level)
 {
+	auto terrain = level->terrain;
+	auto terrainGroup = terrain->signalTerrainGroup;
+
+	// Make sure there is a signal mesh
+	if (!terrainGroup || !terrainGroup->mesh)
+	{
+		return;
+	}
+
+	auto mesh = terrainGroup->mesh;
+
+	// Draw all mesh faces
+	for (int i = 0; i < mesh->m_numFaces; i++)
+	{
+		auto face = (SignalFace*)&mesh->m_faces[i];
+
+		// Get the position of every vertice in world coordinates
+		auto x = GetVertice<MeshVertex32>(face->i0, mesh, &mesh->m_position);
+		auto y = GetVertice<MeshVertex32>(face->i1, mesh, &mesh->m_position);
+		auto z = GetVertice<MeshVertex32>(face->i2, mesh, &mesh->m_position);
+
+		// Draw the face
+		DrawTriangle(&x, &y, &z, RGBA(255, 0, 0, 10));
+	}
 }
 
 #endif
