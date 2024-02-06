@@ -72,18 +72,29 @@ void Draw::OnFrame()
 
 void Draw::OnDraw()
 {
-	if (m_drawInstances)
+	if (m_drawInstances || m_drawCollision)
 	{
 		ImGui::Begin("Draw options");
 
-		// Filter
-		ImGui::InputText("Filter", m_filter, sizeof(m_filter));
+		if (ImGui::CollapsingHeader("Instance"))
+		{
+			// Filter
+			ImGui::InputText("Filter", m_filter, sizeof(m_filter));
 
-		// Options
-		ImGui::Checkbox("Draw intro", &m_drawIntro);
-		ImGui::Checkbox("Draw family", &m_drawFamily);
-		ImGui::Checkbox("Draw animations", &m_drawAnimation);
-		ImGui::Checkbox("Draw health", &m_drawHealth);
+			// Options
+			ImGui::Checkbox("Draw intro", &m_drawIntro);
+			ImGui::Checkbox("Draw family", &m_drawFamily);
+			ImGui::Checkbox("Draw animations", &m_drawAnimation);
+			ImGui::Checkbox("Draw health", &m_drawHealth);
+		}
+
+		if (ImGui::CollapsingHeader("Collision"))
+		{
+			ImGui::Checkbox("Player collision", &m_drawPlayerCollision);
+			ImGui::Checkbox("Enemy collision", &m_drawEnemyCollision);
+
+			ImGui::InputInt("Terrain group", &m_terrainGroup);
+		}
 
 		ImGui::End();
 	}
@@ -213,7 +224,17 @@ void Draw::DrawCollision(Level* level)
 	{
 		auto terrainGroup = &terrain->terrainGroups[i];
 
-		if (terrainGroup->mesh)
+		// Filter on terrain group
+		if (m_terrainGroup >= 0 && m_terrainGroup != i)
+		{
+			continue;
+		}
+
+		// Filter on player/enemy collision
+		auto flag = terrainGroup->flags & 0x4000;
+		auto filter = (m_drawPlayerCollision && flag == 0) || (m_drawEnemyCollision && flag != 0);
+
+		if (terrainGroup->mesh && filter)
 		{
 			DrawCollision(terrainGroup);
 		}
@@ -234,11 +255,14 @@ void Draw::DrawCollision(TerrainGroup* terrainGroup)
 		auto y = GetVertice<MeshVertex>(face->i1, mesh, &mesh->m_position);
 		auto z = GetVertice<MeshVertex>(face->i2, mesh, &mesh->m_position);
 
-		// TODO collision face lines
-		// TODO collision type/mask colors
-
 		// Draw the face
-		DrawTriangle(&x, &y, &z, RGBA(0, 255, 0, 10));
+		auto color = terrainGroup->flags & 0x4000 ? RGBA(255, 0, 255, 10) : RGBA(0, 255, 0, 10);
+		DrawTriangle(&x, &y, &z, color);
+
+		// Draw the face outlines
+		DrawLine(&x, &y, RGB(255, 0, 0));
+		DrawLine(&y, &z, RGB(255, 0, 0));
+		DrawLine(&z, &x, RGB(255, 0, 0));
 	}
 }
 

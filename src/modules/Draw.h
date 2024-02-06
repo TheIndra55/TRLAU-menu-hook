@@ -17,12 +17,19 @@ private:
 	bool m_drawPortals = false;
 	bool m_drawSignals = false;
 
+	// Instance options
 	bool m_drawIntro = false;
 	bool m_drawFamily = false;
 	bool m_drawHealth = false;
 	bool m_drawAnimation = false;
 
 	char m_filter[100] = "";
+
+	// Collision options
+	bool m_drawPlayerCollision = true;
+	bool m_drawEnemyCollision = true;
+
+	int m_terrainGroup = -1;
 
 	void DrawInstances();
 	void DrawInstance(Instance* instance);

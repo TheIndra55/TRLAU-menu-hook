@@ -29,3 +29,4 @@ void DRAW_DrawTriangles(int flags, int tpage, DRAWVERTEX* verts, int numtris);
 
 void DrawTriangle(cdc::Vector3* v0, cdc::Vector3* v1, cdc::Vector3* v2, int color);
 void DrawPlane(cdc::Vector3* v0, cdc::Vector3* v1, int color);
+void DrawLine(cdc::Vector3* v0, cdc::Vector3* v1, int color);
