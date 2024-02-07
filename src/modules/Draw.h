@@ -40,6 +40,8 @@ private:
 	void DrawPortals(Level* level);
 	void DrawSignals(Level* level);
 
+	static std::string FlagsToString(unsigned int flags);
+
 public:
 	void OnMenu();
 	void OnDraw();

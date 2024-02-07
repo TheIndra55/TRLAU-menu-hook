@@ -1,5 +1,6 @@
 #ifndef TR8
 
+#include <utility>
 #include <string>
 #include <imgui.h>
 
@@ -9,6 +10,7 @@
 #include "game/Game.h"
 #include "instance/Instances.h"
 #include "instance/Enemy.h"
+#include "level/Markup.h"
 
 template <typename T>
 static inline cdc::Vector3 GetVertice(unsigned int vertice, Mesh* mesh, cdc::Vector* offset)
@@ -20,6 +22,31 @@ static inline cdc::Vector3 GetVertice(unsigned int vertice, Mesh* mesh, cdc::Vec
 
 	return position;
 }
+
+static std::pair<unsigned int, const char*> s_mudFlags[]
+{
+	{ MUD_FLAG_INSTANCE, "INSTANCE | " },
+	{ MUD_FLAG_WRAPS, "WRAPS | " },
+	{ MUD_FLAG_PATTERN_INTERACT, "PATTERN_INTERACT | " },
+	{ MUD_FLAG_ENEMY_JUMP_ACROSS, "ENEMY_JUMP_ACROSS | " },
+	{ MUD_FLAG_ENEMY_JUMP_DOWN, "ENEMY_JUMP_DOWN | " },
+	{ MUD_FLAG_ENEMY_JUMP_UP, "ENEMY_JUMP_UP | " },
+	{ MUD_FLAG_ATTACHPOINTS, "ATTACHPOINTS | " },
+	{ MUD_FLAG_PERCH, "PERCH | " },
+	{ MUD_FLAG_ROPE, "ROPE | " },
+	{ MUD_FLAG_WATER, "WATER | " },
+	{ MUD_FLAG_CLOSEJUMPTARGET, "CLOSEJUMPTARGET | " },
+	{ MUD_FLAG_LADDER, "LADDER | " },
+	{ MUD_FLAG_MANTLEDOWN, "MANTLEDOWN | " },
+	{ MUD_FLAG_ZIPLINE, "ZIPLINE | " },
+	{ MUD_FLAG_HORIZPOLE, "HORIZPOLE | " },
+	{ MUD_FLAG_VERTPOLE, "VERTPOLE | " },
+	{ MUD_FLAG_WALLVERTPOLE, "WALLVERTPOLE | " },
+	{ MUD_FLAG_ENEMYDROPDOWN, "ENEMYDROPDOWN | " },
+	{ MUD_FLAG_JUMPLANDING, "JUMPLANDING | " },
+	{ MUD_FLAG_LEDGEGRAB, "LEDGEGRAB | " },
+	{ MUD_FLAG_DISABLED, "DISABLED | " }
+};
 
 void Draw::OnMenu()
 {
@@ -213,6 +240,64 @@ void Draw::DrawEnemyRoute(Instance* instance)
 
 void Draw::DrawMarkUp()
 {
+	auto manager = MarkupManager::GetInstance();
+	auto font = Font::GetMainFont();
+
+	// Get all markup
+	for (auto node = manager->m_staticBoxList.next; node->next != nullptr; node = node->next)
+	{
+		auto box = (MarkUpBox*)node;
+		auto markup = box->markup;
+
+		if (!box->markup)
+		{
+			continue;
+		}
+
+		cdc::Vector3 position = { markup->pos[0], markup->pos[1], markup->pos[2] };
+
+		// Add the instance position
+		if (box->instance && (box->flags & MUD_FLAG_WATER) == 0)
+		{
+			position += &box->instance->position;
+		}
+
+		TRANS_RotTransPersVectorf(&position, &position);
+
+		// Check if the text is on screen
+		if (position.z > 16.f)
+		{
+			font->SetCursor(position.x, position.y);
+			font->PrintFormatted(FlagsToString(box->flags).c_str());
+		}
+
+		// Draw the poly line
+		if (markup->polyLine)
+		{
+			cdc::Vector3 x, y;
+			box->GetSegmentPos(&x, 0);
+
+			for (int i = 0; i < box->markup->polyLine->numPoints - 1; i++)
+			{
+				box->GetSegmentPos(&y, i + 1);
+
+				DrawLine(&x, &y, RGB(255, 0, 0));
+
+				x = y;
+			}
+		}
+
+		// Draw the bounding box for water and perch markup
+		if (box->flags & (MUD_FLAG_WATER | MUD_FLAG_PERCH))
+		{
+			auto bbox = markup->bbox;
+
+			auto min = cdc::Vector3{ markup->pos[0] + static_cast<float>(bbox[0]), markup->pos[1] + static_cast<float>(bbox[1]), markup->pos[2] + static_cast<float>(bbox[2]) };
+			auto max = cdc::Vector3{ markup->pos[0] + static_cast<float>(bbox[3]), markup->pos[1] + static_cast<float>(bbox[4]), markup->pos[2] + static_cast<float>(bbox[5]) };
+
+			DrawBoundingBox(&min, &max, RGB(255, 0, 0));
+		}
+	}
 }
 
 void Draw::DrawCollision(Level* level)
@@ -320,6 +405,27 @@ void Draw::DrawSignals(Level* level)
 		// Draw the face
 		DrawTriangle(&x, &y, &z, RGBA(255, 0, 0, 10));
 	}
+}
+
+std::string Draw::FlagsToString(unsigned int flags)
+{
+	std::string result;
+
+	for (int i = 0; i < sizeof(s_mudFlags) / sizeof(s_mudFlags[0]); i++)
+	{
+		if (flags & s_mudFlags[i].first)
+		{
+			result += s_mudFlags[i].second;
+		}
+	}
+
+	// Somewhat stolen from https://stackoverflow.com/a/37795988/9398242
+	if (result.empty())
+		result = "NONE";
+	else
+		result.erase(result.end() - 3, result.end());
+	
+	return result;
 }
 
 #endif
