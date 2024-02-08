@@ -236,6 +236,21 @@ void Draw::DrawEnemyRoute(Instance* instance)
 	{
 		return;
 	}
+
+	// Get the enemy routing process
+	auto extraData = (EnemyData*)instance->extraData;
+	auto path = extraData->m_routing.m_plPath;
+
+	// Draw the path
+	auto x = &path.m_path[0];
+	for (int i = 0; i < path.m_pathlength - 1; i++)
+	{
+		auto y = &path.m_path[i + 1];
+
+		DrawLine(x, y, RGB(255, 0, 0));
+
+		x = y;
+	}
 }
 
 void Draw::DrawMarkUp()
