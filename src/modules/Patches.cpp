@@ -8,6 +8,7 @@
 // Instance of patches so we can get it in our hooks without calling GetModule<T>
 static Patches* s_patches;
 
+#ifndef TR8
 // Original functions
 static void(*s_RenderG2_MotionBlur)(int, int, int);
 static void(*s_GAMELOOP_HandleScreenWipes)();
@@ -37,6 +38,7 @@ static void GAMELOOP_HandleScreenWipes()
 
 	s_GAMELOOP_HandleScreenWipes();
 }
+#endif
 
 Patches::Patches()
 {

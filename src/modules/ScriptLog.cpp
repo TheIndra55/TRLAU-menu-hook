@@ -6,6 +6,15 @@
 #include "Log.h"
 #include "Hook.h"
 
+namespace cdc
+{
+	union DataValue
+	{
+		const char* stringValue;
+		char boolValue;
+	};
+}
+
 static void LogValue(const char* fmt, std::any value, bool newLine)
 {
 	auto log = Hook::GetInstance().GetModule<Log>();
@@ -39,14 +48,14 @@ void __stdcall ScriptLogFloat(float value, bool appendNewLine)
 	LogValue("%f", value, appendNewLine);
 }
 
-void __cdecl NsCoreBase_PrintString(int instance, int numArgs, void** args)
+void __cdecl NsCoreBase_PrintString(int instance, int numArgs, cdc::DataValue* args)
 {
-	LogValue("%s", args[0], (__int8)args[1] != 0);
+	LogValue("%s", args[0].stringValue, args[1].boolValue);
 }
 
-void __cdecl NsCoreBase_LogString(int instance, int numArgs, void** args)
+void __cdecl NsCoreBase_LogString(int instance, int numArgs, cdc::DataValue* args)
 {
-	LogValue("%s", args[0], (__int8)args[1] != 0);
+	LogValue("%s", args[0].stringValue, args[1].boolValue);
 }
 
 ScriptLog::ScriptLog()
