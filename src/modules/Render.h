@@ -5,5 +5,7 @@
 class Render : public Module
 {
 public:
+	Render();
+
 	void OnMenu();
 };
