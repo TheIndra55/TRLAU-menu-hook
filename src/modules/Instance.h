@@ -15,6 +15,7 @@ private:
 
 	void DrawInstance();
 	void SkewTo(Instance* instance);
+	void UnhideAll();
 
 	std::string GetBinary(int value);
 

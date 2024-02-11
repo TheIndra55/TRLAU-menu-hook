@@ -7,6 +7,7 @@
 #include "render/Font.h"
 #include "level/Event.h"
 #include "input/Input.h"
+#include "game/Player.h"
 
 void MainMenu::OnDraw()
 {
@@ -30,9 +31,20 @@ void MainMenu::OnDraw()
 		BirthObject(object);
 	}
 
+#ifndef TR8
 	// Player
 	if (ImGui::CollapsingHeader("Player"))
 	{
+		// Fill 'er up
+		if (ImGui::Button("Fill 'er up"))
+		{
+			auto player = Game::GetPlayerInstance();
+			auto data = (PlayerProp*)player->data;
+
+			// TODO fill up ammo
+			IncrHealth(data->oldData.HealthInitial);
+		}
+
 		// Switch outfit
 		static char outfit[64] = "";
 		ImGui::InputText("Outfit", outfit, sizeof(outfit));
@@ -49,7 +61,6 @@ void MainMenu::OnDraw()
 			SwitchPlayerCharacter();
 		}
 
-#ifndef TR8
 		// Player flags
 		auto flags = (unsigned int*)GET_ADDRESS(0x1075B88, 0x7C7C78, 0x000000);
 
@@ -65,8 +76,8 @@ void MainMenu::OnDraw()
 				*flags &= ~0x80;
 			}
 		}
-#endif
 	}
+#endif
 
 	// Time
 	if (ImGui::CollapsingHeader("Time"))
@@ -81,8 +92,8 @@ void MainMenu::OnDraw()
 		}
 	}
 
-	// Save
 #ifndef TR8
+	// Save
 	if (ImGui::CollapsingHeader("Save"))
 	{
 		static int var = 0;

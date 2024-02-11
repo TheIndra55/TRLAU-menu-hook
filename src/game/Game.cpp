@@ -37,3 +37,15 @@ int OBTABLE_GetObjectID(char* name)
 
 	return Hooking::CallReturn<int>(addr, name);
 }
+
+void LOAD_ObjectFileName(char* name, char* object, char* extension)
+{
+	return LOAD_UnitFileName(name, object, extension);
+}
+
+void LOAD_UnitFileName(char* name, char* unit, char* extension)
+{
+	auto addr = GET_ADDRESS(0x45C730, 0x45F650, 0x477970);
+
+	return Hooking::Call(addr, name, unit, extension);
+}

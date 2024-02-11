@@ -167,3 +167,6 @@ void GAMELOOP_RequestLevelChangeByName(char* name, GameTracker* gameTracker, int
 
 void PLAYER_DebugSwitchPlayerCharacter();
 int OBTABLE_GetObjectID(char* name);
+
+void LOAD_ObjectFileName(char* name, char* object, char* extension);
+void LOAD_UnitFileName(char* name, char* unit, char* extension);

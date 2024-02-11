@@ -12,6 +12,13 @@ void InstanceModule::OnMenu()
 	{
 		ImGui::MenuItem("Instances", nullptr, &m_show);
 
+#ifdef TR8
+		if (ImGui::MenuItem("Unhide all"))
+		{
+			UnhideAll();
+		}
+#endif
+
 		ImGui::EndMenu();
 	}
 }
@@ -217,6 +224,14 @@ void InstanceModule::SkewTo(Instance* instance)
 	auto player = Game::GetPlayerInstance();
 
 	player->position = instance->position;
+}
+
+void InstanceModule::UnhideAll()
+{
+	Instances::Iterate([](Instance* instance)
+		{
+			INSTANCE_Post(instance, 7, 0);
+		});
 }
 
 std::string InstanceModule::GetBinary(int value)
