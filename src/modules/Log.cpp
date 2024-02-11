@@ -25,7 +25,12 @@ void Log::OnDraw()
 		ImGui::BeginChild("Log");
 
 		ImGui::TextUnformatted(m_buffer.begin());
-		ImGui::SetScrollHereY(1.f);
+
+		// Auto scroll to the bottom when already at the bottom
+		if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
+		{
+			ImGui::SetScrollHereY(1.f);
+		}
 
 		ImGui::EndChild();
 		ImGui::End();

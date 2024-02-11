@@ -79,7 +79,6 @@ void InstanceModule::DrawInstance()
 	auto position = instance->position;
 	auto rotation = instance->rotation;
 
-	ImGui::Text("Intro: %d", instance->introUniqueID);
 	ImGui::Text("Position: %f %f %f", position.x, position.y, position.z);
 	ImGui::Text("Rotation: %f %f %f", rotation.x, rotation.y, rotation.z);
 	ImGui::Text("Intro: %d", instance->introUniqueID);
