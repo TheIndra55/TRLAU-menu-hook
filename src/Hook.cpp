@@ -21,6 +21,7 @@
 #include "modules/Patches.h"
 #include "modules/Frontend.h"
 #include "modules/Draw.h"
+#include "modules/Debug.h"
 #include "modules/camera/FreeCamera.h"
 
 #include "cdc/render/PCDeviceManager.h"
@@ -77,6 +78,12 @@ void Hook::PostInitialize()
 #endif
 
 	GameLoop::OnLoop(std::bind(&Hook::OnLoop, this));
+
+	// Post initialize all modules
+	for (auto& [hash, mod] : m_modules)
+	{
+		mod->OnPostInitialize();
+	}
 }
 
 void Hook::OnMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -140,6 +147,7 @@ void Hook::RegisterModules()
 	RegisterModule<Frontend>();
 	RegisterModule<Render>();
 	RegisterModule<Draw>();
+	RegisterModule<Debug>();
 #else
 	RegisterModule<ScriptLog>();
 #endif

@@ -50,8 +50,13 @@ void Font::Print(const char* fmt, ...)
 	va_list va;
 
 	va_start(va, fmt);
-	vsprintf_s(s_formatted, fmt, va);
+	PrintV(fmt, va);
 	va_end(va);
+}
+
+void Font::PrintV(const char* fmt, va_list va)
+{
+	vsprintf_s(s_formatted, fmt, va);
 
 	PrintFormatted(s_formatted);
 }
@@ -106,4 +111,14 @@ void Font::OnFlush(std::function<void()> callback)
 	}
 
 	s_callback = callback;
+}
+
+void FONT_Print(char* fmt, ...)
+{
+	auto font = Font::GetMainFont();
+
+	va_list va;
+	va_start(va, fmt);
+	font->PrintV(fmt, va);
+	va_end(va);
 }

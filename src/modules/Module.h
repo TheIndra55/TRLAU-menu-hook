@@ -5,6 +5,9 @@
 class Module
 {
 public:
+	// Called on post initialization after the device has been obtained
+	virtual void OnPostInitialize() { };
+
 	// Called during drawing of the main menu bar, can be used to add menu items
 	virtual void OnMenu() { };
 

@@ -15,6 +15,7 @@ public:
 	static void SetScale(float scaleX, float scaleY);
 
 	void Print(const char* fmt, ...);
+	void PrintV(const char* fmt, va_list va);
 	void PrintCentered(const char* fmt, ...);
 	void PrintFormatted(const char* formatted, int backdrop = 0);
 
@@ -23,3 +24,5 @@ public:
 
 	static void OnFlush(std::function<void()> callback);
 };
+
+void FONT_Print(char* fmt, ...);
