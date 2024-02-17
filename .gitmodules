@@ -4,3 +4,9 @@
 [submodule "vendor/json"]
 	path = vendor/json
 	url = https://github.com/nlohmann/json
+[submodule "vendor/patterns"]
+	path = vendor/patterns
+	url = https://github.com/ThirteenAG/Hooking.Patterns
+[submodule "vendor/minhook"]
+	path = vendor/minhook
+	url = https://github.com/TsudaKageyu/minhook

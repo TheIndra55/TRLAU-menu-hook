@@ -8,7 +8,7 @@ jobs:
     
     steps:
     # setup
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: true
     
@@ -26,7 +26,7 @@ jobs:
         tar -xf lib.zip
 
     - name: Generate project files
-      run: .\premake5 vs2019
+      run: .\premake5 vs2022
 
     # compile
     - name: Build Anniversary
@@ -37,9 +37,6 @@ jobs:
 
     - name: Build Legend
       run: MSBuild /p:Configuration=Release /p:Platform=TR7
-
-    - name: Build Legend Nextgen Demo
-      run: MSBuild /p:Configuration=Release /p:Platform=TR7DEBUG
 
     # upload
     - uses: actions/upload-artifact@v3
@@ -62,10 +59,3 @@ jobs:
         path: |
           bin/TR7/Release/TR7-Menu-Hook.asi
           bin/TR7/Release/TR7-Menu-Hook.pdb
-
-    - uses: actions/upload-artifact@v3
-      with:
-        name: Legend Nextgen Demo
-        path: |
-          bin/TR7DEBUG/Release/TR7DEBUG-Menu-Hook.asi
-          bin/TR7DEBUG/Release/TR7DEBUG-Menu-Hook.pdb
