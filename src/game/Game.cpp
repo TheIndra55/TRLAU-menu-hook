@@ -2,17 +2,17 @@
 
 #include "util/Hooking.h"
 
-Instance* Game::GetPlayerInstance()
+Instance* Game::GetPlayerInstance() noexcept
 {
 	return GetGameTracker()->playerInstance;
 }
 
-GameTracker* Game::GetGameTracker()
+GameTracker* Game::GetGameTracker() noexcept
 {
 	return (GameTracker*)GET_ADDRESS(0x10E5370, 0x838330, 0x00E7F088);
 }
 
-STracker* Game::GetStreamTracker()
+STracker* Game::GetStreamTracker() noexcept
 {
 	return (STracker*)GET_ADDRESS(0x11582F8, 0x8AE378, 0xDBAB40);
 }

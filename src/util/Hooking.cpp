@@ -2,7 +2,7 @@
 
 #include "Hooking.h"
 
-void Hooking::Nop(void* address, unsigned int length)
+void Hooking::Nop(void* address, unsigned int length) noexcept
 {
 	DWORD oldProtect;
 	VirtualProtect(address, length, PAGE_EXECUTE_READWRITE, &oldProtect);
@@ -12,7 +12,7 @@ void Hooking::Nop(void* address, unsigned int length)
 	VirtualProtect(address, length, oldProtect, &oldProtect);
 }
 
-void Hooking::Patch(void* address, std::initializer_list<unsigned char> data)
+void Hooking::Patch(void* address, std::initializer_list<unsigned char> data) noexcept
 {
 	DWORD oldProtect;
 	VirtualProtect(address, data.size(), PAGE_EXECUTE_READWRITE, &oldProtect);
@@ -22,7 +22,7 @@ void Hooking::Patch(void* address, std::initializer_list<unsigned char> data)
 	VirtualProtect(address, data.size(), oldProtect, &oldProtect);
 }
 
-void Hooking::Patch(void* address, unsigned int data)
+void Hooking::Patch(void* address, unsigned int data) noexcept
 {
 	DWORD oldProtect;
 	VirtualProtect(address, sizeof(data), PAGE_EXECUTE_READWRITE, &oldProtect);

@@ -88,7 +88,7 @@ void Menu::OnMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 }
 
-void Menu::Draw()
+void Menu::Draw() noexcept
 {
 	auto& modules = Hook::GetInstance().GetModules();
 
@@ -113,7 +113,7 @@ void Menu::Draw()
 	}
 }
 
-void Menu::DrawMenu()
+void Menu::DrawMenu() noexcept
 {
 	if (ImGui::BeginMenu("Help"))
 	{
@@ -131,7 +131,7 @@ void Menu::DrawMenu()
 	}
 }
 
-void Menu::SetFocus(bool focus)
+void Menu::SetFocus(bool focus) noexcept
 {
 	m_focus = focus;
 
@@ -140,7 +140,7 @@ void Menu::SetFocus(bool focus)
 	Input::DisableInput(focus);
 }
 
-bool Menu::HasFocus()
+bool Menu::HasFocus() const noexcept
 {
 	return m_focus;
 }

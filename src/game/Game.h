@@ -158,9 +158,9 @@ struct GameTracker
 class Game
 {
 public:
-	static Instance* GetPlayerInstance();
-	static GameTracker* GetGameTracker();
-	static STracker* GetStreamTracker();
+	static Instance* GetPlayerInstance() noexcept;
+	static GameTracker* GetGameTracker() noexcept;
+	static STracker* GetStreamTracker() noexcept;
 };
 
 void GAMELOOP_RequestLevelChangeByName(char* name, GameTracker* gameTracker, int doneType);

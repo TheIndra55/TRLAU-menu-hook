@@ -19,33 +19,33 @@ static void Flush()
 
 char Font::s_formatted[1024];
 
-Font* Font::GetMainFont()
+Font* Font::GetMainFont() noexcept
 {
 	return *(Font**)GET_ADDRESS(0x107F680, 0x7D1800, 0x9DE6D4);
 }
 
-void Font::SetCursor(float x, float y)
+void Font::SetCursor(float x, float y) noexcept
 {
 	auto addr = GET_ADDRESS(0x431670, 0x433C70, 0x474C90);
 
 	Hooking::Call(addr, x, y);
 }
 
-void Font::GetCursor(float* x, float* y)
+void Font::GetCursor(float* x, float* y) noexcept
 {
 	auto addr = GET_ADDRESS(0x431690, 0x433C90, 0x474CB0);
 
 	Hooking::Call(addr, x, y);
 }
 
-void Font::SetScale(float scaleX, float scaleY)
+void Font::SetScale(float scaleX, float scaleY) noexcept
 {
 	auto addr = GET_ADDRESS(0x431860, 0x433E60, 0x000000);
 
 	Hooking::Call(addr, scaleX, scaleY);
 }
 
-void Font::Print(const char* fmt, ...)
+void Font::Print(const char* fmt, ...) const noexcept
 {
 	va_list va;
 
@@ -54,14 +54,14 @@ void Font::Print(const char* fmt, ...)
 	va_end(va);
 }
 
-void Font::PrintV(const char* fmt, va_list va)
+void Font::PrintV(const char* fmt, va_list va) const noexcept
 {
 	vsprintf_s(s_formatted, fmt, va);
 
 	PrintFormatted(s_formatted);
 }
 
-void Font::PrintCentered(const char* fmt, ...)
+void Font::PrintCentered(const char* fmt, ...) const noexcept
 {
 	va_list va;
 
@@ -78,28 +78,28 @@ void Font::PrintCentered(const char* fmt, ...)
 	PrintFormatted(s_formatted);
 }
 
-void Font::PrintFormatted(const char* formatted, int backdrop)
+void Font::PrintFormatted(const char* formatted, int backdrop) const noexcept
 {
 	auto addr = GET_ADDRESS(0x4323D0, 0x434A70, 0x476BC0);
 
 	Hooking::ThisCall(addr, this, formatted, backdrop);
 }
 
-float Font::GetTextWidth(const char* text)
+float Font::GetTextWidth(const char* text) const noexcept
 {
 	auto addr = GET_ADDRESS(0x431EA0, 0x434510, 0x000000);
 
 	return Hooking::ThisCallReturn<float>(addr, this, text);
 }
 
-float Font::GetHeight()
+float Font::GetHeight() const noexcept
 {
 	auto addr = GET_ADDRESS(0x431E20, 0x434440, 0x000000);
 
 	return Hooking::ThisCallReturn<float>(addr, this);
 }
 
-void Font::OnFlush(std::function<void()> callback)
+void Font::OnFlush(std::function<void()> callback) noexcept
 {
 	if (!s_callback)
 	{

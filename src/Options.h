@@ -19,7 +19,7 @@ public:
 	}
 
 	// Loads the value from the registry
-	void LoadValue()
+	void LoadValue() noexcept
 	{
 		HKEY hKey;
 		if (RegOpenKeyA(HKEY_CURRENT_USER, "SOFTWARE\\TRAE-Menu-Hook", &hKey) == ERROR_SUCCESS)
@@ -32,7 +32,7 @@ public:
 	}
 
 	// Saves the current value to the registry
-	void SaveValue()
+	void SaveValue() const noexcept
 	{
 		HKEY hKey;
 		if (RegCreateKeyA(HKEY_CURRENT_USER, "SOFTWARE\\TRAE-Menu-Hook", &hKey) == ERROR_SUCCESS)
@@ -43,19 +43,19 @@ public:
 	}
 
 	// Gets the type hash
-	size_t GetType()
+	size_t GetType() const noexcept
 	{
 		return typeid(T).hash_code();
 	}
 
 	// Gets a pointer to the value
-	void* GetValuePtr()
+	void* GetValuePtr() noexcept
 	{
 		return &m_value;
 	}
 
 	// Gets the value
-	T GetValue()
+	T GetValue() const noexcept
 	{
 		return m_value;
 	}
@@ -76,10 +76,10 @@ public:
 	}
 
 	// Methods to be implemented by Option<T>
-	virtual void LoadValue() = 0;
-	virtual void SaveValue() = 0;
-	virtual size_t GetType() = 0;
-	virtual void* GetValuePtr() = 0;
+	virtual void LoadValue() noexcept = 0;
+	virtual void SaveValue() const noexcept = 0;
+	virtual size_t GetType() const noexcept = 0;
+	virtual void* GetValuePtr() noexcept = 0;
 };
 
 class Options : public Module
@@ -88,14 +88,14 @@ private:
 	std::vector<BaseOption*> m_options;
 	bool m_show = false;
 
-	void DrawOptions();
-	void DrawOption(const char* name, const char* description, float min = 0.f, float max = 0.f);
-	void DrawOption(BaseOption* option, const char* description, float min, float max);
+	void DrawOptions() noexcept;
+	void DrawOption(const char* name, const char* description, float min = 0.f, float max = 0.f) const noexcept;
+	void DrawOption(BaseOption* option, const char* description, float min, float max) const noexcept;
 
 public:
 	Options();
 
 	void OnDraw();
-	void Show();
+	void Show() noexcept;
 	void AddOption(BaseOption* option);
 };

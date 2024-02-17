@@ -5,5 +5,5 @@
 class GameLoop
 {
 public:
-	static void OnLoop(std::function<void()> callback);
+	static void OnLoop(std::function<void()> callback) noexcept;
 };

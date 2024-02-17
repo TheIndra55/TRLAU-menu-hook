@@ -31,18 +31,18 @@ public:
 	// These need to be defined here, else the linker becomes angry
 
 	// Gets all modules
-	const auto& GetModules()
+	const auto& GetModules() const noexcept
 	{
 		return m_modules;
 	}
 
 	// Get a module by T
 	template<typename T>
-	std::shared_ptr<T> GetModule()
+	std::shared_ptr<T> GetModule() const
 	{
 		auto it = m_modules.find(typeid(T).hash_code());
 		return it != m_modules.end() ? std::dynamic_pointer_cast<T>(it->second) : nullptr;
 	}
 
-	static Hook& GetInstance();
+	static Hook& GetInstance() noexcept;
 };

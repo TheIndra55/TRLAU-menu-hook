@@ -87,16 +87,16 @@ public:
 	InputActionMapper* m_pActionMapper;
 
 public:
-	float GetAxisValue(int axisID);
+	float GetAxisValue(int axisID) const noexcept;
 };
 
 class Input
 {
 public:
-	static void DisableInput(bool disable);
-	static void DisablePlayerControl(bool disable);
-	static bool IsPlayerControlEnabled();
-	static bool IsInputActionPressed(int action);
+	static void DisableInput(bool disable) noexcept;
+	static void DisablePlayerControl(bool disable) noexcept;
+	static bool IsPlayerControlEnabled() noexcept;
+	static bool IsInputActionPressed(int action) noexcept;
 
-	static InputSystem* GetInputSystem();
+	static InputSystem* GetInputSystem() noexcept;
 };

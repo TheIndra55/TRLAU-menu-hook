@@ -153,7 +153,7 @@ void Hook::RegisterModules()
 #endif
 }
 
-Hook& Hook::GetInstance()
+Hook& Hook::GetInstance() noexcept
 {
 	static Hook instance;
 	return instance;

@@ -15,7 +15,7 @@ static void __fastcall Present(void* _this, void*, RECT* pSourceRect, RECT* pDes
 	s_Present(_this, pSourceRect, pDestRect, hOverrideWND);
 }
 
-void RenderContext::OnPresent(std::function<void()> callback)
+void RenderContext::OnPresent(std::function<void()> callback) noexcept
 {
 	if (!s_callback)
 	{

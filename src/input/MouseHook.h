@@ -3,6 +3,6 @@
 class MouseHook
 {
 public:
-	static void Init();
-	static void DisableCursorLock(bool disable);
+	static void Init() noexcept;
+	static void DisableCursorLock(bool disable) noexcept;
 };

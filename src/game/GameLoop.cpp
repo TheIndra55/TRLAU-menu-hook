@@ -13,7 +13,7 @@ static void GAMELOOP_Process(GameTracker* gameTracker)
 	s_GAMELOOP_Process(gameTracker);
 }
 
-void GameLoop::OnLoop(std::function<void()> callback)
+void GameLoop::OnLoop(std::function<void()> callback) noexcept
 {
 	if (!s_callback)
 	{

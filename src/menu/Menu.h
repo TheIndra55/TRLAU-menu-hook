@@ -19,10 +19,10 @@ public:
 	bool OnCreateDevice();
 	void OnDestroyDevice();
 
-	void SetFocus(bool focus);
-	bool HasFocus();
+	void SetFocus(bool focus) noexcept;
+	bool HasFocus() const noexcept;
 
 private:
-	void Draw();
-	void DrawMenu();
+	void Draw() noexcept;
+	void DrawMenu() noexcept;
 };

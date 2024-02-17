@@ -7,5 +7,5 @@
 class Instances
 {
 public:
-	static void Iterate(std::function<void(Instance*)> callback);
+	static void Iterate(std::function<void(Instance*)> callback) noexcept;
 };

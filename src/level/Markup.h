@@ -14,7 +14,7 @@ public:
 	NodeType m_dynamicBoxList;
 	NodeType m_staticBoxList;
 
-	static MarkupManager* GetInstance();
+	static MarkupManager* GetInstance() noexcept;
 };
 
 struct PolyLine
@@ -115,6 +115,6 @@ public:
 	int nSegments;
 	void** associateRef;
 
-	cdc::Vector3* GetSegmentPos(cdc::Vector3* result, int n);
+	cdc::Vector3* GetSegmentPos(cdc::Vector3* result, int n) const noexcept;
 };
 #pragma pack(pop)

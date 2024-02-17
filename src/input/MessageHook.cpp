@@ -12,7 +12,7 @@ static LRESULT WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return CallWindowProc(s_original, hWnd, msg, wParam, lParam);
 }
 
-void MessageHook::OnMessage(std::function<void(HWND, UINT, WPARAM, LPARAM)> callback)
+void MessageHook::OnMessage(std::function<void(HWND, UINT, WPARAM, LPARAM)> callback) noexcept
 {
 	// Get the window handle
 	auto hWnd = cdc::PCDeviceManager::s_pInstance->GetWindow();

@@ -16,13 +16,13 @@ BOOL WINAPI SetCursorPosHook(int X, int Y)
 	return s_SetCursorPos(X, Y);
 }
 
-void MouseHook::Init()
+void MouseHook::Init() noexcept
 {
 	MH_CreateHookApi(L"user32", "SetCursorPos", SetCursorPosHook, (void**)&s_SetCursorPos);
 	MH_EnableHook(MH_ALL_HOOKS);
 }
 
-void MouseHook::DisableCursorLock(bool disable)
+void MouseHook::DisableCursorLock(bool disable) noexcept
 {
 	s_disabled = disable;
 }

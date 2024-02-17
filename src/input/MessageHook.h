@@ -6,5 +6,5 @@
 class MessageHook
 {
 public:
-	static void OnMessage(std::function<void(HWND, UINT, WPARAM, LPARAM)> callback);
+	static void OnMessage(std::function<void(HWND, UINT, WPARAM, LPARAM)> callback) noexcept;
 };

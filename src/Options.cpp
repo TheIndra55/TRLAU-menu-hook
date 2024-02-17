@@ -19,7 +19,7 @@ void Options::OnDraw()
 	}
 }
 
-void Options::DrawOptions()
+void Options::DrawOptions() noexcept
 {
 	ImGui::Begin("Options", &m_show);
 
@@ -46,7 +46,7 @@ void Options::DrawOptions()
 	ImGui::End();
 }
 
-void Options::DrawOption(const char* name, const char* description, float min, float max)
+void Options::DrawOption(const char* name, const char* description, float min, float max) const noexcept
 {
 	// TODO use a map for better performance
 	for (auto& option : m_options)
@@ -58,7 +58,7 @@ void Options::DrawOption(const char* name, const char* description, float min, f
 	}
 }
 
-void Options::DrawOption(BaseOption* option, const char* description, float min, float max)
+void Options::DrawOption(BaseOption* option, const char* description, float min, float max) const noexcept
 {
 	auto type = option->GetType();
 
@@ -79,7 +79,7 @@ void Options::DrawOption(BaseOption* option, const char* description, float min,
 	}
 }
 
-void Options::Show()
+void Options::Show() noexcept
 {
 	m_show = true;
 }
