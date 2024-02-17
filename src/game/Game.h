@@ -164,6 +164,8 @@ public:
 };
 
 void GAMELOOP_RequestLevelChangeByName(char* name, GameTracker* gameTracker, int doneType);
+bool GAMELOOP_IsWipeDone(int type);
+void GAMELOOP_SetScreenWipe(int type, int target, int time);
 
 void PLAYER_DebugSwitchPlayerCharacter();
 int OBTABLE_GetObjectID(char* name);

@@ -24,6 +24,20 @@ void GAMELOOP_RequestLevelChangeByName(char* name, GameTracker* gameTracker, int
 	Hooking::Call(addr, name, gameTracker, doneType);
 }
 
+bool GAMELOOP_IsWipeDone(int type)
+{
+	auto addr = GET_ADDRESS(0x450310, 0x452970, 0x52E880);
+
+	return Hooking::CallReturn<bool>(addr, type);
+}
+
+void GAMELOOP_SetScreenWipe(int type, int target, int time)
+{
+	auto addr = GET_ADDRESS(0x4503D0, 0x452A30, 0x52E8B0);
+
+	Hooking::Call(addr, type, target, time);
+}
+
 void PLAYER_DebugSwitchPlayerCharacter()
 {
 	auto addr = GET_ADDRESS(0x5A40B0, 0x5A39A0, 0x79DB50);

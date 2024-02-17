@@ -31,10 +31,10 @@ void MainMenu::OnDraw()
 		BirthObject(object);
 	}
 
-#ifndef TR8
 	// Player
 	if (ImGui::CollapsingHeader("Player"))
 	{
+#ifndef TR8
 		// Fill 'er up
 		if (ImGui::Button("Fill 'er up"))
 		{
@@ -76,8 +76,10 @@ void MainMenu::OnDraw()
 				*flags &= ~0x80;
 			}
 		}
-	}
 #endif
+
+		ImGui::Checkbox("No death fade", &m_noDeathFade);
+	}
 
 	// Time
 	if (ImGui::CollapsingHeader("Time"))
