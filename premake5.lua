@@ -29,8 +29,7 @@ project "TRAE-menu-hook"
         "vendor/minhook/include",
         "vendor/patterns",
         "vendor/imgui",
-        "vendor/imgui/backends",
-        "vendor/json/include"
+        "vendor/imgui/backends"
     }
 
     defines { "IMGUI_IMPL_WIN32_DISABLE_GAMEPAD" }
