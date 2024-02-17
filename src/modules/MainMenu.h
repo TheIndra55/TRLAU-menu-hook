@@ -11,11 +11,14 @@ private:
 
 	Option<bool> m_noWatermark{ "NoWatermark", false };
 
-	void BirthObject(char* name);
-	void SwitchPlayerCharacter(char* name = nullptr);
+	void BirthObject(char* name) const noexcept;
+	void SwitchUnit(char* name) const noexcept;
+	void SwitchPlayerCharacter(char* name = nullptr) noexcept;
+
+	static bool CheckDataFile(char* name) noexcept;
 
 public:
-	bool IsNoDeathFade() { return m_noDeathFade; }
+	bool IsNoDeathFade() const noexcept { return m_noDeathFade; }
 
 	void OnDraw();
 	void OnFrame();

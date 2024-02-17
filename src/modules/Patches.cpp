@@ -98,7 +98,7 @@ Patches::Patches()
 	MH_EnableHook(MH_ALL_HOOKS);
 }
 
-void Patches::RemoveIntro()
+void Patches::RemoveIntro() const noexcept
 {
 	auto match = hook::pattern("8D 0C 8D 03 00 00 00 89 0D").count(1);
 	auto mainState = *match.get_first<int>(9);

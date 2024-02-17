@@ -76,9 +76,10 @@ void DrawLine(cdc::Vector3* v0, cdc::Vector3* v1, int color)
 	auto v2 = *v1;
 	auto v3 = *v0;
 
-	v2.z += 50.f;
-	v3.z += 50.f;
-	v3.x += 50.f;
+	v2.z += 20.f;
+	v3.z += 20.f;
+	v2.y += 20.f;
+	v3.y += 20.f;
 
 	TRANS_TransToDrawVertexV4f(verts, v0);
 	TRANS_TransToDrawVertexV4f(&verts[1], &v2);

@@ -10,13 +10,13 @@ private:
 	Option<bool> m_noCinematicBars{ "NoCinematicBars", true };
 	Option<bool> m_noMotionBlur{ "NoMotionBlur", false };
 
-	void RemoveIntro();
+	void RemoveIntro() const noexcept;
 
 public:
 	Patches();
 
-	bool IsNoMotionBlur() { return m_noMotionBlur.GetValue(); }
-	bool IsNoCinematicBars() { return m_noCinematicBars.GetValue(); }
+	bool IsNoMotionBlur() const noexcept { return m_noMotionBlur.GetValue(); }
+	bool IsNoCinematicBars() const noexcept { return m_noCinematicBars.GetValue(); }
 
 	void OnInput(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 };

@@ -3,7 +3,12 @@
 #include "instance/Instances.h"
 #include "game/Game.h"
 
-void Skew::ToggleSkew()
+Skew::Skew()
+{
+	UpdateLayout();
+}
+
+void Skew::ToggleSkew() const noexcept
 {
 	auto tracker = Game::GetGameTracker();
 
@@ -22,21 +27,20 @@ void Skew::ToggleSkew()
 #endif
 }
 
-void Skew::Process(UINT msg, WPARAM wParam)
+void Skew::Process(UINT msg, WPARAM wParam) const noexcept
 {
-	// TODO different keyboard layouts
-
 	auto player = Game::GetPlayerInstance();
 	auto tracker = Game::GetGameTracker();
 
 	auto speed = m_speed.GetValue() * tracker->timeMult;
 
-	if (msg == WM_KEYDOWN && wParam == 0x51)
+	// TODO less hacky way? use game input system perhaps
+	if (msg == WM_KEYDOWN && wParam == (m_isAzerty ? 0x41 /* A */ : 0x51 /* Q */))
 	{
 		player->position.z += speed;
 	}
 
-	if (msg == WM_KEYDOWN && wParam == 0x5A)
+	if (msg == WM_KEYDOWN && wParam == (m_isAzerty ? 0x57 /* W */ : 0x5A /* Z */))
 	{
 		player->position.z -= speed;
 	}
@@ -49,10 +53,23 @@ void Skew::OnInput(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		ToggleSkew();
 	}
 
+	if (msg == WM_INPUTLANGCHANGE)
+	{
+		UpdateLayout();
+	}
+
 	auto tracker = Game::GetGameTracker();
 
 	if (tracker->cheatMode)
 	{
 		Process(msg, wParam);
 	}
+}
+
+void Skew::UpdateLayout() noexcept
+{
+	auto layout = GetKeyboardLayout(0);
+	auto id = LOWORD(layout);
+
+	m_isAzerty = id == 2060 || id == 1036;
 }

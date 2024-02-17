@@ -8,6 +8,8 @@
 #include "level/Event.h"
 #include "input/Input.h"
 #include "game/Player.h"
+#include "file/FileSystem.h"
+#include "modules/Log.h"
 
 void MainMenu::OnDraw()
 {
@@ -19,7 +21,7 @@ void MainMenu::OnDraw()
 
 	if (ImGui::Button("Load unit"))
 	{
-		GAMELOOP_RequestLevelChangeByName(unit, Game::GetGameTracker(), 4);
+		SwitchUnit(unit);
 	}
 
 	// Birth instance
@@ -116,8 +118,15 @@ void MainMenu::OnDraw()
 	ImGui::End();
 }
 
-void MainMenu::BirthObject(char* name)
+void MainMenu::BirthObject(char* name) const noexcept
 {
+	// Make sure the object exists
+	if (!CheckDataFile(name) || OBTABLE_GetObjectID(name) == 0)
+	{
+		Hook::GetInstance().GetModule<Log>()->WriteLine("Not birthing %s, object does not exists", name);
+		return;
+	}
+
 	auto game = Game::GetGameTracker();
 	auto player = Game::GetPlayerInstance();
 
@@ -134,7 +143,19 @@ void MainMenu::BirthObject(char* name)
 	INSTANCE_BirthObjectNoParent(game->StreamUnitID, &player->position, &player->rotation, nullptr, tracker->object, 0, 1);
 }
 
-void MainMenu::SwitchPlayerCharacter(char* name)
+void MainMenu::SwitchUnit(char* name) const noexcept
+{
+	// Make sure the unit exists, this only checks if a file with the same name exists
+	if (!CheckDataFile(name))
+	{
+		Hook::GetInstance().GetModule<Log>()->WriteLine("Not switching to unit %s, level does not exist", name);
+		return;
+	}
+
+	GAMELOOP_RequestLevelChangeByName(name, Game::GetGameTracker(), 4);
+}
+
+void MainMenu::SwitchPlayerCharacter(char* name) noexcept
 {
 	auto game = Game::GetGameTracker();
 
@@ -197,4 +218,14 @@ void MainMenu::OnInput(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		INSTANCE_Post(gameTracker->playerInstance, 4, 3);
 #endif
 	}
+}
+
+bool MainMenu::CheckDataFile(char* name) noexcept
+{
+	auto fileSystem = GetFS();
+
+	char fileName[256];
+	LOAD_UnitFileName(fileName, name, "drm");
+
+	return fileSystem->FileExists(fileName);
 }
