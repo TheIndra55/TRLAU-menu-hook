@@ -19,7 +19,7 @@ STracker* Game::GetStreamTracker() noexcept
 
 void GAMELOOP_RequestLevelChangeByName(char* name, GameTracker* gameTracker, int doneType)
 {
-	auto addr = GET_ADDRESS(0x451970, 0xC61CFA, 0x5DF8C0);
+	auto addr = GET_ADDRESS(0x451970, 0x4543C0, 0x5DF8C0);
 
 	Hooking::Call(addr, name, gameTracker, doneType);
 }
