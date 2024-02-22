@@ -87,6 +87,8 @@ This section allows you to change saved data, currently this only contains the a
 
 The instance viewer (instances) shows all the current instances in the game.
 
+![](https://github.com/TheIndra55/TRAE-menu-hook/assets/15322107/de6f20a3-dbda-4d3f-ada4-377fbfc0b1f1)
+
 ### Transforms
 
 This section can be used to change the position and rotation of an instance.
@@ -119,13 +121,19 @@ Checking this option will disable the loading of the level script.
 
 This window allows you to see the current event (script) variables for a level.
 
+![](https://github.com/TheIndra55/TRAE-menu-hook/assets/15322107/27ffc85e-85e5-4b9e-aa49-cd3a920a7ec7)
+
 ## Draw
 
 The draw menu can be used to enable various of debug drawing such as drawing of the collision mesh or signals.
 
+![](https://github.com/TheIndra55/TRAE-menu-hook/assets/15322107/889b8c07-c451-444a-8a7a-ab8b8dcd511d)
+
 ### Draw options
 
 This window will be visible when drawing instances or the collision mesh and allows you to specify some filters.
+
+![](https://github.com/TheIndra55/TRAE-menu-hook/assets/15322107/a39685d0-8f2f-4a82-8caa-aea2d29534e6)
 
 ### Draw instances
 
@@ -162,3 +170,11 @@ This will enable all of the debug drawing from the level.
 ### Debug keypad
 
 This will enable the debug keypad, which allows you to use debug key combinations.
+
+## Render
+
+The render menu allows toggling some render modes such as wireframe and terrain wireframe.
+
+## Frontend
+
+The frontend menu allows you to hide the frontend HUD.
