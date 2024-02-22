@@ -21,6 +21,10 @@ static void WINAPI StartupInfoW(LPSTARTUPINFOA lpStartupInfo)
 
 static void Initialize()
 {
+#ifdef _DEBUG
+	SetProcessDEPPolicy(PROCESS_DEP_ENABLE);
+#endif
+
 	// Initialize MinHook
 	MH_Initialize();
 

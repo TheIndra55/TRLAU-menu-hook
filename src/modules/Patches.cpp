@@ -5,6 +5,7 @@
 #include "util/Hooking.h"
 #include "game/Game.h"
 #include "MainMenu.h"
+#include "patches/Reloc.h"
 
 // Instance of patches so we can get it in our hooks without calling GetModule<T>
 static Patches* s_patches;
@@ -86,6 +87,9 @@ Patches::Patches()
 	// Insert hooks
 	MH_CreateHook((void*)GET_ADDRESS(0x40CA80, 0x43AB40, 0x000000), RenderG2_MotionBlur, (void**)&s_RenderG2_MotionBlur);
 	MH_CreateHook((void*)GET_ADDRESS(0x450430, 0x452A90, 0x000000), GAMELOOP_HandleScreenWipes, (void**)&s_GAMELOOP_HandleScreenWipes);
+
+	// Insert reloc hook
+	MH_CreateHook((void*)GET_ADDRESS(0x4642F0, 0x467E60, 0x000000), MakePeHandle, nullptr);
 #endif
 
 	// Insert DeathState hooks
