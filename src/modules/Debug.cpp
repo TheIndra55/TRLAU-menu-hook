@@ -49,7 +49,7 @@ Debug::Debug()
 
 #define OVERRIDE_FUNC(offset, func) *(void**)((char*)globalData + offset) = (void*)func
 
-void Debug::Initialize()
+void Debug::Initialize() const noexcept
 {
 	// Override all nullsubs in the event functions structure
 	auto globalData = (GlobalData*)GET_ADDRESS(0x1076980, 0x7C8A50, 0x000000);

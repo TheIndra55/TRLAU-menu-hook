@@ -77,7 +77,7 @@ void InstanceModule::OnDraw()
 	}
 }
 
-void InstanceModule::DrawInstance()
+void InstanceModule::DrawInstance() const
 {
 	auto instance = m_selected;
 
@@ -219,14 +219,14 @@ void InstanceModule::DrawInstance()
 	}
 }
 
-void InstanceModule::SkewTo(Instance* instance)
+void InstanceModule::SkewTo(Instance* instance) const noexcept
 {
 	auto player = Game::GetPlayerInstance();
 
 	player->position = instance->position;
 }
 
-void InstanceModule::UnhideAll()
+void InstanceModule::UnhideAll() const noexcept
 {
 	Instances::Iterate([](Instance* instance)
 		{

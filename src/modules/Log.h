@@ -15,10 +15,10 @@ public:
 	void OnDraw();
 
 	// Writes to the log
-	void Write(const char* fmt, ...);
+	void Write(const char* fmt, ...) noexcept;
 	// Writes a line to the log
-	void WriteLine(const char* fmt, ...);
+	void WriteLine(const char* fmt, ...) noexcept;
 
 	// Clears the log
-	void Clear();
+	void Clear() noexcept;
 };

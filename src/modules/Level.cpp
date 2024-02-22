@@ -48,7 +48,7 @@ void LevelModule::OnDraw()
 	}
 }
 
-void LevelModule::DrawEventDebug()
+void LevelModule::DrawEventDebug() noexcept
 {
 	ImGui::Begin("Event debug", &m_eventDebug);
 	ImGui::Columns(2);
@@ -100,7 +100,7 @@ void LevelModule::DrawEventDebug()
 	ImGui::End();
 }
 
-void LevelModule::DrawEventDebug(StreamUnit* unit)
+void LevelModule::DrawEventDebug(StreamUnit* unit) const noexcept
 {
 	auto level = unit->level;
 

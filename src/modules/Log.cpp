@@ -37,7 +37,7 @@ void Log::OnDraw()
 	}
 }
 
-void Log::Write(const char* fmt, ...)
+void Log::Write(const char* fmt, ...) noexcept
 {
 	va_list args;
 	va_start(args, fmt);
@@ -47,7 +47,7 @@ void Log::Write(const char* fmt, ...)
 	va_end(args);
 }
 
-void Log::WriteLine(const char* fmt, ...)
+void Log::WriteLine(const char* fmt, ...) noexcept
 {
 	va_list args;
 	va_start(args, fmt);
@@ -58,7 +58,7 @@ void Log::WriteLine(const char* fmt, ...)
 	va_end(args);
 }
 
-void Log::Clear()
+void Log::Clear() noexcept
 {
 	m_buffer.clear();
 }

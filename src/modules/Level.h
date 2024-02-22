@@ -9,8 +9,8 @@ private:
 	bool m_eventDebug = false;
 	StreamUnit* m_selected = nullptr;
 
-	void DrawEventDebug();
-	void DrawEventDebug(StreamUnit* unit);
+	void DrawEventDebug() noexcept;
+	void DrawEventDebug(StreamUnit* unit) const noexcept;
 
 public:
 	LevelModule();

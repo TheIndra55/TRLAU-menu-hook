@@ -7,12 +7,12 @@ class Debug : public Module
 private:
 	bool m_drawDebug = false;
 
-	void Initialize();
+	void Initialize() const noexcept;
 
 public:
 	Debug();
 
-	bool IsDrawDebug() { return m_drawDebug; }
+	bool IsDrawDebug() const noexcept { return m_drawDebug; }
 
 	void OnPostInitialize();
 	void OnMenu();

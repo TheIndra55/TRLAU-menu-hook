@@ -13,15 +13,15 @@ private:
 	Instance* m_selected = nullptr;
 	char m_filter[64] = "";
 
-	void DrawInstance();
-	void SkewTo(Instance* instance);
-	void UnhideAll();
+	void DrawInstance() const;
+	void SkewTo(Instance* instance) const noexcept;
+	void UnhideAll() const noexcept;
 
-	std::string GetBinary(int value);
+	static std::string GetBinary(int value);
 
 public:
 	void OnMenu();
 	void OnDraw();
 
-	Instance* GetSelected() { return m_selected; }
+	Instance* GetSelected() const noexcept { return m_selected; }
 };
