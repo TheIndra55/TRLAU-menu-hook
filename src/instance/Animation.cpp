@@ -17,8 +17,7 @@ void G2EmulationInstanceSetMode(Instance* instance, int CurrentSection, int Mode
 
 int G2EmulationInstanceQueryAnimation(Instance* instance, int CurrentSection)
 {
-	// TODO Underworld
-	auto addr = GET_ADDRESS(0x4DEE50, 0x4DE8B0, 0x000000);
+	auto addr = GET_ADDRESS(0x4DEE50, 0x4DE8B0, 0x5B1FC0);
 
 	return Hooking::CallReturn<int>(addr, instance, CurrentSection);
 }
