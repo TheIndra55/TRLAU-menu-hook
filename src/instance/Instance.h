@@ -105,6 +105,10 @@ struct Instance
 	char pad2[24];
 
 	int introUniqueID;
+
+	char pad3[548];
+
+	AnimComponent* animComponent;
 };
 #endif
 

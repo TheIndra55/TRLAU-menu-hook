@@ -44,12 +44,21 @@ struct Object
 #else
 struct Object
 {
-	char pad1[58];
+	char pad1[20];
+
+	int uniqueID;
+
+	char pad2[34];
 
 	__int16 numModels;
 	__int16 numAnims;
 
-	char pad2[34];
+	char pad3[2];
+
+	Model** modelList;
+	AnimListEntry* animList;
+
+	char pad4[24];
 
 	char* name;
 };

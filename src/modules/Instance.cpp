@@ -141,6 +141,7 @@ void InstanceModule::DrawInstance() const
 	{
 		auto object = instance->object;
 
+		ImGui::Text("ID: %d", object->uniqueID);
 		ImGui::Text("Models: %d", object->numModels);
 		ImGui::Text("Animations: %d", object->numAnims);
 	}
@@ -170,7 +171,6 @@ void InstanceModule::DrawInstance() const
 	// Animations
 	if (ImGui::CollapsingHeader("Animations"))
 	{
-#ifndef TR8
 		// Show all allocated animation sections with the current playing animation
 		for (int section = 0; section < instance->animComponent->mAnimProcessor->mSectionsAllocated; section++)
 		{
@@ -178,17 +178,21 @@ void InstanceModule::DrawInstance() const
 			auto currentAnim = G2EmulationInstanceQueryAnimation(instance, section);
 
 			// Can be null for some reason
-			if (instance->object->animList)
+			if (instance->object->animList && currentAnim != 0xffff)
 			{
 				// (Section): (Anim index) (Anim ID)
+#ifndef TR8
 				ImGui::Text("Section %d: %d (%X)", section, currentAnim, instance->object->animList[currentAnim].animationID);
+#else
+				auto animEntry = &instance->object->animList[currentAnim];
+				ImGui::Text("Section %d: %d %s (%X)", section, currentAnim, animEntry->debugName, animEntry->animationID);
+#endif
 			}
 			else
 			{
 				ImGui::Text("Section %d: %d", section, currentAnim);
 			}
 		}
-#endif
 
 		static int animation = 0;
 		static bool loop = true;
