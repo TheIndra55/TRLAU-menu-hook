@@ -80,6 +80,7 @@ void InstanceModule::OnDraw()
 void InstanceModule::DrawInstance() const
 {
 	auto instance = m_selected;
+	auto data = (ObjectData*)instance->data;
 
 	ImGui::Text("%s", instance->object->name);
 
@@ -90,6 +91,11 @@ void InstanceModule::DrawInstance() const
 	ImGui::Text("Rotation: %f %f %f", rotation.x, rotation.y, rotation.z);
 	ImGui::Text("Intro: %d", instance->introUniqueID);
 	ImGui::Text("Address: %p", instance);
+
+	if (data)
+	{
+		ImGui::Text("Family: %d", data->family);
+	}
 
 	// Buttons
 	if (ImGui::Button("Goto"))
@@ -149,12 +155,10 @@ void InstanceModule::DrawInstance() const
 	// Draw groups
 	if (ImGui::CollapsingHeader("Draw groups"))
 	{
-#ifndef TR8
 		// Draw the bit representation
 		auto binary = GetBinary(~instance->noDrawGroups);
 
 		ImGui::Text("%s", binary.c_str());
-#endif
 
 		static int drawGroup = 0;
 		static bool enabled = false;
