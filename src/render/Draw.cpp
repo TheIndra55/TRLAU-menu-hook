@@ -3,7 +3,7 @@
 
 void TRANS_TransToDrawVertexV4f(DRAWVERTEX* v, cdc::Vector3* vec)
 {
-	auto addr = GET_ADDRESS(0x402EF0, 0x402F20, 0x000000);
+	auto addr = GET_ADDRESS(0x402EF0, 0x402F20, 0x49F990);
 
 	Hooking::Call(addr, v, vec);
 }
@@ -17,14 +17,21 @@ void TRANS_RotTransPersVectorf(cdc::Vector3* srcvector, cdc::Vector3* dstvector)
 
 void DRAW_DrawQuads(int flags, int tpage, DRAWVERTEX* verts, int numquads)
 {
-	auto addr = GET_ADDRESS(0x406720, 0x406D70, 0x000000);
+	auto addr = GET_ADDRESS(0x406720, 0x406D70, 0x5BFB20);
 
 	Hooking::Call(addr, flags, tpage, verts, numquads);
 }
 
+void DRAW_DrawLines(LINEVERTEX* verts, int numlines)
+{
+	auto addr = GET_ADDRESS(0x000000, 0x000000, 0x5BFCD0);
+
+	Hooking::Call(addr, verts, numlines);
+}
+
 void DRAW_DrawTriangles(int flags, int tpage, DRAWVERTEX* verts, int numtris)
 {
-	auto addr = GET_ADDRESS(0x406A40, 0x407570, 0x000000);
+	auto addr = GET_ADDRESS(0x406A40, 0x407570, 0x5BFA40);
 
 	Hooking::Call(addr, flags, tpage, verts, numtris);
 }

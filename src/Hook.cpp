@@ -73,10 +73,7 @@ void Hook::PostInitialize()
 	// Register the message hook
 	MessageHook::OnMessage(std::bind(&Hook::OnMessage, this, _1, _2, _3, _4));
 
-#ifndef TR8
 	Font::OnFlush(std::bind(&Hook::OnFrame, this));
-#endif
-
 	GameLoop::OnLoop(std::bind(&Hook::OnLoop, this));
 
 	// Post initialize all modules
