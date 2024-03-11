@@ -10,7 +10,7 @@ void TRANS_TransToDrawVertexV4f(DRAWVERTEX* v, cdc::Vector3* vec)
 
 void TRANS_RotTransPersVectorf(cdc::Vector3* srcvector, cdc::Vector3* dstvector)
 {
-	auto addr = GET_ADDRESS(0x402B20, 0x402B50, 0x000000);
+	auto addr = GET_ADDRESS(0x402B20, 0x402B50, 0x49F630);
 
 	Hooking::Call(addr, srcvector, dstvector);
 }

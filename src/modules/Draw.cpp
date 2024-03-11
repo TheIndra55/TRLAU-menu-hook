@@ -1,5 +1,3 @@
-#ifndef TR8
-
 #include <utility>
 #include <string>
 #include <imgui.h>
@@ -148,6 +146,7 @@ void Draw::DrawInstances()
 
 void Draw::DrawInstance(Instance* instance)
 {
+#ifndef TR8
 	auto name = instance->object->name;
 	auto data = (ObjectData*)instance->data;
 
@@ -225,10 +224,12 @@ void Draw::DrawInstance(Instance* instance)
 			}
 		}
 	}
+#endif
 }
 
 void Draw::DrawEnemyRoute(Instance* instance)
 {
+#ifndef TR8
 	auto data = (ObjectData*)instance->data;
 
 	// Check if the instance is an enemy
@@ -251,6 +252,7 @@ void Draw::DrawEnemyRoute(Instance* instance)
 
 		x = y;
 	}
+#endif
 }
 
 void Draw::DrawMarkUp()
@@ -317,6 +319,7 @@ void Draw::DrawMarkUp()
 
 void Draw::DrawCollision(Level* level)
 {
+#ifndef TR8
 	auto terrain = level->terrain;
 
 	// Draw the collision mesh for all terrain groups
@@ -339,6 +342,7 @@ void Draw::DrawCollision(Level* level)
 			DrawCollision(terrainGroup);
 		}
 	}
+#endif
 }
 
 void Draw::DrawCollision(TerrainGroup* terrainGroup)
@@ -379,6 +383,7 @@ void Draw::DrawPortals(Level* level)
 		position += &portal->max;
 		position /= 2;
 
+#ifndef TR8
 		TRANS_RotTransPersVectorf(&position, &position);
 
 		// Check if the portal is on screen
@@ -387,15 +392,17 @@ void Draw::DrawPortals(Level* level)
 			// Draw the portal destination
 			font->SetCursor(position.x, position.y);
 			font->PrintCentered("Portal to %s", portal->tolevelname);
-
-			// Draw the portal bounds
-			DrawPlane(&portal->min, &portal->max, RGBA(0, 0, 255, 10));
 		}
+#endif
+
+		// Draw the portal bounds
+		DrawPlane(&portal->min, &portal->max, RGBA(0, 0, 255, 10));
 	}
 }
 
 void Draw::DrawSignals(Level* level)
 {
+#ifndef TR8
 	auto terrain = level->terrain;
 	auto terrainGroup = terrain->signalTerrainGroup;
 
@@ -420,6 +427,7 @@ void Draw::DrawSignals(Level* level)
 		// Draw the face
 		DrawTriangle(&x, &y, &z, RGBA(255, 0, 0, 10));
 	}
+#endif
 }
 
 std::string Draw::FlagsToString(unsigned int flags)
@@ -442,5 +450,3 @@ std::string Draw::FlagsToString(unsigned int flags)
 	
 	return result;
 }
-
-#endif

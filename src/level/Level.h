@@ -91,6 +91,7 @@ struct TerrainGroup
 	char pad1[116];
 };
 
+#ifndef TR8
 struct StreamUnitPortal
 {
 	char tolevelname[30];
@@ -126,6 +127,35 @@ struct Terrain
 	TerrainGroup* signalTerrainGroup;
 	Signal* signals;
 };
+#else
+struct StreamUnitPortal
+{
+	char tolevelname[128];
+
+	__int16 field_80;
+	__int16 field_82;
+
+	__int16 streamID;
+
+	__int16 field_86;
+	__int16 field_88;
+	__int16 field_8A;
+	__int16 field_8C;
+	__int16 field_8E;
+
+	cdc::Vector3 min;
+	cdc::Vector3 max;
+	cdc::Vector3 quad[4];
+	cdc::Vector3 normal;
+};
+
+struct Terrain
+{
+	__int16 field_0;
+	__int16 numStreamUnitPortals;
+	StreamUnitPortal* streamUnitPortals;
+};
+#endif
 
 struct Level
 {

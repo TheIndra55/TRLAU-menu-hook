@@ -1,5 +1,4 @@
 #pragma once
-#ifndef TR8
 
 #include "Module.h"
 
@@ -47,5 +46,3 @@ public:
 	void OnDraw();
 	void OnFrame();
 };
-
-#endif
