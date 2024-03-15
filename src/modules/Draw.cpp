@@ -9,6 +9,9 @@
 #include "instance/Instances.h"
 #include "instance/Enemy.h"
 #include "level/Markup.h"
+#include "level/Trigger.h"
+
+#include "cdc/math/Math.h"
 
 template <typename T>
 static inline cdc::Vector3 GetVertice(unsigned int vertice, Mesh* mesh, cdc::Vector* offset)
@@ -56,6 +59,7 @@ void Draw::OnMenu()
 		ImGui::MenuItem("Draw collision", nullptr, &m_drawCollision);
 		ImGui::MenuItem("Draw portals", nullptr, &m_drawPortals);
 		ImGui::MenuItem("Draw signals", nullptr, &m_drawSignals);
+		ImGui::MenuItem("Draw triggers", nullptr, &m_drawTriggers);
 
 		ImGui::EndMenu();
 	}
@@ -74,6 +78,11 @@ void Draw::OnFrame()
 	if (m_drawMarkUp)
 	{
 		DrawMarkUp();
+	}
+
+	if (m_drawTriggers)
+	{
+		DrawTriggers();
 	}
 
 	if (level)
@@ -426,6 +435,106 @@ void Draw::DrawSignals(Level* level)
 
 		// Draw the face
 		DrawTriangle(&x, &y, &z, RGBA(255, 0, 0, 10));
+	}
+#endif
+}
+
+void Draw::DrawTriggers()
+{
+#ifdef TR8
+	// Draw all trigger planes
+	auto numPlanes = *(int*)0xDBA21C;
+	auto planes = (NsTriggerPlaneBase**)0xDA61C8;
+
+	for (int i = 0; i < numPlanes; i++)
+	{
+		auto plane = planes[i];
+		auto instance = plane->m_instance;
+		auto data = (IntroDataTrigger*)instance->intro->data;
+
+		if (data)
+		{
+			auto extendX = cdc::Vector3{};
+			extendX.x += data->LocalXExtent;
+			extendX.z += data->LocalZExtent;
+
+			auto extendY = cdc::Vector3{};
+			extendY.x -= data->LocalXExtent;
+			extendY.z -= data->LocalZExtent;
+
+			cdc::Matrix mat;
+			mat.Build_XYZOrder(&instance->rotation);
+			mat.col3 = instance->position;
+
+			auto x = cdc::Mul3x4(&mat, &extendX);
+			auto y = cdc::Mul3x4(&mat, &extendY);
+
+			DrawPlane(&x, &y, RGBA(255, 0, 0, 10));
+		}
+	}
+
+	// Draw all trigger volumes
+	auto numVolumes = *(int*)0xDBA220;
+	auto volumes = (NsTriggerVolumeBase**)0xDB6BE0;
+
+	for (int i = 0; i < numVolumes; i++)
+	{
+		auto volume = volumes[i];
+		auto instance = volume->m_instance;
+		auto data = (IntroDataTrigger*)instance->intro->data;
+
+		if (data)
+		{
+			if(data->shape == TriggerShape_Box)
+			{
+				auto extendX = cdc::Vector3{};
+				extendX.x += data->LocalXExtent;
+				extendX.y += data->LocalYExtent;
+				extendX.z += data->LocalZExtent;
+
+				auto extendY = cdc::Vector3{};
+				extendY.x -= data->LocalXExtent;
+				extendY.y -= data->LocalYExtent;
+				extendY.z -= data->LocalZExtent;
+
+				auto extendZ = cdc::Vector3{};
+				extendZ.x -= data->LocalXExtent;
+				extendZ.y += data->LocalYExtent;
+
+				auto extendW = cdc::Vector3{};
+				extendW.x += data->LocalXExtent;
+				extendW.y -= data->LocalYExtent;
+
+				cdc::Matrix mat;
+				mat.Build_XYZOrder(&instance->rotation);
+				mat.col3 = instance->position;
+
+				auto x = cdc::Mul3x4(&mat, &extendX);
+				auto y = cdc::Mul3x4(&mat, &extendY);
+				auto z = cdc::Mul3x4(&mat, &extendZ);
+				auto w = cdc::Mul3x4(&mat, &extendW);
+
+				DrawBoundingBox(&x, &y, &z, &w, RGB(255, 0, 0));
+				DrawBox(&x, &y, &z, &w, RGBA(255, 0, 0, 10));
+			}
+			else if (data->shape == TriggerShape_Sphere)
+			{
+				auto x = instance->position;
+				auto y = instance->position;
+
+				auto radius = data->Radius;
+
+				x.x += radius;
+				x.y += radius;
+				x.z += radius;
+
+				y.x -= radius;
+				y.y -= radius;
+				y.z -= radius;
+
+				DrawBoundingBox(&x, &y, RGB(255, 0, 0));
+			}
+		}
 	}
 #endif
 }

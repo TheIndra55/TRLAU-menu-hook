@@ -132,3 +132,53 @@ void DrawBoundingBox(cdc::Vector3* v0, cdc::Vector3* v1, int color)
 	DrawLine(&b3, &a3, color);
 	DrawLine(&b4, &a4, color);
 }
+
+void DrawBoundingBox(cdc::Vector3* v0, cdc::Vector3* v1, cdc::Vector3* v2, cdc::Vector3* v3, int color)
+{
+	// Yes this is terrible
+	auto a1 = cdc::Vector3{ v0->x, v0->y, v0->z };
+	auto a2 = cdc::Vector3{ v2->x, v2->y, v0->z };
+	auto a3 = cdc::Vector3{ v1->x, v1->y, v0->z };
+	auto a4 = cdc::Vector3{ v3->x, v3->y, v0->z };
+
+	auto b1 = cdc::Vector3{ v0->x, v0->y, v1->z };
+	auto b2 = cdc::Vector3{ v2->x, v2->y, v1->z };
+	auto b3 = cdc::Vector3{ v1->x, v1->y, v1->z };
+	auto b4 = cdc::Vector3{ v3->x, v3->y, v1->z };
+
+	DrawLine(&a1, &a2, color);
+	DrawLine(&a2, &a3, color);
+	DrawLine(&a3, &a4, color);
+	DrawLine(&a4, &a1, color);
+
+	DrawLine(&b1, &b2, color);
+	DrawLine(&b2, &b3, color);
+	DrawLine(&b3, &b4, color);
+	DrawLine(&b4, &b1, color);
+
+	DrawLine(&b1, &a1, color);
+	DrawLine(&b2, &a2, color);
+	DrawLine(&b3, &a3, color);
+	DrawLine(&b4, &a4, color);
+}
+
+void DrawBox(cdc::Vector3* v0, cdc::Vector3* v1, cdc::Vector3* v2, cdc::Vector3* v3, int color)
+{
+	auto a1 = cdc::Vector3{ v0->x, v0->y, v0->z };
+	auto a2 = cdc::Vector3{ v2->x, v2->y, v0->z };
+	auto a3 = cdc::Vector3{ v1->x, v1->y, v0->z };
+	auto a4 = cdc::Vector3{ v3->x, v3->y, v0->z };
+
+	auto b1 = cdc::Vector3{ v0->x, v0->y, v1->z };
+	auto b2 = cdc::Vector3{ v2->x, v2->y, v1->z };
+	auto b3 = cdc::Vector3{ v1->x, v1->y, v1->z };
+	auto b4 = cdc::Vector3{ v3->x, v3->y, v1->z };
+
+	DrawPlane(&a1, &b2, color);
+	DrawPlane(&a2, &b3, color);
+	DrawPlane(&a3, &b4, color);
+	DrawPlane(&a4, &b1, color);
+
+	DrawPlane(&a1, &a3, color);
+	DrawPlane(&b1, &b3, color);
+}

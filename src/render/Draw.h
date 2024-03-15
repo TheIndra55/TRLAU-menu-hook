@@ -41,3 +41,6 @@ void DrawTriangle(cdc::Vector3* v0, cdc::Vector3* v1, cdc::Vector3* v2, int colo
 void DrawPlane(cdc::Vector3* v0, cdc::Vector3* v1, int color);
 void DrawLine(cdc::Vector3* v0, cdc::Vector3* v1, int color);
 void DrawBoundingBox(cdc::Vector3* v0, cdc::Vector3* v1, int color);
+void DrawBoundingBox(cdc::Vector3* v0, cdc::Vector3* v1, cdc::Vector3* v2, cdc::Vector3* v3, int color);
+
+void DrawBox(cdc::Vector3* v0, cdc::Vector3* v1, cdc::Vector3* v2, cdc::Vector3* v3, int color);

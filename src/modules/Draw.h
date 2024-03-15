@@ -15,6 +15,7 @@ private:
 	bool m_drawCollision = false;
 	bool m_drawPortals = false;
 	bool m_drawSignals = false;
+	bool m_drawTriggers = false;
 
 	// Instance options
 	bool m_drawIntro = false;
@@ -38,6 +39,7 @@ private:
 	void DrawCollision(TerrainGroup* group);
 	void DrawPortals(Level* level);
 	void DrawSignals(Level* level);
+	void DrawTriggers();
 
 	static std::string FlagsToString(unsigned int flags);
 
