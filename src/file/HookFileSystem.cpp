@@ -133,4 +133,10 @@ char* HookFileSystem::GetBufferPointer(cdc::FileRequest* request, unsigned int* 
 {
 	return m_pDiskFS->GetBufferPointer(request, bytesLocked);
 }
+
+void HookFileSystem::ResetBufferPointer(int value)
+{
+	m_pDiskFS->ResetBufferPointer(value);
+}
+
 #endif
