@@ -128,4 +128,9 @@ bool HookFileSystem::IsSuspended()
 {
 	return m_pDiskFS->IsSuspended();
 }
+
+char* HookFileSystem::GetBufferPointer(cdc::FileRequest* request, unsigned int* bytesLocked)
+{
+	return m_pDiskFS->GetBufferPointer(request, bytesLocked);
+}
 #endif

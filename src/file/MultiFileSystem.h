@@ -31,5 +31,7 @@ public:
 	void Suspend() { }
 	bool Resume() { return false; }
 	bool IsSuspended() { return false; }
+	char* GetBufferPointer(cdc::FileRequest* request, unsigned int* bytesLocked) { return nullptr; }
+	void ResetBufferPointer(int value) { }
 #endif
 };

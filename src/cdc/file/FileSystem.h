@@ -42,6 +42,8 @@ namespace cdc
 		virtual void Suspend() = 0;
 		virtual bool Resume() = 0;
 		virtual bool IsSuspended() = 0;
+		virtual char* GetBufferPointer(FileRequest* request, unsigned int* bytesLocked) = 0;
+		virtual void ResetBufferPointer(int value) = 0;
 #endif
 
 		virtual ~FileSystem() { };

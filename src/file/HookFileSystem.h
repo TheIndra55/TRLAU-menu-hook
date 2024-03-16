@@ -28,5 +28,7 @@ public:
 	void Suspend();
 	bool Resume();
 	bool IsSuspended();
+	char* GetBufferPointer(cdc::FileRequest* request, unsigned int* bytesLocked);
+	void ResetBufferPointer(int value) { }
 #endif
 };
