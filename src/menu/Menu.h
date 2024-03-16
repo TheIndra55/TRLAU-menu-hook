@@ -8,6 +8,8 @@ class Menu : public cdc::PCInternalResource
 {
 private:
 	bool m_initialized = false;
+
+	bool m_visible = false;
 	bool m_focus = false;
 
 public:
@@ -19,7 +21,7 @@ public:
 	bool OnCreateDevice();
 	void OnDestroyDevice();
 
-	void SetFocus(bool focus) noexcept;
+	void SetFocus(bool focus, bool dontHide = false) noexcept;
 	bool HasFocus() const noexcept;
 
 private:

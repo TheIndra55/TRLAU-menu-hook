@@ -63,7 +63,7 @@ void Menu::OnPresent()
 	ImGui::NewFrame();
 
 	// Draw the menu
-	if (m_focus)
+	if (m_visible)
 	{
 		Draw();
 	}
@@ -79,7 +79,7 @@ void Menu::OnMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	if (msg == WM_KEYUP && wParam == VK_F8)
 	{
-		SetFocus(!m_focus);
+		SetFocus(!m_focus, ImGui::IsKeyDown(ImGuiKey_LeftShift));
 	}
 
 	if (m_focus)
@@ -92,7 +92,7 @@ void Menu::Draw() noexcept
 {
 	auto& modules = Hook::GetInstance().GetModules();
 
-	if (ImGui::BeginMainMenuBar())
+	if (m_focus && ImGui::BeginMainMenuBar())
 	{
 		// Draw all modules menus
 		for (auto& [hash, mod] : modules)
@@ -131,9 +131,15 @@ void Menu::DrawMenu() noexcept
 	}
 }
 
-void Menu::SetFocus(bool focus) noexcept
+void Menu::SetFocus(bool focus, bool dontHide) noexcept
 {
 	m_focus = focus;
+	m_visible = focus;
+
+	if (!focus && dontHide)
+	{
+		m_visible = true;
+	}
 
 	// Disable the cursor lock and game input
 	MouseHook::DisableCursorLock(focus);
