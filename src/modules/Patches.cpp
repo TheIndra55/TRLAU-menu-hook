@@ -21,6 +21,8 @@ static void RenderG2_MotionBlur(int blur, int time, int timeout)
 	if (s_patches->IsNoMotionBlur())
 	{
 		s_RenderG2_MotionBlur(0, 0, 0);
+
+		return;
 	}
 
 	s_RenderG2_MotionBlur(blur, time, timeout);
