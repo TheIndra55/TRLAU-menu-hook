@@ -94,6 +94,11 @@ Patches::Patches()
 	MH_CreateHook((void*)GET_ADDRESS(0x4642F0, 0x467E60, 0x000000), MakePeHandle, nullptr);
 #endif
 
+	if (m_heapSize.GetValue() > 0)
+	{
+		PatchHeapSize();
+	}
+
 	// Insert DeathState hooks
 	MH_CreateHook((void*)GET_ADDRESS(0x55DEC0, 0x5581D0, 0x75AA50), DeathState_Entry, (void**)&s_DeathState_Entry);
 	MH_CreateHook((void*)GET_ADDRESS(0x56EC70, 0x5699C0, 0x75AF90), DeathState_Process, (void**)&s_DeathState_Process);
@@ -115,6 +120,15 @@ void Patches::RemoveIntro() const noexcept
 	// mov [mainState], 6
 	Hooking::Patch(match.get_first(), { 0xC7, 0x05, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00 });
 	Hooking::Patch(match.get_first(2), mainState);
+}
+
+void Patches::PatchHeapSize() const noexcept
+{
+	auto match = hook::pattern("68 00 00 00 10 6A 00 C7 06").count(1);
+	auto size = m_heapSize.GetValue();
+
+	Hooking::Patch(match.get_first(1), size);
+	Hooking::Patch(match.get_first(19), size);
 }
 
 void Patches::OnInput(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)

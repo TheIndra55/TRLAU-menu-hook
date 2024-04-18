@@ -10,7 +10,10 @@ private:
 	Option<bool> m_noCinematicBars{ "NoCinematicBars", true };
 	Option<bool> m_noMotionBlur{ "NoMotionBlur", false };
 
+	Option<unsigned int> m_heapSize{ "HeapSize", 0 };
+
 	void RemoveIntro() const noexcept;
+	void PatchHeapSize() const noexcept;
 
 public:
 	Patches();
