@@ -7,7 +7,7 @@
 #include "MainMenu.h"
 #include "patches/Reloc.h"
 
-// Instance of patches so we can get it in our hooks without calling GetModule<T>
+// Instance of patches so we can get it in our hooks without calling GetModule<T> each call
 static Patches* s_patches;
 static MainMenu* s_menu;
 
@@ -94,17 +94,25 @@ Patches::Patches()
 	MH_CreateHook((void*)GET_ADDRESS(0x4642F0, 0x467E60, 0x000000), MakePeHandle, nullptr);
 #endif
 
-	if (m_heapSize.GetValue() > 0)
-	{
-		PatchHeapSize();
-	}
-
 	// Insert DeathState hooks
 	MH_CreateHook((void*)GET_ADDRESS(0x55DEC0, 0x5581D0, 0x75AA50), DeathState_Entry, (void**)&s_DeathState_Entry);
 	MH_CreateHook((void*)GET_ADDRESS(0x56EC70, 0x5699C0, 0x75AF90), DeathState_Process, (void**)&s_DeathState_Process);
 
 	// NOP the original death wipe code in DeathState::Entry
 	Hooking::Nop((void*)GET_ADDRESS(0x55E188, 0x5584DC, 0x75AEDE), 5);
+
+	// Patches
+	if (m_heapSize.GetValue() > 0)
+	{
+		PatchHeapSize();
+	}
+
+#ifdef TR7
+	if (m_shadowMapSize.GetValue() > 0)
+	{
+		PatchShadowMap();
+	}
+#endif
 
 	MH_EnableHook(MH_ALL_HOOKS);
 }
@@ -130,6 +138,15 @@ void Patches::PatchHeapSize() const noexcept
 	Hooking::Patch(match.get_first(1), size);
 	Hooking::Patch(match.get_first(19), size);
 }
+
+#ifdef TR7
+void Patches::PatchShadowMap() const noexcept
+{
+	auto match = hook::pattern("BF 00 04 00 00 3B C7 8B F1 BA 80 00 00 00").count(1);
+
+	Hooking::Patch(match.get_first(1), m_shadowMapSize.GetValue());
+}
+#endif
 
 void Patches::OnInput(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
