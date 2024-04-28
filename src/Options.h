@@ -89,13 +89,16 @@ private:
 	bool m_show = false;
 
 	void DrawOptions() noexcept;
-	void DrawOption(const char* name, const char* description, float min = 0.f, float max = 0.f) const noexcept;
-	void DrawOption(BaseOption* option, const char* description, float min, float max) const noexcept;
+
+	void DrawCheckOption(const char* name, const char* description) const noexcept;
+	void DrawSliderOption(const char* name, const char* description, float min, float max) const noexcept;
+	void DrawComboOption(const char* name, const char* description, std::vector<const char*> items) const noexcept;
 
 public:
 	Options();
 
 	void OnDraw();
-	void Show() noexcept;
+	void SetVisible(bool visible) noexcept;
 	void AddOption(BaseOption* option);
+	BaseOption* FindOption(const char* name) const noexcept;
 };

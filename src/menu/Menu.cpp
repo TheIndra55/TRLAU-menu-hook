@@ -119,7 +119,7 @@ void Menu::DrawMenu() noexcept
 	{
 		if (ImGui::MenuItem("Options"))
 		{
-			Hook::GetInstance().GetModule<Options>()->Show();
+			Hook::GetInstance().GetModule<Options>()->SetVisible(true);
 		}
 
 		if (ImGui::MenuItem("GitHub"))

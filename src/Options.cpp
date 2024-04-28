@@ -25,63 +25,65 @@ void Options::DrawOptions() noexcept
 
 	if (ImGui::CollapsingHeader("General"))
 	{
-		DrawOption("DisableIntro", "Disable legal screen and intros");
-		DrawOption("NoCinematicBars", "Disable cinematic bars");
-		DrawOption("NoMotionBlur", "Disable motion blur");
+		DrawComboOption("IntroSkip", "Legal screen and intros", { "Don't skip", "Skip legal", "Skip legal and intros" });
+		DrawCheckOption("NoCinematicBars", "Disable cinematic bars");
+		DrawCheckOption("NoMotionBlur", "Disable motion blur");
 	}
 
 	if (ImGui::CollapsingHeader("Camera"))
 	{
-		DrawOption("CameraSlowSpeed", "Slow speed", 0.f, 1000.f);
-		DrawOption("CameraNormalSpeed", "Normal speed", 0.f, 1000.f);
-		DrawOption("CameraFastSpeed", "Fast speed", 0.f, 1000.f);
-		DrawOption("CameraRollSpeed", "Roll speed", 0.f, 1.f);
+		DrawSliderOption("CameraSlowSpeed", "Slow speed", 0.f, 1000.f);
+		DrawSliderOption("CameraNormalSpeed", "Normal speed", 0.f, 1000.f);
+		DrawSliderOption("CameraFastSpeed", "Fast speed", 0.f, 1000.f);
+		DrawSliderOption("CameraRollSpeed", "Roll speed", 0.f, 1.f);
 	}
 
 	if (ImGui::CollapsingHeader("Controls"))
 	{
-		DrawOption("SkewSpeed", "Vertical skew speed", 0.f, 1000.f);
+		DrawSliderOption("SkewSpeed", "Vertical skew speed", 0.f, 1000.f);
 	}
 
 	ImGui::End();
 }
 
-void Options::DrawOption(const char* name, const char* description, float min, float max) const noexcept
+void Options::DrawCheckOption(const char* name, const char* description) const noexcept
 {
-	// TODO use a map for better performance
-	for (auto& option : m_options)
+	auto option = FindOption(name);
+	if (option == nullptr) return;
+
+	if (ImGui::Checkbox(description, (bool*)option->GetValuePtr()))
 	{
-		if (option->GetName() == name)
-		{
-			DrawOption(option, description, min, max);
-		}
+		option->SaveValue();
 	}
 }
 
-void Options::DrawOption(BaseOption* option, const char* description, float min, float max) const noexcept
+void Options::DrawSliderOption(const char* name, const char* description, float min, float max) const noexcept
 {
-	auto type = option->GetType();
+	auto option = FindOption(name);
+	if (option == nullptr) return;
 
-	if (type == typeid(bool).hash_code())
+	if (ImGui::SliderFloat(description, (float*)option->GetValuePtr(), min, max))
 	{
-		if (ImGui::Checkbox(description, (bool*)option->GetValuePtr()))
-		{
-			option->SaveValue();
-		}
-	}
-
-	if (type == typeid(float).hash_code())
-	{
-		if (ImGui::SliderFloat(description, (float*)option->GetValuePtr(), min, max))
-		{
-			option->SaveValue();
-		}
+		option->SaveValue();
 	}
 }
 
-void Options::Show() noexcept
+void Options::DrawComboOption(const char* name, const char* description, std::vector<const char*> items) const noexcept
 {
-	m_show = true;
+	auto option = FindOption(name);
+	if (option == nullptr) return;
+
+	auto value = (int*)option->GetValuePtr();
+
+	if (ImGui::Combo(description, value, items.data(), items.size()))
+	{
+		option->SaveValue();
+	}
+}
+
+void Options::SetVisible(bool visible) noexcept
+{
+	m_show = visible;
 }
 
 void Options::AddOption(BaseOption* option)
@@ -90,4 +92,18 @@ void Options::AddOption(BaseOption* option)
 
 	// Load the value from the registry
 	option->LoadValue();
+}
+
+BaseOption* Options::FindOption(const char* name) const noexcept
+{
+	// TODO use a map for better performance
+	for (auto& option : m_options)
+	{
+		if (option->GetName() == name)
+		{
+			return option;
+		}
+	}
+
+	return nullptr;
 }
