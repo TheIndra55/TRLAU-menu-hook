@@ -35,10 +35,17 @@ public:
 	}
 };
 
+enum IntroSkip
+{
+	Disabled,
+	SkipLegal,
+	SkipIntros
+};
+
 class Patches : public Module
 {
 private:
-	Option<bool> m_disableIntro{ "DisableIntro", true };
+	Option<IntroSkip> m_disableIntro{ "IntroSkip", SkipLegal };
 	Option<bool> m_noCinematicBars{ "NoCinematicBars", true };
 	Option<bool> m_noMotionBlur{ "NoMotionBlur", false };
 

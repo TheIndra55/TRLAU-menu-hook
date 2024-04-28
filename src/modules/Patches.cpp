@@ -81,7 +81,7 @@ Patches::Patches()
 	s_menu = Hook::GetInstance().GetModule<MainMenu>().get();
 
 #ifndef TR8
-	if (m_disableIntro.GetValue())
+	if (m_disableIntro.GetValue() > Disabled)
 	{
 		RemoveIntro();
 	}
@@ -122,12 +122,16 @@ void Patches::RemoveIntro() const noexcept
 	auto match = hook::pattern("8D 0C 8D 03 00 00 00 89 0D").count(1);
 	auto mainState = *match.get_first<int>(9);
 
+	// Set new state to either main menu or intros
+	auto newState = m_disableIntro.GetValue() == SkipIntros ? 6 : 3;
+
 	// Nop out the code setting the main state to intros
 	Hooking::Nop(match.get_first(), 13);
 
-	// mov [mainState], 6
-	Hooking::Patch(match.get_first(), { 0xC7, 0x05, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00 });
+	// mov [mainState], newState
+	Hooking::Patch(match.get_first(), { 0xC7, 0x05, 0x00, 0x00, 0x00, 0x00 });
 	Hooking::Patch(match.get_first(2), mainState);
+	Hooking::Patch(match.get_first(6), newState);
 }
 
 void Patches::PatchHeapSize() const noexcept
