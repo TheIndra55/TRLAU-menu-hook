@@ -14,8 +14,6 @@ private:
 
 	void PostInitialize();
 
-	template<typename T>
-	void RegisterModule();
 	void RegisterModules();
 
 	void OnMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -29,6 +27,14 @@ public:
 	void OnDevice();
 
 	// These need to be defined here, else the linker becomes angry
+
+	// Adds a module
+	template<typename T>
+	void RegisterModule()
+	{
+		auto mod = std::make_shared<T>();
+		m_modules.insert({ typeid(T).hash_code(), mod });
+	}
 
 	// Gets all modules
 	const auto& GetModules() const noexcept

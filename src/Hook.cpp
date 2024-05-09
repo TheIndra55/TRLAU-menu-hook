@@ -118,14 +118,6 @@ void Hook::OnDevice()
 	PostInitialize();
 }
 
-template<typename T>
-void Hook::RegisterModule()
-{
-	auto mod = std::make_shared<T>();
-
-	m_modules.insert({ typeid(T).hash_code(), mod });
-}
-
 void Hook::RegisterModules()
 {
 	// Register these first
