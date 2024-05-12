@@ -3,8 +3,36 @@ name: Build
 on: [push, pull_request]
 
 jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+    # setup
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - uses: microsoft/setup-msbuild@v1.1
+    - uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Download premake5
+      run: |
+        curl.exe -o premake5.zip -L https://github.com/premake/premake-core/releases/download/v5.0.0-beta2/premake-5.0.0-beta2-windows.zip
+        tar -xf premake5.zip
+
+    - name: Generate project files
+      run: .\premake5 vs2022 --with-tests
+
+    # tests
+    - name: Build tests
+      run: MSBuild TRAE-menu-hook.sln /t:Tests /p:Configuration=Release /p:Platform=TR7
+
+    - name: Test
+      run: .\bin\TR7\Release\Tests.exe
+
   build:
     runs-on: windows-latest
+    needs: test
     
     steps:
     # setup
@@ -29,16 +57,23 @@ jobs:
       run: .\premake5 vs2022
 
     # compile
+    - name: Build Legend
+      run: MSBuild /p:Configuration=Release /p:Platform=TR7
+
     - name: Build Anniversary
       run: MSBuild /p:Configuration=Release /p:Platform=TRAE
 
     - name: Build Underworld
       run: MSBuild /p:Configuration=Release /p:Platform=TR8
 
-    - name: Build Legend
-      run: MSBuild /p:Configuration=Release /p:Platform=TR7
-
     # upload
+    - uses: actions/upload-artifact@v3
+      with:
+        name: Legend
+        path: |
+          bin/TR7/Release/TR7-Menu-Hook.asi
+          bin/TR7/Release/TR7-Menu-Hook.pdb
+
     - uses: actions/upload-artifact@v3
       with:
         name: Anniversary
@@ -52,10 +87,3 @@ jobs:
         path: |
           bin/TR8/Release/TR8-Menu-Hook.asi
           bin/TR8/Release/TR8-Menu-Hook.pdb
-
-    - uses: actions/upload-artifact@v3
-      with:
-        name: Legend
-        path: |
-          bin/TR7/Release/TR7-Menu-Hook.asi
-          bin/TR7/Release/TR7-Menu-Hook.pdb

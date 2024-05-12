@@ -7,3 +7,6 @@
 [submodule "vendor/minhook"]
 	path = vendor/minhook
 	url = https://github.com/TsudaKageyu/minhook
+[submodule "vendor/catch2"]
+	path = vendor/catch2
+	url = https://github.com/catchorg/Catch2
