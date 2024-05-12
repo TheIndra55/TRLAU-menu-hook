@@ -1,8 +1,14 @@
+newoption {
+    trigger = "with-tests",
+    description = "Include the tests project"
+}
+
 workspace "TRAE-menu-hook"
     architecture "x86"
     configurations { "Debug", "Release" }
     platforms { "TR7", "TRAE", "TR8" }
 
+-- Main project
 project "TRAE-menu-hook"
     kind "SharedLib"
     targetextension ".asi"
@@ -44,6 +50,9 @@ project "TRAE-menu-hook"
         defines { "TR8" }
         targetname "TR8-Menu-Hook"
 
+-- Tests
+if _OPTIONS["with-tests"] then
+
 project "Tests"
     kind "ConsoleApp"
 
@@ -59,4 +68,7 @@ project "Tests"
     includedirs { "src", "vendor/catch2/extras" }
     dofile "vendor.lua"
 
+    -- Define this as dummy game
     defines { "TR7" }
+
+end
