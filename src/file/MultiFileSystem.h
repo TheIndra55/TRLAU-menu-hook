@@ -1,21 +1,18 @@
 #pragma once
 
+#include <vector>
+
 #include "cdc/file/FileSystem.h"
 
-// Simplified version for cdc::MultiFileSystem since it does not exist in Legend and Anniversary
-// The real MultiFileSystem can dynamically add and re-order systems
-// 
-// This just checks the hook file system first and else falls back to the
-// original file system
 class MultiFileSystem : public cdc::FileSystem
 {
 private:
-	cdc::FileSystem* m_pFS;
-	cdc::FileSystem* m_pHookFS;
+	std::vector<FileSystem*> m_fileSystems;
 
 	cdc::FileSystem* GetBestFileSystem(const char* fileName);
 public:
-	MultiFileSystem(cdc::FileSystem* pFS, cdc::FileSystem* pHookFS);
+	MultiFileSystem();
+	void Add(cdc::FileSystem* fileSystem);
 
 	cdc::FileRequest* RequestRead(cdc::FileReceiver* receiver, const char* fileName, unsigned int startOffset);
 	cdc::File* OpenFile(const char* fileName);

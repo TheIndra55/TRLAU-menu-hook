@@ -1,73 +1,105 @@
-#include "MultiFileSystem.h"
+ #include "MultiFileSystem.h"
 
-MultiFileSystem::MultiFileSystem(cdc::FileSystem* pFS, cdc::FileSystem* pHookFS)
+MultiFileSystem::MultiFileSystem() : m_fileSystems()
 {
-	m_pFS = pFS;
-	m_pHookFS = pHookFS;
 }
 
-// Gets the best file system for a file simply by checking the hook file system first
+// Gets the best file system for a file by checking all file systems
 cdc::FileSystem* MultiFileSystem::GetBestFileSystem(const char* fileName)
 {
-	// First check the hook file system, else fall back to default filesystem
-	if (m_pHookFS->FileExists(fileName))
+	for (auto fileSystem : m_fileSystems)
 	{
-		return m_pHookFS;
+		if (fileSystem->FileExists(fileName))
+		{
+			return fileSystem;
+		}
 	}
 
-	return m_pFS;
+	return nullptr;
+}
+
+void MultiFileSystem::Add(cdc::FileSystem* fileSystem)
+{
+	m_fileSystems.push_back(fileSystem);
 }
 
 cdc::FileRequest* MultiFileSystem::RequestRead(cdc::FileReceiver* receiver, const char* fileName, unsigned int startOffset)
 {
-	auto pFS = GetBestFileSystem(fileName);
+	auto fileSystem = GetBestFileSystem(fileName);
 
-	return pFS->RequestRead(receiver, fileName, startOffset);
+	return fileSystem->RequestRead(receiver, fileName, startOffset);
 }
 
 cdc::File* MultiFileSystem::OpenFile(char const* fileName)
 {
-	auto pFS = GetBestFileSystem(fileName);
+	auto fileSystem = GetBestFileSystem(fileName);
 
-	return pFS->OpenFile(fileName);
+	return fileSystem->OpenFile(fileName);
 }
 
 bool MultiFileSystem::FileExists(char const* fileName)
 {
-	return m_pFS->FileExists(fileName) || m_pHookFS->FileExists(fileName);
+	for (auto fileSystem : m_fileSystems)
+	{
+		if (fileSystem->FileExists(fileName))
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 unsigned int MultiFileSystem::GetFileSize(char const* fileName)
 {
-	auto pFS = GetBestFileSystem(fileName);
+	auto fileSystem = GetBestFileSystem(fileName);
 
-	return pFS->GetFileSize(fileName);
+	return fileSystem->GetFileSize(fileName);
 }
 
 void MultiFileSystem::SetSpecialisationMask(unsigned int specMask)
 {
-	m_pFS->SetSpecialisationMask(specMask);
-	m_pHookFS->SetSpecialisationMask(specMask);
+	for (auto fileSystem : m_fileSystems)
+	{
+		fileSystem->SetSpecialisationMask(specMask);
+	}
 }
 
 unsigned int MultiFileSystem::GetSpecialisationMask()
 {
-	return m_pFS->GetSpecialisationMask();
-}
+	if (m_fileSystems.empty())
+	{
+		return 0xFFFFFFFF;
+	}
 
-// These only need to call the default file system, both will end at the same place
+	return m_fileSystems[0]->GetSpecialisationMask();
+}
 
 cdc::FileSystem::Status MultiFileSystem::GetStatus()
 {
-	return m_pFS->GetStatus();
+	for (auto fileSystem : m_fileSystems)
+	{
+		if (fileSystem->GetStatus() == BUSY)
+		{
+			return BUSY;
+		}
+	}
+
+	return IDLE;
 }
 
 void MultiFileSystem::Update()
 {
-	m_pFS->Update();
+	for (auto fileSystem : m_fileSystems)
+	{
+		fileSystem->Update();
+	}
 }
 
 void MultiFileSystem::Synchronize()
 {
-	m_pFS->Synchronize();
+	for (auto fileSystem : m_fileSystems)
+	{
+		fileSystem->Synchronize();
+	}
 }

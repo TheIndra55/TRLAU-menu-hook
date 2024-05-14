@@ -4,7 +4,7 @@
 
 namespace cdc
 {
-	class MultiFileSystem : public cdc::FileSystem
+	class MultiFileSystem : public FileSystem
 	{
 	public:
 		void Add(FileSystem* fileSystem, bool bReprioritize, bool bAddToFront);
