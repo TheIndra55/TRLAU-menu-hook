@@ -68,14 +68,14 @@ project "Tests"
     includedirs { "src", "vendor/catch2/extras" }
     dofile "vendor.lua"
 
+    -- Define this as dummy game
+    defines { "TR7" }
+
     filter "configurations:Debug"
         defines { "DEBUG", "_DEBUG" }
 
     filter "configurations:Release"
         defines { "NDEBUG" }
         optimize "On"
-
-    -- Define this as dummy game
-    defines { "TR7" }
 
 end

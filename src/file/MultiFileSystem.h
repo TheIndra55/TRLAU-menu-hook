@@ -12,7 +12,12 @@ private:
 	cdc::FileSystem* GetBestFileSystem(const char* fileName);
 public:
 	MultiFileSystem();
+
 	void Add(cdc::FileSystem* fileSystem);
+	void Remove(cdc::FileSystem* fileSystem);
+
+	// This should not really be exposed, currently only for tests - do not use directly
+	const auto& GetSystems() const noexcept { return m_fileSystems; };
 
 	cdc::FileRequest* RequestRead(cdc::FileReceiver* receiver, const char* fileName, unsigned int startOffset);
 	cdc::File* OpenFile(const char* fileName);

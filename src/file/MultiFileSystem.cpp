@@ -23,6 +23,11 @@ void MultiFileSystem::Add(cdc::FileSystem* fileSystem)
 	m_fileSystems.push_back(fileSystem);
 }
 
+void MultiFileSystem::Remove(cdc::FileSystem* fileSystem)
+{
+	m_fileSystems.erase(std::remove(m_fileSystems.begin(), m_fileSystems.end(), fileSystem));
+}
+
 cdc::FileRequest* MultiFileSystem::RequestRead(cdc::FileReceiver* receiver, const char* fileName, unsigned int startOffset)
 {
 	auto fileSystem = GetBestFileSystem(fileName);
