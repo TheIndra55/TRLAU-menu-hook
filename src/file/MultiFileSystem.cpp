@@ -1,5 +1,8 @@
  #include "MultiFileSystem.h"
 
+#include "Hook.h"
+#include "modules/Log.h"
+
 MultiFileSystem::MultiFileSystem() : m_fileSystems()
 {
 }
@@ -21,6 +24,8 @@ cdc::FileSystem* MultiFileSystem::GetBestFileSystem(const char* fileName)
 void MultiFileSystem::Add(cdc::FileSystem* fileSystem)
 {
 	m_fileSystems.push_back(fileSystem);
+
+	Hook::GetInstance().GetModule<Log>()->WriteLine("Mounted new file system %p, number of systems: %d", fileSystem, m_fileSystems.size());
 }
 
 void MultiFileSystem::Remove(cdc::FileSystem* fileSystem)

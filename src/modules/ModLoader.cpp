@@ -2,13 +2,19 @@
 #include <MinHook.h>
 
 #include "ModLoader.h"
+#include "Hook.h"
+#include "Log.h"
 #include "util/Hooking.h"
 
 #include "cdc/file/MultiFileSystem.h"
+#include "cdc/file/ArchiveFileSystem.h"
 
 #include "file/FileSystem.h"
 #include "file/HookFileSystem.h"
 #include "file/MultiFileSystem.h"
+#include "file/ModFileSystem.h"
+
+static ModLoader* loader = nullptr;
 
 static cdc::FileSystem* CreateHookFileSystem()
 {
@@ -43,10 +49,9 @@ static void InitArchive()
 
 	// Create our hook file system and multi file system
 	auto fileSystem = CreateHookFileSystem();
-	auto multiFileSystem = new MultiFileSystem();
+	auto multiFileSystem = loader->GetFileSystem();
 
-	//auto archiveFile = new cdc::ArchiveFileSystem(*(cdc::FileSystem**)0x838890);
-	//archiveFile->Open("mods/bigfile.000");
+	loader->MountMods();
 
 	multiFileSystem->Add(fileSystem);
 	multiFileSystem->Add(GetFS());
@@ -56,8 +61,10 @@ static void InitArchive()
 }
 
 // Initialize the mod loader and insert all hooks
-ModLoader::ModLoader()
+ModLoader::ModLoader() : m_fileSystem()
 {
+	loader = this;
+
 #ifndef TR8
 	MH_CreateHook((void*)GET_ADDRESS(0x45C670, 0x45F5B0, 0x473840), InitArchive, (void**)&s_InitArchive);
 #else
@@ -65,4 +72,56 @@ ModLoader::ModLoader()
 #endif
 
 	MH_EnableHook(MH_ALL_HOOKS);
+}
+
+void ModLoader::MountMods()
+{
+	auto log = Hook::GetInstance().GetModule<Log>();
+
+	for (auto& entry : std::filesystem::directory_iterator("mods"))
+	{
+		auto name = entry.path().filename();
+
+		// Mount files with bigfile extension as archive
+		if (entry.is_regular_file() && name.extension() == ".000")
+		{
+			log->WriteLine("Mounting mod archive %s", name.string().c_str());
+
+			MountArchive(name);
+		}
+
+		// Mount folders as new mod file system
+		if (entry.is_directory())
+		{
+			log->WriteLine("Mounting mod directory %s", name.string().c_str());
+
+			MountDirectory(name);
+		}
+	}
+}
+
+void ModLoader::MountArchive(std::filesystem::path& name) noexcept
+{
+	auto path = "mods" / name;
+
+	// Open the archive
+	auto archive = new cdc::ArchiveFileSystem(*(cdc::FileSystem**)0x838890);
+	archive->Open(path.string().c_str());
+
+	// Mount the archive
+	m_fileSystem.Add((cdc::FileSystem*)archive);
+}
+
+void ModLoader::MountDirectory(std::filesystem::path& name) noexcept
+{
+	auto path = "mods" / name;
+	auto fileSystem = new ModFileSystem(name.string().c_str());
+
+	// Mount the file system
+	m_fileSystem.Add(fileSystem);
+}
+
+MultiFileSystem* ModLoader::GetFileSystem() noexcept
+{
+	return &m_fileSystem;
 }
