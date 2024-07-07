@@ -8,6 +8,8 @@
 #include "util/Hooking.h"
 #include "game/Game.h"
 
+#include "cdc/sys/Allocator.h"
+
 static Debug* s_debug;
 
 // Event debug print hooks
@@ -76,6 +78,18 @@ void Debug::OnPostInitialize()
 	Initialize();
 }
 
+void Debug::OnFrame()
+{
+	if (m_drawHeap)
+	{
+		auto font = Font::GetMainFont();
+		auto allocator = cdc::Alloc::GetHeap();
+
+		font->SetCursor(10, 10);
+		font->Print("Heap: %.1f/%dMB", allocator->GetTotalAllocSize() / 1024.f / 1024.f, allocator->GetMaxHeapSize() >> 20);
+	}
+}
+
 void Debug::OnMenu()
 {
 	if (ImGui::BeginMenu("Debug"))
@@ -94,6 +108,7 @@ void Debug::OnMenu()
 			}
 		}
 
+		ImGui::MenuItem("Draw heap", nullptr, &m_drawHeap);
 		ImGui::MenuItem("Debug keypad", nullptr, (bool*)GET_ADDRESS(0x107696C, 0x7C8A3C, 0x000000));
 
 		ImGui::EndMenu();

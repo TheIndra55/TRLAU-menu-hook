@@ -59,4 +59,11 @@ namespace cdc
 
 		virtual Heap* GetHeapImpl() = 0;
 	};
+
+	class Alloc
+	{
+	public:
+		static Allocator* Get();
+		static HeapAllocator* GetHeap();
+	};
 }
