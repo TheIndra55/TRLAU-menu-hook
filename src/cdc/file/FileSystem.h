@@ -4,6 +4,32 @@ namespace cdc
 {
 	class FileRequest
 	{
+	public:
+		enum Status
+		{
+			SETUP,
+			QUEUED,
+			PROCESSING,
+			DONE,
+			CANCELLED
+		};
+
+		enum Priority
+		{
+			HIGH,
+			NORMAL,
+			LOW
+		};
+
+		virtual void AddRef() = 0;
+		virtual void Release() = 0;
+		virtual void SetCompressedSize(unsigned int size) = 0;
+		virtual void SetUncompressed() = 0;
+		virtual void SetSize(unsigned int size) = 0;
+		virtual Status GetStatus() = 0;
+		virtual void Submit(Priority priority) = 0;
+		virtual void Cancel() = 0;
+		virtual float Completed() = 0;
 	};
 
 	class FileReceiver
@@ -17,6 +43,9 @@ namespace cdc
 
 	class File
 	{
+	public:
+		virtual FileRequest* RequestRead(FileReceiver* receiver, const char* fileName, unsigned int startOffset) = 0;
+		virtual unsigned int GetSize() = 0;
 	};
 
 	class FileSystem
