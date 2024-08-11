@@ -80,6 +80,7 @@ void Debug::OnPostInitialize()
 
 void Debug::OnFrame()
 {
+#ifndef TR8
 	if (m_drawHeap)
 	{
 		auto font = Font::GetMainFont();
@@ -88,6 +89,7 @@ void Debug::OnFrame()
 		font->SetCursor(10, 10);
 		font->Print("Heap: %.1f/%dMB", allocator->GetTotalAllocSize() / 1024.f / 1024.f, allocator->GetMaxHeapSize() >> 20);
 	}
+#endif
 }
 
 void Debug::OnMenu()
@@ -108,7 +110,9 @@ void Debug::OnMenu()
 			}
 		}
 
+#ifndef TR8
 		ImGui::MenuItem("Draw heap", nullptr, &m_drawHeap);
+#endif
 		ImGui::MenuItem("Debug keypad", nullptr, (bool*)GET_ADDRESS(0x107696C, 0x7C8A3C, 0x000000));
 
 		ImGui::EndMenu();

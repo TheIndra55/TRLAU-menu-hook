@@ -5,6 +5,8 @@
 #include "instance/Instances.h"
 #include "instance/Animation.h"
 #include "game/Game.h"
+#include "file/FileSystem.h"
+#include "cdc/resource/IDMap.h"
 
 void InstanceModule::OnMenu()
 {
@@ -21,6 +23,25 @@ void InstanceModule::OnMenu()
 
 		ImGui::EndMenu();
 	}
+}
+
+void InstanceModule::OnPostInitialize()
+{
+#ifdef TR8
+	// TR8 has always anim names
+	m_hasAnimNames = true;
+#else
+	// Check if we have an animlist.ids
+	auto fileSystem = GetFS();
+
+	if (fileSystem->FileExists("pc-w\\animlist.ids"))
+	{
+		// Read the IDMap
+		m_animations.Open("pc-w\\animlist.ids", fileSystem);
+
+		m_hasAnimNames = true;
+	}
+#endif
 }
 
 void InstanceModule::OnDraw()
@@ -184,13 +205,18 @@ void InstanceModule::DrawInstance() const
 			// Can be null for some reason
 			if (instance->object->animList && currentAnim != 0xffff)
 			{
-				// (Section): (Anim index) (Anim ID)
-#ifndef TR8
-				ImGui::Text("Section %d: %d (%X)", section, currentAnim, instance->object->animList[currentAnim].animationID);
-#else
 				auto animEntry = &instance->object->animList[currentAnim];
-				ImGui::Text("Section %d: %d %s (%X)", section, currentAnim, animEntry->debugName, animEntry->animationID);
-#endif
+
+				// (Section): (Anim index) (Anim name) (Anim ID)
+				if (!m_hasAnimNames)
+				{
+					ImGui::Text("Section %d: %d (%X)", section, currentAnim, animEntry->animationID);
+				}
+				else
+				{
+					auto name = GetAnimName(animEntry);
+					ImGui::Text("Section %d: %d %s (%X)", section, currentAnim, name, animEntry->animationID);
+				}
 			}
 			else
 			{
@@ -240,6 +266,15 @@ void InstanceModule::UnhideAll() const noexcept
 		{
 			INSTANCE_Post(instance, 7, 0);
 		});
+}
+
+const char* InstanceModule::GetAnimName(AnimListEntry* anim) const noexcept
+{
+#ifdef TR8
+	return anim->debugName;
+#else
+	return m_animations.GetName(anim->animationID);
+#endif
 }
 
 std::string InstanceModule::GetBinary(int value)

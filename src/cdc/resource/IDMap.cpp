@@ -3,7 +3,11 @@
 #include "IDMap.h"
 #include "file/FileSystem.h"
 
-cdc::IDMap::IDMap(const char* fileName, cdc::FileSystem* fileSystem) : m_map()
+cdc::IDMap::IDMap() : m_map()
+{
+}
+
+void cdc::IDMap::Open(const char* fileName, cdc::FileSystem* fileSystem)
 {
 	auto buffer = FSHelper_ReadFile(fileName, fileSystem);
 
@@ -45,7 +49,7 @@ cdc::IDMap::IDMap(const char* fileName, cdc::FileSystem* fileSystem) : m_map()
 		delete buffer;
 	}
 }
-const char* cdc::IDMap::GetName(unsigned int id)
+const char* cdc::IDMap::GetName(unsigned int id) const noexcept
 {
 	auto name = m_map.find(id);
 
