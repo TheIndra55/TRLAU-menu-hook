@@ -32,10 +32,13 @@ struct LINEVERTEX
 
 void TRANS_TransToDrawVertexV4f(DRAWVERTEX* v, cdc::Vector3* vec);
 void TRANS_RotTransPersVectorf(cdc::Vector3* srcvector, cdc::Vector3* dstvector);
+void TRANS_TransToDrawVertex(cdc::Vector3* vec, DRAWVERTEX* v);
 
 void DRAW_DrawQuads(int flags, int tpage, DRAWVERTEX* verts, int numquads);
 void DRAW_DrawTriangles(int flags, int tpage, DRAWVERTEX* verts, int numtris);
 void DRAW_DrawLines(LINEVERTEX* verts, int numlines);
+
+void TransformToVertex(DRAWVERTEX* v, cdc::Vector3* vec);
 
 void DrawTriangle(cdc::Vector3* v0, cdc::Vector3* v1, cdc::Vector3* v2, int color);
 void DrawPlane(cdc::Vector3* v0, cdc::Vector3* v1, int color);

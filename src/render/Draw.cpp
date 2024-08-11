@@ -15,6 +15,13 @@ void TRANS_RotTransPersVectorf(cdc::Vector3* srcvector, cdc::Vector3* dstvector)
 	Hooking::Call(addr, srcvector, dstvector);
 }
 
+void TRANS_TransToDrawVertex(cdc::Vector3* vec, DRAWVERTEX* v)
+{
+	auto addr = GET_ADDRESS(0x000000, 0x000000, 0x48A450);
+
+	Hooking::Call(addr, vec, v);
+}
+
 void DRAW_DrawQuads(int flags, int tpage, DRAWVERTEX* verts, int numquads)
 {
 	auto addr = GET_ADDRESS(0x406720, 0x406D70, 0x5BFB20);
@@ -36,13 +43,22 @@ void DRAW_DrawTriangles(int flags, int tpage, DRAWVERTEX* verts, int numtris)
 	Hooking::Call(addr, flags, tpage, verts, numtris);
 }
 
+inline void TransformToVertex(DRAWVERTEX* v, cdc::Vector3* vec)
+{
+#ifndef TR8
+	TRANS_TransToDrawVertexV4f(v, vec);
+#else
+	TRANS_TransToDrawVertex(vec, v);
+#endif
+}
+
 void DrawTriangle(cdc::Vector3* v0, cdc::Vector3* v1, cdc::Vector3* v2, int color)
 {
 	DRAWVERTEX verts[3];
 
-	TRANS_TransToDrawVertexV4f(verts, v0);
-	TRANS_TransToDrawVertexV4f(&verts[1], v1);
-	TRANS_TransToDrawVertexV4f(&verts[2], v2);
+	TransformToVertex(verts, v0);
+	TransformToVertex(&verts[1], v1);
+	TransformToVertex(&verts[2], v2);
 
 	verts[0].color = color;
 	verts[1].color = color;
@@ -58,12 +74,12 @@ void DrawPlane(cdc::Vector3* v0, cdc::Vector3* v1, int color)
 	auto v2 = cdc::Vector3{ v0->x, v0->y, v1->z };
 	auto v3 = cdc::Vector3{ v1->x, v1->y, v0->z };
 
-	TRANS_TransToDrawVertexV4f(verts, v0);
-	TRANS_TransToDrawVertexV4f(&verts[1], &v2);
-	TRANS_TransToDrawVertexV4f(&verts[2], v1);
-	TRANS_TransToDrawVertexV4f(&verts[3], &v3);
-	TRANS_TransToDrawVertexV4f(&verts[4], v1);
-	TRANS_TransToDrawVertexV4f(&verts[5], v0);
+	TransformToVertex(verts, v0);
+	TransformToVertex(&verts[1], &v2);
+	TransformToVertex(&verts[2], v1);
+	TransformToVertex(&verts[3], &v3);
+	TransformToVertex(&verts[4], v1);
+	TransformToVertex(&verts[5], v0);
 
 	verts[0].color = color;
 	verts[1].color = color;
@@ -88,12 +104,12 @@ void DrawLine(cdc::Vector3* v0, cdc::Vector3* v1, int color)
 	v2.y += 20.f;
 	v3.y += 20.f;
 
-	TRANS_TransToDrawVertexV4f(verts, v0);
-	TRANS_TransToDrawVertexV4f(&verts[1], &v2);
-	TRANS_TransToDrawVertexV4f(&verts[2], v1);
-	TRANS_TransToDrawVertexV4f(&verts[3], &v3);
-	TRANS_TransToDrawVertexV4f(&verts[4], v1);
-	TRANS_TransToDrawVertexV4f(&verts[5], v0);
+	TransformToVertex(verts, v0);
+	TransformToVertex(&verts[1], &v2);
+	TransformToVertex(&verts[2], v1);
+	TransformToVertex(&verts[3], &v3);
+	TransformToVertex(&verts[4], v1);
+	TransformToVertex(&verts[5], v0);
 
 	verts[0].color = color;
 	verts[1].color = color;
