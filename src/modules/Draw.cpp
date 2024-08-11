@@ -288,6 +288,7 @@ void Draw::DrawMarkUp()
 			position += &box->instance->position;
 		}
 
+#ifndef TR8
 		TRANS_RotTransPersVectorf(&position, &position);
 
 		// Check if the text is on screen
@@ -296,6 +297,7 @@ void Draw::DrawMarkUp()
 			font->SetCursor(position.x, position.y);
 			font->PrintFormatted(FlagsToString(box->flags).c_str());
 		}
+#endif
 
 		// Draw the poly line
 		if (markup->polyLine)
@@ -356,6 +358,7 @@ void Draw::DrawCollision(Level* level)
 
 void Draw::DrawCollision(TerrainGroup* terrainGroup)
 {
+#ifndef TR8
 	auto mesh = terrainGroup->mesh;
 
 	// Draw all mesh faces
@@ -377,6 +380,7 @@ void Draw::DrawCollision(TerrainGroup* terrainGroup)
 		DrawLine(&y, &z, RGB(255, 0, 0));
 		DrawLine(&z, &x, RGB(255, 0, 0));
 	}
+#endif
 }
 
 void Draw::DrawPortals(Level* level)
