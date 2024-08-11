@@ -1,5 +1,3 @@
-#ifndef TR8
-
 #include <utility>
 #include <string>
 #include <imgui.h>
@@ -11,6 +9,9 @@
 #include "instance/Instances.h"
 #include "instance/Enemy.h"
 #include "level/Markup.h"
+#include "level/Trigger.h"
+
+#include "cdc/math/Math.h"
 
 template <typename T>
 static inline cdc::Vector3 GetVertice(unsigned int vertice, Mesh* mesh, cdc::Vector* offset)
@@ -21,6 +22,12 @@ static inline cdc::Vector3 GetVertice(unsigned int vertice, Mesh* mesh, cdc::Vec
 	position += offset;
 
 	return position;
+}
+
+static inline cdc::Vector3 GetVertice(unsigned int vertice, Mesh* mesh, cdc::Vector* offset)
+{
+	if (mesh->m_vertexType == VERTEX_INT16) return GetVertice<MeshVertex16>(vertice, mesh, offset);
+	return GetVertice<MeshVertex32>(vertice, mesh, offset);
 }
 
 static std::pair<unsigned int, const char*> s_mudFlags[]
@@ -52,12 +59,19 @@ void Draw::OnMenu()
 {
 	if (ImGui::BeginMenu("Draw"))
 	{
+#ifndef TR8
 		ImGui::MenuItem("Draw instances", nullptr, &m_drawInstances);
-		ImGui::MenuItem("Draw markup", nullptr, &m_drawMarkUp);
 		ImGui::MenuItem("Draw enemy route", nullptr, &m_drawEnemyRouting);
+#endif
+
+		ImGui::MenuItem("Draw markup", nullptr, &m_drawMarkUp);
 		ImGui::MenuItem("Draw collision", nullptr, &m_drawCollision);
 		ImGui::MenuItem("Draw portals", nullptr, &m_drawPortals);
 		ImGui::MenuItem("Draw signals", nullptr, &m_drawSignals);
+
+#ifdef TR8
+		ImGui::MenuItem("Draw triggers", nullptr, &m_drawTriggers);
+#endif
 
 		ImGui::EndMenu();
 	}
@@ -76,6 +90,11 @@ void Draw::OnFrame()
 	if (m_drawMarkUp)
 	{
 		DrawMarkUp();
+	}
+
+	if (m_drawTriggers)
+	{
+		DrawTriggers();
 	}
 
 	if (level)
@@ -148,6 +167,7 @@ void Draw::DrawInstances()
 
 void Draw::DrawInstance(Instance* instance)
 {
+#ifndef TR8
 	auto name = instance->object->name;
 	auto data = (ObjectData*)instance->data;
 
@@ -225,10 +245,12 @@ void Draw::DrawInstance(Instance* instance)
 			}
 		}
 	}
+#endif
 }
 
 void Draw::DrawEnemyRoute(Instance* instance)
 {
+#ifndef TR8
 	auto data = (ObjectData*)instance->data;
 
 	// Check if the instance is an enemy
@@ -251,6 +273,7 @@ void Draw::DrawEnemyRoute(Instance* instance)
 
 		x = y;
 	}
+#endif
 }
 
 void Draw::DrawMarkUp()
@@ -277,6 +300,7 @@ void Draw::DrawMarkUp()
 			position += &box->instance->position;
 		}
 
+#ifndef TR8
 		TRANS_RotTransPersVectorf(&position, &position);
 
 		// Check if the text is on screen
@@ -285,6 +309,7 @@ void Draw::DrawMarkUp()
 			font->SetCursor(position.x, position.y);
 			font->PrintFormatted(FlagsToString(box->flags).c_str());
 		}
+#endif
 
 		// Draw the poly line
 		if (markup->polyLine)
@@ -351,9 +376,9 @@ void Draw::DrawCollision(TerrainGroup* terrainGroup)
 		auto face = &mesh->m_faces[i];
 
 		// Get the position of every vertice in world coordinates
-		auto x = GetVertice<MeshVertex>(face->i0, mesh, &mesh->m_position);
-		auto y = GetVertice<MeshVertex>(face->i1, mesh, &mesh->m_position);
-		auto z = GetVertice<MeshVertex>(face->i2, mesh, &mesh->m_position);
+		auto x = GetVertice(face->i0, mesh, &mesh->m_position);
+		auto y = GetVertice(face->i1, mesh, &mesh->m_position);
+		auto z = GetVertice(face->i2, mesh, &mesh->m_position);
 
 		// Draw the face
 		auto color = terrainGroup->flags & 0x4000 ? RGBA(255, 0, 255, 10) : RGBA(0, 255, 0, 10);
@@ -379,6 +404,7 @@ void Draw::DrawPortals(Level* level)
 		position += &portal->max;
 		position /= 2;
 
+#ifndef TR8
 		TRANS_RotTransPersVectorf(&position, &position);
 
 		// Check if the portal is on screen
@@ -387,10 +413,11 @@ void Draw::DrawPortals(Level* level)
 			// Draw the portal destination
 			font->SetCursor(position.x, position.y);
 			font->PrintCentered("Portal to %s", portal->tolevelname);
-
-			// Draw the portal bounds
-			DrawPlane(&portal->min, &portal->max, RGBA(0, 0, 255, 10));
 		}
+#endif
+
+		// Draw the portal bounds
+		DrawPlane(&portal->min, &portal->max, RGBA(0, 0, 255, 10));
 	}
 }
 
@@ -413,13 +440,113 @@ void Draw::DrawSignals(Level* level)
 		auto face = (SignalFace*)&mesh->m_faces[i];
 
 		// Get the position of every vertice in world coordinates
-		auto x = GetVertice<MeshVertex32>(face->i0, mesh, &mesh->m_position);
-		auto y = GetVertice<MeshVertex32>(face->i1, mesh, &mesh->m_position);
-		auto z = GetVertice<MeshVertex32>(face->i2, mesh, &mesh->m_position);
+		auto x = GetVertice(face->i0, mesh, &mesh->m_position);
+		auto y = GetVertice(face->i1, mesh, &mesh->m_position);
+		auto z = GetVertice(face->i2, mesh, &mesh->m_position);
 
 		// Draw the face
 		DrawTriangle(&x, &y, &z, RGBA(255, 0, 0, 10));
 	}
+}
+
+void Draw::DrawTriggers()
+{
+#ifdef TR8
+	// Draw all trigger planes
+	auto numPlanes = *(int*)0xDBA21C;
+	auto planes = (NsTriggerPlaneBase**)0xDA61C8;
+
+	for (int i = 0; i < numPlanes; i++)
+	{
+		auto plane = planes[i];
+		auto instance = plane->m_instance;
+		auto data = (IntroDataTrigger*)instance->intro->data;
+
+		if (data)
+		{
+			auto extendX = cdc::Vector3{};
+			extendX.x += data->LocalXExtent;
+			extendX.z += data->LocalZExtent;
+
+			auto extendY = cdc::Vector3{};
+			extendY.x -= data->LocalXExtent;
+			extendY.z -= data->LocalZExtent;
+
+			cdc::Matrix mat;
+			mat.Build_XYZOrder(&instance->rotation);
+			mat.col3 = instance->position;
+
+			auto x = cdc::Mul3x4(&mat, &extendX);
+			auto y = cdc::Mul3x4(&mat, &extendY);
+
+			DrawPlane(&x, &y, RGBA(255, 0, 0, 10));
+		}
+	}
+
+	// Draw all trigger volumes
+	auto numVolumes = *(int*)0xDBA220;
+	auto volumes = (NsTriggerVolumeBase**)0xDB6BE0;
+
+	for (int i = 0; i < numVolumes; i++)
+	{
+		auto volume = volumes[i];
+		auto instance = volume->m_instance;
+		auto data = (IntroDataTrigger*)instance->intro->data;
+
+		if (data)
+		{
+			if(data->shape == TriggerShape_Box)
+			{
+				auto extendX = cdc::Vector3{};
+				extendX.x += data->LocalXExtent;
+				extendX.y += data->LocalYExtent;
+				extendX.z += data->LocalZExtent;
+
+				auto extendY = cdc::Vector3{};
+				extendY.x -= data->LocalXExtent;
+				extendY.y -= data->LocalYExtent;
+				extendY.z -= data->LocalZExtent;
+
+				auto extendZ = cdc::Vector3{};
+				extendZ.x -= data->LocalXExtent;
+				extendZ.y += data->LocalYExtent;
+
+				auto extendW = cdc::Vector3{};
+				extendW.x += data->LocalXExtent;
+				extendW.y -= data->LocalYExtent;
+
+				cdc::Matrix mat;
+				mat.Build_XYZOrder(&instance->rotation);
+				mat.col3 = instance->position;
+
+				auto x = cdc::Mul3x4(&mat, &extendX);
+				auto y = cdc::Mul3x4(&mat, &extendY);
+				auto z = cdc::Mul3x4(&mat, &extendZ);
+				auto w = cdc::Mul3x4(&mat, &extendW);
+
+				DrawBoundingBox(&x, &y, &z, &w, RGB(255, 0, 0));
+				DrawBox(&x, &y, &z, &w, RGBA(255, 0, 0, 10));
+			}
+			else if (data->shape == TriggerShape_Sphere)
+			{
+				auto x = instance->position;
+				auto y = instance->position;
+
+				auto radius = data->Radius;
+
+				x.x += radius;
+				x.y += radius;
+				x.z += radius;
+
+				y.x -= radius;
+				y.y -= radius;
+				y.z -= radius;
+
+				DrawBoundingBox(&x, &y, RGB(255, 0, 0));
+			}
+		}
+	}
+#endif
 }
 
 std::string Draw::FlagsToString(unsigned int flags)
@@ -442,5 +569,3 @@ std::string Draw::FlagsToString(unsigned int flags)
 	
 	return result;
 }
-
-#endif

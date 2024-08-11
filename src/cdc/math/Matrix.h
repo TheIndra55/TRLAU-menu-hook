@@ -13,5 +13,6 @@ namespace cdc
 		Vector col3;
 
 		void Build(Euler* euler);
+		void Build_XYZOrder(cdc::Euler* euler);
 	};
 }

@@ -159,6 +159,10 @@ This will visualize all portals which are between levels.
 
 This will draw all signals (triggers) in the current level.
 
+### Draw triggers
+
+This will draw all trigger volumes and planes in the current level. This feature only exists in Underworld.
+
 ## Debug
 
 The debug menu has some restored event debug features.

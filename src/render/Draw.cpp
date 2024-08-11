@@ -10,9 +10,23 @@ void TRANS_TransToDrawVertexV4f(DRAWVERTEX* v, cdc::Vector3* vec)
 
 void TRANS_RotTransPersVectorf(cdc::Vector3* srcvector, cdc::Vector3* dstvector)
 {
-	auto addr = GET_ADDRESS(0x402B20, 0x402B50, 0x000000);
+	auto addr = GET_ADDRESS(0x402B20, 0x402B50, 0x49F630);
 
 	Hooking::Call(addr, srcvector, dstvector);
+}
+
+void TRANS_TransToDrawVertex(cdc::Vector3* vec, DRAWVERTEX* v)
+{
+	auto addr = GET_ADDRESS(0x000000, 0x000000, 0x48A450);
+
+	Hooking::Call(addr, vec, v);
+}
+
+void TRANS_TransToLineVertex(cdc::Vector3* vec, LINEVERTEX* v)
+{
+	auto addr = GET_ADDRESS(0x000000, 0x000000, 0x48A450);
+
+	Hooking::Call(addr, vec, v);
 }
 
 void DRAW_DrawQuads(int flags, int tpage, DRAWVERTEX* verts, int numquads)
@@ -36,13 +50,22 @@ void DRAW_DrawTriangles(int flags, int tpage, DRAWVERTEX* verts, int numtris)
 	Hooking::Call(addr, flags, tpage, verts, numtris);
 }
 
+inline void TransformToVertex(DRAWVERTEX* v, cdc::Vector3* vec)
+{
+#ifndef TR8
+	TRANS_TransToDrawVertexV4f(v, vec);
+#else
+	TRANS_TransToDrawVertex(vec, v);
+#endif
+}
+
 void DrawTriangle(cdc::Vector3* v0, cdc::Vector3* v1, cdc::Vector3* v2, int color)
 {
 	DRAWVERTEX verts[3];
 
-	TRANS_TransToDrawVertexV4f(verts, v0);
-	TRANS_TransToDrawVertexV4f(&verts[1], v1);
-	TRANS_TransToDrawVertexV4f(&verts[2], v2);
+	TransformToVertex(verts, v0);
+	TransformToVertex(&verts[1], v1);
+	TransformToVertex(&verts[2], v2);
 
 	verts[0].color = color;
 	verts[1].color = color;
@@ -58,12 +81,12 @@ void DrawPlane(cdc::Vector3* v0, cdc::Vector3* v1, int color)
 	auto v2 = cdc::Vector3{ v0->x, v0->y, v1->z };
 	auto v3 = cdc::Vector3{ v1->x, v1->y, v0->z };
 
-	TRANS_TransToDrawVertexV4f(verts, v0);
-	TRANS_TransToDrawVertexV4f(&verts[1], &v2);
-	TRANS_TransToDrawVertexV4f(&verts[2], v1);
-	TRANS_TransToDrawVertexV4f(&verts[3], &v3);
-	TRANS_TransToDrawVertexV4f(&verts[4], v1);
-	TRANS_TransToDrawVertexV4f(&verts[5], v0);
+	TransformToVertex(verts, v0);
+	TransformToVertex(&verts[1], &v2);
+	TransformToVertex(&verts[2], v1);
+	TransformToVertex(&verts[3], &v3);
+	TransformToVertex(&verts[4], v1);
+	TransformToVertex(&verts[5], v0);
 
 	verts[0].color = color;
 	verts[1].color = color;
@@ -78,6 +101,7 @@ void DrawPlane(cdc::Vector3* v0, cdc::Vector3* v1, int color)
 // Scuffed ass line, TODO fix
 void DrawLine(cdc::Vector3* v0, cdc::Vector3* v1, int color)
 {
+#ifndef TR8
 	DRAWVERTEX verts[6];
 
 	auto v2 = *v1;
@@ -88,12 +112,12 @@ void DrawLine(cdc::Vector3* v0, cdc::Vector3* v1, int color)
 	v2.y += 20.f;
 	v3.y += 20.f;
 
-	TRANS_TransToDrawVertexV4f(verts, v0);
-	TRANS_TransToDrawVertexV4f(&verts[1], &v2);
-	TRANS_TransToDrawVertexV4f(&verts[2], v1);
-	TRANS_TransToDrawVertexV4f(&verts[3], &v3);
-	TRANS_TransToDrawVertexV4f(&verts[4], v1);
-	TRANS_TransToDrawVertexV4f(&verts[5], v0);
+	TransformToVertex(verts, v0);
+	TransformToVertex(&verts[1], &v2);
+	TransformToVertex(&verts[2], v1);
+	TransformToVertex(&verts[3], &v3);
+	TransformToVertex(&verts[4], v1);
+	TransformToVertex(&verts[5], v0);
 
 	verts[0].color = color;
 	verts[1].color = color;
@@ -103,6 +127,17 @@ void DrawLine(cdc::Vector3* v0, cdc::Vector3* v1, int color)
 	verts[5].color = color;
 
 	DRAW_DrawTriangles(2, 0, verts, 2);
+#else
+	LINEVERTEX lines[2];
+
+	TRANS_TransToLineVertex(v0, lines);
+	TRANS_TransToLineVertex(v1, &lines[1]);
+
+	lines[0].color = color;
+	lines[1].color = color;
+
+	DRAW_DrawLines(lines, 1);
+#endif
 }
 
 void DrawBoundingBox(cdc::Vector3* v0, cdc::Vector3* v1, int color)
@@ -131,4 +166,54 @@ void DrawBoundingBox(cdc::Vector3* v0, cdc::Vector3* v1, int color)
 	DrawLine(&b2, &a2, color);
 	DrawLine(&b3, &a3, color);
 	DrawLine(&b4, &a4, color);
+}
+
+void DrawBoundingBox(cdc::Vector3* v0, cdc::Vector3* v1, cdc::Vector3* v2, cdc::Vector3* v3, int color)
+{
+	// Yes this is terrible
+	auto a1 = cdc::Vector3{ v0->x, v0->y, v0->z };
+	auto a2 = cdc::Vector3{ v2->x, v2->y, v0->z };
+	auto a3 = cdc::Vector3{ v1->x, v1->y, v0->z };
+	auto a4 = cdc::Vector3{ v3->x, v3->y, v0->z };
+
+	auto b1 = cdc::Vector3{ v0->x, v0->y, v1->z };
+	auto b2 = cdc::Vector3{ v2->x, v2->y, v1->z };
+	auto b3 = cdc::Vector3{ v1->x, v1->y, v1->z };
+	auto b4 = cdc::Vector3{ v3->x, v3->y, v1->z };
+
+	DrawLine(&a1, &a2, color);
+	DrawLine(&a2, &a3, color);
+	DrawLine(&a3, &a4, color);
+	DrawLine(&a4, &a1, color);
+
+	DrawLine(&b1, &b2, color);
+	DrawLine(&b2, &b3, color);
+	DrawLine(&b3, &b4, color);
+	DrawLine(&b4, &b1, color);
+
+	DrawLine(&b1, &a1, color);
+	DrawLine(&b2, &a2, color);
+	DrawLine(&b3, &a3, color);
+	DrawLine(&b4, &a4, color);
+}
+
+void DrawBox(cdc::Vector3* v0, cdc::Vector3* v1, cdc::Vector3* v2, cdc::Vector3* v3, int color)
+{
+	auto a1 = cdc::Vector3{ v0->x, v0->y, v0->z };
+	auto a2 = cdc::Vector3{ v2->x, v2->y, v0->z };
+	auto a3 = cdc::Vector3{ v1->x, v1->y, v0->z };
+	auto a4 = cdc::Vector3{ v3->x, v3->y, v0->z };
+
+	auto b1 = cdc::Vector3{ v0->x, v0->y, v1->z };
+	auto b2 = cdc::Vector3{ v2->x, v2->y, v1->z };
+	auto b3 = cdc::Vector3{ v1->x, v1->y, v1->z };
+	auto b4 = cdc::Vector3{ v3->x, v3->y, v1->z };
+
+	DrawPlane(&a1, &b2, color);
+	DrawPlane(&a2, &b3, color);
+	DrawPlane(&a3, &b4, color);
+	DrawPlane(&a4, &b1, color);
+
+	DrawPlane(&a1, &a3, color);
+	DrawPlane(&b1, &b3, color);
 }
