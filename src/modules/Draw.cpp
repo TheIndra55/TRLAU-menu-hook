@@ -59,13 +59,19 @@ void Draw::OnMenu()
 {
 	if (ImGui::BeginMenu("Draw"))
 	{
+#ifndef TR8
 		ImGui::MenuItem("Draw instances", nullptr, &m_drawInstances);
-		ImGui::MenuItem("Draw markup", nullptr, &m_drawMarkUp);
 		ImGui::MenuItem("Draw enemy route", nullptr, &m_drawEnemyRouting);
+#endif
+
+		ImGui::MenuItem("Draw markup", nullptr, &m_drawMarkUp);
 		ImGui::MenuItem("Draw collision", nullptr, &m_drawCollision);
 		ImGui::MenuItem("Draw portals", nullptr, &m_drawPortals);
 		ImGui::MenuItem("Draw signals", nullptr, &m_drawSignals);
+
+#ifdef TR8
 		ImGui::MenuItem("Draw triggers", nullptr, &m_drawTriggers);
+#endif
 
 		ImGui::EndMenu();
 	}
@@ -417,7 +423,6 @@ void Draw::DrawPortals(Level* level)
 
 void Draw::DrawSignals(Level* level)
 {
-#ifndef TR8
 	auto terrain = level->terrain;
 	auto terrainGroup = terrain->signalTerrainGroup;
 
@@ -435,14 +440,13 @@ void Draw::DrawSignals(Level* level)
 		auto face = (SignalFace*)&mesh->m_faces[i];
 
 		// Get the position of every vertice in world coordinates
-		auto x = GetVertice<MeshVertex32>(face->i0, mesh, &mesh->m_position);
-		auto y = GetVertice<MeshVertex32>(face->i1, mesh, &mesh->m_position);
-		auto z = GetVertice<MeshVertex32>(face->i2, mesh, &mesh->m_position);
+		auto x = GetVertice(face->i0, mesh, &mesh->m_position);
+		auto y = GetVertice(face->i1, mesh, &mesh->m_position);
+		auto z = GetVertice(face->i2, mesh, &mesh->m_position);
 
 		// Draw the face
 		DrawTriangle(&x, &y, &z, RGBA(255, 0, 0, 10));
 	}
-#endif
 }
 
 void Draw::DrawTriggers()

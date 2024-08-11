@@ -33,14 +33,25 @@ struct IndexedFace
 
 struct SignalFace
 {
+#ifndef TR8
 	unsigned __int16 i0;
 	unsigned __int16 i1;
 	unsigned __int16 i2;
 
-	char adjacencyFlags;
-	char collisionFlags;
+	unsigned __int8 adjacencyFlags;
+	unsigned __int8 collisionFlags;
 
 	unsigned __int16 id;
+#else
+	unsigned int i0;
+	unsigned int i1;
+	unsigned int i2;
+
+	unsigned __int8 adjacencyFlags;
+	unsigned __int8 collisionFlags;
+
+	unsigned __int16 id;
+#endif
 };
 
 struct MeshVertex16
