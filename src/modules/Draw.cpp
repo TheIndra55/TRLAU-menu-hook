@@ -24,6 +24,12 @@ static inline cdc::Vector3 GetVertice(unsigned int vertice, Mesh* mesh, cdc::Vec
 	return position;
 }
 
+static inline cdc::Vector3 GetVertice(unsigned int vertice, Mesh* mesh, cdc::Vector* offset)
+{
+	if (mesh->m_vertexType == VERTEX_INT16) return GetVertice<MeshVertex16>(vertice, mesh, offset);
+	return GetVertice<MeshVertex32>(vertice, mesh, offset);
+}
+
 static std::pair<unsigned int, const char*> s_mudFlags[]
 {
 	{ MUD_FLAG_INSTANCE, "INSTANCE | " },
@@ -330,7 +336,6 @@ void Draw::DrawMarkUp()
 
 void Draw::DrawCollision(Level* level)
 {
-#ifndef TR8
 	auto terrain = level->terrain;
 
 	// Draw the collision mesh for all terrain groups
@@ -353,12 +358,10 @@ void Draw::DrawCollision(Level* level)
 			DrawCollision(terrainGroup);
 		}
 	}
-#endif
 }
 
 void Draw::DrawCollision(TerrainGroup* terrainGroup)
 {
-#ifndef TR8
 	auto mesh = terrainGroup->mesh;
 
 	// Draw all mesh faces
@@ -367,9 +370,9 @@ void Draw::DrawCollision(TerrainGroup* terrainGroup)
 		auto face = &mesh->m_faces[i];
 
 		// Get the position of every vertice in world coordinates
-		auto x = GetVertice<MeshVertex>(face->i0, mesh, &mesh->m_position);
-		auto y = GetVertice<MeshVertex>(face->i1, mesh, &mesh->m_position);
-		auto z = GetVertice<MeshVertex>(face->i2, mesh, &mesh->m_position);
+		auto x = GetVertice(face->i0, mesh, &mesh->m_position);
+		auto y = GetVertice(face->i1, mesh, &mesh->m_position);
+		auto z = GetVertice(face->i2, mesh, &mesh->m_position);
 
 		// Draw the face
 		auto color = terrainGroup->flags & 0x4000 ? RGBA(255, 0, 255, 10) : RGBA(0, 255, 0, 10);
@@ -380,7 +383,6 @@ void Draw::DrawCollision(TerrainGroup* terrainGroup)
 		DrawLine(&y, &z, RGB(255, 0, 0));
 		DrawLine(&z, &x, RGB(255, 0, 0));
 	}
-#endif
 }
 
 void Draw::DrawPortals(Level* level)

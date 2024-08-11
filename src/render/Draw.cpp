@@ -22,6 +22,13 @@ void TRANS_TransToDrawVertex(cdc::Vector3* vec, DRAWVERTEX* v)
 	Hooking::Call(addr, vec, v);
 }
 
+void TRANS_TransToLineVertex(cdc::Vector3* vec, LINEVERTEX* v)
+{
+	auto addr = GET_ADDRESS(0x000000, 0x000000, 0x48A450);
+
+	Hooking::Call(addr, vec, v);
+}
+
 void DRAW_DrawQuads(int flags, int tpage, DRAWVERTEX* verts, int numquads)
 {
 	auto addr = GET_ADDRESS(0x406720, 0x406D70, 0x5BFB20);
@@ -94,6 +101,7 @@ void DrawPlane(cdc::Vector3* v0, cdc::Vector3* v1, int color)
 // Scuffed ass line, TODO fix
 void DrawLine(cdc::Vector3* v0, cdc::Vector3* v1, int color)
 {
+#ifndef TR8
 	DRAWVERTEX verts[6];
 
 	auto v2 = *v1;
@@ -119,6 +127,17 @@ void DrawLine(cdc::Vector3* v0, cdc::Vector3* v1, int color)
 	verts[5].color = color;
 
 	DRAW_DrawTriangles(2, 0, verts, 2);
+#else
+	LINEVERTEX lines[2];
+
+	TRANS_TransToLineVertex(v0, lines);
+	TRANS_TransToLineVertex(v1, &lines[1]);
+
+	lines[0].color = color;
+	lines[1].color = color;
+
+	DRAW_DrawLines(lines, 1);
+#endif
 }
 
 void DrawBoundingBox(cdc::Vector3* v0, cdc::Vector3* v1, int color)

@@ -10,6 +10,7 @@ struct StreamUnit;
 
 struct IndexedFace
 {
+#ifndef TR8
 	unsigned __int16 i0;
 	unsigned __int16 i1;
 	unsigned __int16 i2;
@@ -18,6 +19,16 @@ struct IndexedFace
 	unsigned __int8 collisionFlags;
 	unsigned __int8 clientFlags;
 	unsigned __int8 materialType;
+#else
+	unsigned int i0;
+	unsigned int i1;
+	unsigned int i2;
+
+	unsigned __int8 adjacencyFlags;
+	unsigned __int8 collisionFlags;
+	unsigned __int16 clientFlags;
+	unsigned int materialType;
+#endif
 };
 
 struct SignalFace
@@ -32,7 +43,7 @@ struct SignalFace
 	unsigned __int16 id;
 };
 
-struct MeshVertex
+struct MeshVertex16
 {
 	__int16 x;
 	__int16 y;
@@ -53,6 +64,12 @@ struct BBox
 	cdc::Vector3 bMax;
 };
 
+enum VertexType
+{
+	VERTEX_INT16,
+	VERTEX_FLOAT32
+};
+
 struct Mesh
 {
 	BBox m_box;
@@ -64,6 +81,7 @@ struct Mesh
 
 	void* m_clientData;
 
+#ifndef TR8
 	unsigned __int16 m_vertexType;
 	unsigned __int16 m_numNodes;
 	unsigned __int16 m_numFaces;
@@ -71,10 +89,20 @@ struct Mesh
 	unsigned __int16 m_height;
 	unsigned __int16 m_numDegenerateFaces;
 	unsigned __int16 m_numNonManifoldEdges;
+#else
+	unsigned int m_numNodes;
+	unsigned int m_numFaces;
+	unsigned int m_numVertices;
+	unsigned int m_numDegenerateFaces;
+	unsigned int m_numNonManifoldEdges;
+	unsigned __int16 m_vertexType;
+	unsigned __int16 m_height;
+#endif
 };
 
 struct Level;
 
+#ifndef TR8
 struct TerrainGroup
 {
 	cdc::Vector3 globalOffset;
@@ -91,7 +119,6 @@ struct TerrainGroup
 	char pad1[116];
 };
 
-#ifndef TR8
 struct StreamUnitPortal
 {
 	char tolevelname[30];
@@ -128,6 +155,27 @@ struct Terrain
 	Signal* signals;
 };
 #else
+struct TerrainGroup
+{
+	cdc::Vector3 globalOffset;
+	cdc::Vector3 localOffset;
+
+	int flags;
+	int field_24;
+	int field_28;
+	int field_2C;
+	int field_30;
+
+	Level* level;
+	Mesh* mesh;
+
+	int field_3C;
+	int field_40;
+	int field_44;
+	int field_48;
+	int field_4C;
+};
+
 struct StreamUnitPortal
 {
 	char tolevelname[128];
@@ -154,6 +202,11 @@ struct Terrain
 	__int16 field_0;
 	__int16 numStreamUnitPortals;
 	StreamUnitPortal* streamUnitPortals;
+
+	int numTerrainGroups;
+	TerrainGroup* terrainGroups;
+
+	TerrainGroup* signalTerrainGroup;
 };
 #endif
 
