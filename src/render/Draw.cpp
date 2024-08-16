@@ -1,6 +1,11 @@
 #include "Draw.h"
 #include "util/Hooking.h"
 
+#ifdef TRAE
+#include "cdc/render/PCDeviceManager.h"
+#include "cdc/render/PCPrimitivePool.h"
+#endif
+
 void TRANS_TransToDrawVertexV4f(DRAWVERTEX* v, cdc::Vector3* vec)
 {
 	auto addr = GET_ADDRESS(0x402EF0, 0x402F20, 0x49F990);
@@ -40,9 +45,27 @@ void DRAW_DrawQuads(int flags, int tpage, DRAWVERTEX* verts, int numquads)
 
 void DRAW_DrawLines(LINEVERTEX* verts, int numlines)
 {
+#ifndef TRAE
 	auto addr = GET_ADDRESS(0x406120, 0x000000, 0x5BFCD0);
 
 	Hooking::Call(addr, verts, numlines);
+#else
+	// The DRAW_DrawLines method has been optimized away in Anniversary
+	// the code below is a reimplementation of the code from Legend
+	if (cdc::PCDeviceManager::s_pInstance->IsStatusOk())
+	{
+		auto linePool = *(cdc::PCPrimitivePool**)0x7545E0;
+		auto vertices = (LINEVERTEX*)linePool->AllocateVertices(numlines * 2);
+
+		for (int i = 0; i < numlines * 2; i++)
+		{
+			vertices[i] = verts[i];
+
+			// Swap RGBA to ARGB
+			vertices[i].color = (verts[i].color << 24) | (verts[i].color >> 8);
+		}
+	}
+#endif
 }
 
 void DRAW_DrawTriangles(int flags, int tpage, DRAWVERTEX* verts, int numtris)
@@ -111,33 +134,6 @@ void DrawPlane(cdc::Vector3* v0, cdc::Vector3* v1, int color)
 
 void DrawLine(cdc::Vector3* v0, cdc::Vector3* v1, int color)
 {
-#ifdef TRAE
-	DRAWVERTEX verts[6];
-
-	auto v2 = *v1;
-	auto v3 = *v0;
-
-	v2.z += 20.f;
-	v3.z += 20.f;
-	v2.y += 20.f;
-	v3.y += 20.f;
-
-	TransformToDrawVertex(verts, v0);
-	TransformToDrawVertex(&verts[1], &v2);
-	TransformToDrawVertex(&verts[2], v1);
-	TransformToDrawVertex(&verts[3], &v3);
-	TransformToDrawVertex(&verts[4], v1);
-	TransformToDrawVertex(&verts[5], v0);
-
-	verts[0].color = color;
-	verts[1].color = color;
-	verts[2].color = color;
-	verts[3].color = color;
-	verts[4].color = color;
-	verts[5].color = color;
-
-	DRAW_DrawTriangles(2, 0, verts, 2);
-#else
 	LINEVERTEX lines[2];
 
 	TransformToLineVertex(lines, v0);
@@ -147,7 +143,6 @@ void DrawLine(cdc::Vector3* v0, cdc::Vector3* v1, int color)
 	lines[1].color = color;
 
 	DRAW_DrawLines(lines, 1);
-#endif
 }
 
 void DrawBoundingBox(cdc::Vector3* v0, cdc::Vector3* v1, int color)
