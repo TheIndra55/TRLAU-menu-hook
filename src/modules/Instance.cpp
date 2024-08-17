@@ -182,14 +182,11 @@ void InstanceModule::DrawInstance() const
 		ImGui::Text("%s", binary.c_str());
 
 		static int drawGroup = 0;
-		static bool enabled = false;
-
 		ImGui::InputInt("Draw group", &drawGroup);
-		ImGui::Checkbox("Enabled", &enabled);
 
 		if (ImGui::Button("Toggle"))
 		{
-			INSTANCE_HideUnhideDrawGroup(instance, drawGroup, enabled);
+			INSTANCE_HideUnhideDrawGroup(instance, drawGroup, (instance->noDrawGroups & (1 << drawGroup)));
 		}
 	}
 
