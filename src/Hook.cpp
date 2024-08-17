@@ -8,6 +8,7 @@
 #include "game/Game.h"
 #include "render/Font.h"
 #include "game/GameLoop.h"
+#include "render/DrawBatcher.h"
 
 // Modules
 #include "modules/MainMenu.h"
@@ -99,6 +100,10 @@ void Hook::OnFrame()
 	{
 		mod->OnFrame();
 	}
+
+#ifdef BATCH_DRAW_CALLS
+	DrawBatcher::GetInstance()->Flush();
+#endif
 }
 
 void Hook::OnLoop()

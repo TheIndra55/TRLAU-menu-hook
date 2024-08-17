@@ -93,6 +93,13 @@ inline void TransformToLineVertex(LINEVERTEX* v, cdc::Vector3* vec)
 #endif
 }
 
+#ifndef BATCH_DRAW_CALLS
+inline void DrawTriangles(DRAWVERTEX* verts, int numtris)
+{
+	DRAW_DrawTriangles(2, 0, verts, numtris);
+}
+#endif
+
 void DrawTriangle(cdc::Vector3* v0, cdc::Vector3* v1, cdc::Vector3* v2, int color)
 {
 	DRAWVERTEX verts[3];
@@ -105,7 +112,7 @@ void DrawTriangle(cdc::Vector3* v0, cdc::Vector3* v1, cdc::Vector3* v2, int colo
 	verts[1].color = color;
 	verts[2].color = color;
 
-	DRAW_DrawTriangles(2, 0, verts, 1);
+	DrawTriangles(verts, 1);
 }
 
 void DrawPlane(cdc::Vector3* v0, cdc::Vector3* v1, int color)
@@ -129,7 +136,7 @@ void DrawPlane(cdc::Vector3* v0, cdc::Vector3* v1, int color)
 	verts[4].color = color;
 	verts[5].color = color;
 
-	DRAW_DrawTriangles(2, 0, verts, 2);
+	DrawTriangles(verts, 2);
 }
 
 void DrawLine(cdc::Vector3* v0, cdc::Vector3* v1, int color)

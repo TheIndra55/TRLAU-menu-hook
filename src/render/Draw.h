@@ -45,6 +45,8 @@ void DRAW_DrawLines(LINEVERTEX* verts, int numlines);
 void TransformToDrawVertex(DRAWVERTEX* v, cdc::Vector3* vec);
 void TransformToLineVertex(LINEVERTEX* v, cdc::Vector3* vec);
 
+void DrawTriangles(DRAWVERTEX* verts, int numtris);
+
 void DrawTriangle(cdc::Vector3* v0, cdc::Vector3* v1, cdc::Vector3* v2, int color);
 void DrawPlane(cdc::Vector3* v0, cdc::Vector3* v1, int color);
 void DrawLine(cdc::Vector3* v0, cdc::Vector3* v1, int color);

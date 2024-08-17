@@ -47,7 +47,7 @@ project "TRAE-menu-hook"
         targetname "TRAE-Menu-Hook"
 
     filter "platforms:TR8"
-        defines { "TR8" }
+        defines { "TR8", "BATCH_DRAW_CALLS" }
         targetname "TR8-Menu-Hook"
 
 -- Tests
