@@ -16,7 +16,7 @@ project "TRAE-menu-hook"
     language "C++"
     cppdialect "C++17"
 
-    links { "d3d9.lib" }
+    links { "d3d9.lib", "Comctl32.lib" }
 
     -- Source files
     files "src/**"
@@ -29,6 +29,7 @@ project "TRAE-menu-hook"
 
     -- Build configurations
     symbols "On"
+    linkoptions [["/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'"]]
 
     filter "configurations:Debug"
         defines { "DEBUG", "_DEBUG" }
