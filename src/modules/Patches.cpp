@@ -105,6 +105,11 @@ Patches::Patches()
 	// NOP the original death wipe code in DeathState::Entry
 	Hooking::Nop((void*)GET_ADDRESS(0x55E188, 0x5584DC, 0x75AEDE), 5);
 
+#ifdef TR7
+	// NOP the exception handler in Legend
+	Hooking::Nop((void*)0x401F53, 26);
+#endif
+
 	// Patches
 	if (m_heapSize.GetValue() > 0)
 	{
