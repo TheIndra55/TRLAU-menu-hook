@@ -15,7 +15,7 @@ static LRESULT WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 void MessageHook::OnMessage(std::function<void(HWND, UINT, WPARAM, LPARAM)> callback) noexcept
 {
 	// Get the window handle
-	auto hWnd = cdc::PCDeviceManager::s_pInstance->GetWindow();
+	auto hWnd = cdc::PCDeviceManager::GetInstance()->GetWindow();
 
 	// Set the new message handler to our handler
 	s_original = (WNDPROC)SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)WndProc);

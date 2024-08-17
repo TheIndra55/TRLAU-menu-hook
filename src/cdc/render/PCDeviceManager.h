@@ -5,6 +5,8 @@
 
 #include "PCInternalResource.h"
 
+class Hook;
+
 namespace cdc
 {
 	class PCDeviceManager
@@ -28,6 +30,8 @@ namespace cdc
 
 		bool m_bIsRecreatingResources;
 
+		static PCDeviceManager* s_pInstance;
+
 	public:
 		bool IsStatusOk();
 		bool IsCreatingResources();
@@ -37,6 +41,8 @@ namespace cdc
 
 		void AddDeviceResource(PCInternalResource* resource);
 
-		static PCDeviceManager* s_pInstance;
+		static PCDeviceManager* GetInstance();
+
+		friend class Hook;
 	};
 }

@@ -24,6 +24,11 @@ HWND cdc::PCDeviceManager::GetWindow()
 	return m_hFocusWindow;
 }
 
+cdc::PCDeviceManager* cdc::PCDeviceManager::GetInstance()
+{
+	return s_pInstance;
+}
+
 void cdc::PCDeviceManager::AddDeviceResource(PCInternalResource* resource)
 {
 #ifndef TR8

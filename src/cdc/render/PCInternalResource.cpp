@@ -3,7 +3,7 @@
 
 cdc::PCInternalResource::PCInternalResource() : m_pPrev(nullptr), m_pNext(nullptr)
 {
-	PCDeviceManager::s_pInstance->AddDeviceResource(this);
+	PCDeviceManager::GetInstance()->AddDeviceResource(this);
 }
 
 cdc::PCInternalResource::~PCInternalResource()
@@ -27,7 +27,7 @@ void cdc::PCInternalResource::OnSettingsChanged()
 
 void cdc::PCInternalResource::OnConstruct()
 {
-	auto deviceManager = cdc::PCDeviceManager::s_pInstance;
+	auto deviceManager = PCDeviceManager::GetInstance();
 
 	if (deviceManager->IsStatusOk() && !deviceManager->IsCreatingResources())
 	{

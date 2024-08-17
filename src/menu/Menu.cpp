@@ -20,7 +20,7 @@ Menu::Menu() : PCInternalResource()
 	ImGui::CreateContext();
 
 	// We can do this since we always create the menu after D3D_Init
-	ImGui_ImplWin32_Init(cdc::PCDeviceManager::s_pInstance->GetWindow());
+	ImGui_ImplWin32_Init(cdc::PCDeviceManager::GetInstance()->GetWindow());
 
 	// Add present callback to draw the UI
 	RenderContext::OnPresent(std::bind(&Menu::OnPresent, this));
@@ -32,7 +32,7 @@ Menu::Menu() : PCInternalResource()
 bool Menu::OnCreateDevice()
 {
 	// Initialize the DirectX9 backend for ImGui
-	ImGui_ImplDX9_Init(cdc::PCDeviceManager::s_pInstance->GetD3DDevice());
+	ImGui_ImplDX9_Init(cdc::PCDeviceManager::GetInstance()->GetD3DDevice());
 
 	m_initialized = true;
 

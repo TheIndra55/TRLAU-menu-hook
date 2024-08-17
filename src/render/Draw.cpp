@@ -52,7 +52,7 @@ void DRAW_DrawLines(LINEVERTEX* verts, int numlines)
 #else
 	// The DRAW_DrawLines method has been optimized away in Anniversary
 	// the code below is a reimplementation of the code from Legend
-	if (cdc::PCDeviceManager::s_pInstance->IsStatusOk())
+	if (cdc::PCDeviceManager::GetInstance()->IsStatusOk())
 	{
 		auto linePool = *(cdc::PCPrimitivePool**)0x7545E0;
 		auto vertices = (LINEVERTEX*)linePool->AllocateVertices(numlines * 2);
