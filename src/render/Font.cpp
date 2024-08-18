@@ -40,7 +40,7 @@ void Font::GetCursor(float* x, float* y) noexcept
 
 void Font::SetScale(float scaleX, float scaleY) noexcept
 {
-	auto addr = GET_ADDRESS(0x431860, 0x433E60, 0x000000);
+	auto addr = GET_ADDRESS(0x431860, 0x433E60, 0x474D50);
 
 	Hooking::Call(addr, scaleX, scaleY);
 }
@@ -87,14 +87,14 @@ void Font::PrintFormatted(const char* formatted, int backdrop) const noexcept
 
 float Font::GetTextWidth(const char* text) const noexcept
 {
-	auto addr = GET_ADDRESS(0x431EA0, 0x434510, 0x000000);
+	auto addr = GET_ADDRESS(0x431EA0, 0x434510, 0x4758C0);
 
 	return Hooking::ThisCallReturn<float>(addr, this, text);
 }
 
 float Font::GetHeight() const noexcept
 {
-	auto addr = GET_ADDRESS(0x431E20, 0x434440, 0x000000);
+	auto addr = GET_ADDRESS(0x431E20, 0x434440, 0x475870);
 
 	return Hooking::ThisCallReturn<float>(addr, this);
 }
@@ -104,7 +104,7 @@ void Font::OnFlush(std::function<void()> callback) noexcept
 	if (!s_callback)
 	{
 		// TODO pattern
-		auto addr = GET_ADDRESS(0x432570, 0x434C40, 0x476D80);
+		auto addr = GET_ADDRESS(0x432570, 0x434C40, 0x5C5A30);
 
 		MH_CreateHook((void*)addr, Flush, (void**)&s_Flush);
 		MH_EnableHook(MH_ALL_HOOKS);

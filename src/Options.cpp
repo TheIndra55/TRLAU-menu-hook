@@ -23,12 +23,14 @@ void Options::DrawOptions() noexcept
 {
 	ImGui::Begin("Options", &m_show);
 
+#ifndef TR8
 	if (ImGui::CollapsingHeader("General"))
 	{
 		DrawComboOption("IntroSkip", "Legal screen and intros", { "Don't skip", "Skip legal", "Skip legal and intros" });
 		DrawCheckOption("NoCinematicBars", "Disable cinematic bars");
 		DrawCheckOption("NoMotionBlur", "Disable motion blur");
 	}
+#endif
 
 	if (ImGui::CollapsingHeader("Camera"))
 	{

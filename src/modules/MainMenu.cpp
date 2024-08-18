@@ -185,7 +185,7 @@ void MainMenu::OnFrame()
 {
 #ifndef TR8
 	// Shows the watermark in th main menu
-	auto mainState = *(int*)GET_ADDRESS(0x10E5868, 0x838838, 0x000000);
+	auto mainState = *(int*)GET_ADDRESS(0x10E5868, 0x838838, 0xE7ED60);
 
 	if (mainState == MS_DISPLAY_MAIN_MENU && !m_noWatermark.GetValue())
 	{
