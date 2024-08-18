@@ -10,6 +10,7 @@
 #include "game/Player.h"
 #include "file/FileSystem.h"
 #include "modules/Log.h"
+#include "game/Camera.h"
 
 void MainMenu::OnDraw()
 {
@@ -112,6 +113,16 @@ void MainMenu::OnDraw()
 
 			globalData->eventVars[var] = value;
 		}
+	}
+#endif
+
+#ifdef TR8
+	// Camera
+	if (ImGui::CollapsingHeader("Camera"))
+	{
+		auto camera = CAMERA_GetCamera();
+
+		ImGui::SliderFloat("Field of view", &camera->fov, 0.f, 3.f);
 	}
 #endif
 
