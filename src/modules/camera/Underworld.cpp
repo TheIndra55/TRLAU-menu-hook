@@ -35,6 +35,7 @@ void UnderworldCamera::ToggleMode()
 		// Set the camera position to the player position
 		auto camera = CAMERA_GetCamera();
 		camera->transform.col3 = Game::GetPlayerInstance()->position;
+		camera->fov = static_cast<float>(M_PI) / 2;
 
 		m_rotation = { static_cast<float>(M_PI) / -2.f, 0.f, 0.f };
 	}
@@ -56,6 +57,8 @@ void UnderworldCamera::OnControl()
 	// Apply the rotation and position
 	camera->transform.Build(&m_rotation);
 	camera->transform.col3 = m_position;
+
+	cdc::OrthonormalInverse3x4(&camera->invTransform, &camera->transform);
 }
 
 void UnderworldCamera::Rotate(float x, float z)

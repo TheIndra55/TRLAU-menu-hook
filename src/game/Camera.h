@@ -26,6 +26,11 @@ struct Camera
 	char pad1[16];
 
 	cdc::Matrix transform;
+	cdc::Matrix invTransform;
+	cdc::Vector3 position;
+	cdc::Quat orientation;
+
+	float fov;
 };
 #endif
 

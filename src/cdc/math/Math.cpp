@@ -1,4 +1,5 @@
 #include "Math.h"
+#include "util/Hooking.h"
 
 cdc::Vector3 cdc::Mul3x3(Matrix* matA, Vector3* vecB)
 {
@@ -26,4 +27,12 @@ cdc::Vector3 cdc::Mul3x4(Matrix* matA, Vector3* vecB)
 				matA->col3.vec128)));
 	
 	return result;
+}
+
+void cdc::OrthonormalInverse3x4(cdc::Matrix* result, cdc::Matrix* m)
+{
+	// Imagine doing all this math yourself
+	auto addr = GET_ADDRESS(0x000000, 0x000000, 0x49BE10);
+
+	Hooking::Call(addr, result, m);
 }

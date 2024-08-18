@@ -44,4 +44,8 @@ namespace cdc
 	class Euler : public Vector
 	{
 	};
+
+	class Quat : public Vector
+	{
+	};
 }
