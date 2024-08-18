@@ -355,18 +355,24 @@ void Draw::DrawCollision(Level* level)
 			continue;
 		}
 
+#ifndef TR8
+		auto flags = terrainGroup->flags;
+#else
+		auto flags = terrainGroup->extra->flags;
+#endif
+
 		// Filter on player/enemy collision
-		auto flag = terrainGroup->flags & 0x4000;
+		auto flag = flags & kEnemyCollision;
 		auto filter = (m_drawPlayerCollision && flag == 0) || (m_drawEnemyCollision && flag != 0);
 
 		if (terrainGroup->mesh && filter)
 		{
-			DrawCollision(terrainGroup);
+			DrawCollision(terrainGroup, flags);
 		}
 	}
 }
 
-void Draw::DrawCollision(TerrainGroup* terrainGroup)
+void Draw::DrawCollision(TerrainGroup* terrainGroup, int flags)
 {
 	auto mesh = terrainGroup->mesh;
 
@@ -381,7 +387,7 @@ void Draw::DrawCollision(TerrainGroup* terrainGroup)
 		auto z = GetVertice(face->i2, mesh, &mesh->m_position);
 
 		// Draw the face
-		auto color = terrainGroup->flags & 0x4000 ? RGBA(255, 0, 255, 10) : RGBA(0, 255, 0, 10);
+		auto color = flags & kEnemyCollision ? RGBA(255, 0, 255, 10) : RGBA(0, 255, 0, 10);
 		DrawTriangle(&x, &y, &z, color);
 
 		// Draw the face outlines

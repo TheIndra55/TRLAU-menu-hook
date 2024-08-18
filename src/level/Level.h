@@ -166,23 +166,28 @@ struct Terrain
 	Signal* signals;
 };
 #else
+struct TerrainGroupExtra
+{
+	int flags;
+};
+
 struct TerrainGroup
 {
 	cdc::Vector3 globalOffset;
 	cdc::Vector3 localOffset;
 
-	int flags;
-	int field_24;
-	int field_28;
+	int field_20;
+	int ID;
+	int uniqueID;
 	int field_2C;
-	int field_30;
 
+	TerrainGroupExtra* extra;
 	Level* level;
 	Mesh* mesh;
 
-	int field_3C;
-	int field_40;
-	int field_44;
+	float field_3C;
+	float field_40;
+	float field_44;
 	int field_48;
 	int field_4C;
 };

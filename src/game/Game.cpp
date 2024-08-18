@@ -9,7 +9,7 @@ Instance* Game::GetPlayerInstance() noexcept
 
 GameTracker* Game::GetGameTracker() noexcept
 {
-	return (GameTracker*)GET_ADDRESS(0x10E5370, 0x838330, 0x00E7F088);
+	return (GameTracker*)GET_ADDRESS(0x10E5370, 0x838330, 0xE7F088);
 }
 
 STracker* Game::GetStreamTracker() noexcept

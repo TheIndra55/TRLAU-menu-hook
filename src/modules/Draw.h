@@ -36,7 +36,7 @@ private:
 	void DrawEnemyRoute(Instance* instance);
 	void DrawMarkUp();
 	void DrawCollision(Level* level);
-	void DrawCollision(TerrainGroup* group);
+	void DrawCollision(TerrainGroup* group, int flags);
 	void DrawPortals(Level* level);
 	void DrawSignals(Level* level);
 	void DrawTriggers();
@@ -48,3 +48,9 @@ public:
 	void OnDraw();
 	void OnFrame();
 };
+
+#ifndef TR8
+constexpr auto kEnemyCollision = 0x4000;
+#else
+constexpr auto kEnemyCollision = 0x800;
+#endif
