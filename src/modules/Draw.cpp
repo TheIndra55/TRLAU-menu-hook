@@ -59,16 +59,14 @@ void Draw::OnMenu()
 {
 	if (ImGui::BeginMenu("Draw"))
 	{
-#ifndef TR8
 		ImGui::MenuItem("Draw instances", nullptr, &m_drawInstances);
+#ifndef TR8
 		ImGui::MenuItem("Draw enemy route", nullptr, &m_drawEnemyRouting);
 #endif
-
 		ImGui::MenuItem("Draw markup", nullptr, &m_drawMarkUp);
 		ImGui::MenuItem("Draw collision", nullptr, &m_drawCollision);
 		ImGui::MenuItem("Draw portals", nullptr, &m_drawPortals);
 		ImGui::MenuItem("Draw signals", nullptr, &m_drawSignals);
-
 #ifdef TR8
 		ImGui::MenuItem("Draw triggers", nullptr, &m_drawTriggers);
 #endif
@@ -81,6 +79,11 @@ void Draw::OnFrame()
 {
 	auto gameTracker = Game::GetGameTracker();
 	auto level = gameTracker->level;
+
+	// Default font in Underworld is a bit too large
+#ifdef TR8
+	Font::SetScale(0.6f, 0.6f);
+#endif
 
 	if (m_drawInstances || m_drawEnemyRouting)
 	{
@@ -167,7 +170,6 @@ void Draw::DrawInstances()
 
 void Draw::DrawInstance(Instance* instance)
 {
-#ifndef TR8
 	auto name = instance->object->name;
 	auto data = (ObjectData*)instance->data;
 
@@ -208,6 +210,7 @@ void Draw::DrawInstance(Instance* instance)
 			font->Print("Family: %d", data->family);
 		}
 
+#ifndef TR8
 		// Draw enemy health
 		if (m_drawHealth && data && data->family == 0xDAF0)
 		{
@@ -218,6 +221,7 @@ void Draw::DrawInstance(Instance* instance)
 			font->SetCursor(position.x, position.y);
 			font->Print("Health: %g", extraData->m_health.m_hitPoints);
 		}
+#endif
 
 		// Draw animations
 		if (m_drawAnimation)
@@ -245,7 +249,6 @@ void Draw::DrawInstance(Instance* instance)
 			}
 		}
 	}
-#endif
 }
 
 void Draw::DrawEnemyRoute(Instance* instance)
@@ -300,7 +303,6 @@ void Draw::DrawMarkUp()
 			position += &box->instance->position;
 		}
 
-#ifndef TR8
 		TRANS_RotTransPersVectorf(&position, &position);
 
 		// Check if the text is on screen
@@ -309,7 +311,6 @@ void Draw::DrawMarkUp()
 			font->SetCursor(position.x, position.y);
 			font->PrintFormatted(FlagsToString(box->flags).c_str());
 		}
-#endif
 
 		// Draw the poly line
 		if (markup->polyLine)
@@ -410,7 +411,6 @@ void Draw::DrawPortals(Level* level)
 		position += &portal->max;
 		position /= 2;
 
-#ifndef TR8
 		TRANS_RotTransPersVectorf(&position, &position);
 
 		// Check if the portal is on screen
@@ -420,7 +420,6 @@ void Draw::DrawPortals(Level* level)
 			font->SetCursor(position.x, position.y);
 			font->PrintCentered("Portal to %s", portal->tolevelname);
 		}
-#endif
 
 		// Draw the portal bounds
 		DrawPlane(&portal->min, &portal->max, RGBA(0, 0, 255, 10));
