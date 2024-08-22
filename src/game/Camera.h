@@ -7,7 +7,17 @@
 struct CameraCore
 {
 	cdc::Vector3 position;
-	char pad1[608];
+	cdc::Vector3 effectPosition;
+
+	cdc::Matrix vvNormalWorVecMatf[2];
+	cdc::Matrix defaultvvNormalWorVecMatf[2];
+	cdc::Matrix wcTransformf;
+	cdc::Matrix wcTransformNoShakef;
+	cdc::Matrix wcTransform2f;
+	cdc::Matrix cwTransform2f;
+
+	cdc::Vector3 viewVolumeNormal[5];
+
 	cdc::Euler rotation;
 	char pad2[128];
 };

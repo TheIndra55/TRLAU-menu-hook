@@ -7,6 +7,7 @@
 #include "MainMenu.h"
 #include "patches/Reloc.h"
 #include "patches/ErrorHandler.h"
+#include "game/Camera.h"
 
 // Instance of patches so we can get it in our hooks without calling GetModule<T> each call
 static Patches* s_patches;
@@ -16,6 +17,7 @@ static MainMenu* s_menu;
 // Original functions
 static void(*s_RenderG2_MotionBlur)(int, int, int);
 static void(*s_GAMELOOP_HandleScreenWipes)();
+static void(*s_TRANS_SetTransformMatrixf)(cdc::Matrix*);
 
 static void RenderG2_MotionBlur(int blur, int time, int timeout)
 {
@@ -43,6 +45,19 @@ static void GAMELOOP_HandleScreenWipes()
 	}
 
 	s_GAMELOOP_HandleScreenWipes();
+}
+
+static void TRANS_SetTransformMatrixf(cdc::Matrix* m)
+{
+	auto camera = CAMERA_GetCamera();
+
+	// Use the right transform in next generation graphics
+	if (Game::IsInNextGenMode() && m == &camera->wcTransformf)
+	{
+		m = &camera->wcTransform2f;
+	}
+
+	s_TRANS_SetTransformMatrixf(m);
 }
 #endif
 
@@ -108,6 +123,9 @@ Patches::Patches()
 #ifdef TR7
 	// NOP the exception handler in Legend
 	Hooking::Nop((void*)0x401F53, 26);
+
+	// Fix DRAW_ functions in next generation graphics
+	MH_CreateHook((void*)0x402B10, TRANS_SetTransformMatrixf, (void**)&s_TRANS_SetTransformMatrixf);
 #endif
 
 	// Patches

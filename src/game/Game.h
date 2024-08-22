@@ -170,6 +170,8 @@ public:
 	static Instance* GetPlayerInstance() noexcept;
 	static GameTracker* GetGameTracker() noexcept;
 	static STracker* GetStreamTracker() noexcept;
+
+	static bool IsInNextGenMode() noexcept;
 };
 
 void GAMELOOP_RequestLevelChangeByName(char* name, GameTracker* gameTracker, int doneType);

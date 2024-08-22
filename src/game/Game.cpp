@@ -17,6 +17,11 @@ STracker* Game::GetStreamTracker() noexcept
 	return (STracker*)GET_ADDRESS(0x11582F8, 0x8AE378, 0xDBAB40);
 }
 
+bool Game::IsInNextGenMode() noexcept
+{
+	return *(bool*)GET_ADDRESS(0x10024E8, 0x7545B4, 0x000000);
+}
+
 void GAMELOOP_RequestLevelChangeByName(char* name, GameTracker* gameTracker, int doneType)
 {
 	auto addr = GET_ADDRESS(0x451970, 0x4543C0, 0x5DF8C0);
