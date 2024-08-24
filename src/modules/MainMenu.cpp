@@ -183,6 +183,7 @@ void MainMenu::SwitchPlayerCharacter(char* name) noexcept
 
 void MainMenu::OnFrame()
 {
+#ifndef TR8
 	// Shows the watermark in th main menu
 	auto mainState = *(int*)GET_ADDRESS(0x10E5868, 0x838838, 0xE7ED60);
 
@@ -190,12 +191,10 @@ void MainMenu::OnFrame()
 	{
 		auto font = Font::GetMainFont();
 
-#ifdef TR8
-		font->SetScale(0.7f, 0.7f);
-#endif
 		font->SetCursor(5.f, 430.f);
 		font->Print("TRLAU-Menu-Hook");
 	}
+#endif
 }
 
 void MainMenu::OnLoop()
