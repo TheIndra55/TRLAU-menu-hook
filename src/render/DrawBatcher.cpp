@@ -4,7 +4,7 @@ DrawBatcher* DrawBatcher::s_batcher = nullptr;
 
 DrawBatcher::DrawBatcher() : m_vertices()
 {
-	m_vertices.reserve(0x2000);
+	m_vertices.reserve(0x4000);
 }
 
 void DrawBatcher::DrawTriangles(DRAWVERTEX* verts, int numtris) noexcept

@@ -28,6 +28,7 @@ private:
 	// Collision options
 	bool m_drawPlayerCollision = true;
 	bool m_drawEnemyCollision = true;
+	bool m_cull = true;
 
 	int m_terrainGroup = -1;
 
@@ -54,3 +55,5 @@ constexpr auto kEnemyCollision = 0x4000;
 #else
 constexpr auto kEnemyCollision = 0x800;
 #endif
+
+constexpr auto kCollisionFar = 20000;

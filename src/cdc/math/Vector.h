@@ -27,6 +27,8 @@ namespace cdc
 
 		void operator *=(float b);
 		void operator /=(float b);
+
+		float operator -(cdc::Vector* b);
 	};
 
 	class Vector2 : public Vector

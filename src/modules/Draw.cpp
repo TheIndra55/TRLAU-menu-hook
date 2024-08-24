@@ -151,6 +151,10 @@ void Draw::OnDraw()
 			ImGui::Checkbox("Player collision", &m_drawPlayerCollision);
 			ImGui::Checkbox("Enemy collision", &m_drawEnemyCollision);
 
+#ifdef TR8
+			ImGui::Checkbox("Cull close collision", &m_cull);
+#endif
+
 			ImGui::InputInt("Terrain group", &m_terrainGroup);
 		}
 
@@ -385,6 +389,7 @@ void Draw::DrawCollision(Level* level)
 void Draw::DrawCollision(TerrainGroup* terrainGroup, int flags)
 {
 	auto mesh = terrainGroup->mesh;
+	auto player = Game::GetPlayerInstance();
 
 	// Draw all mesh faces
 	for (int i = 0; i < mesh->m_numFaces; i++)
@@ -395,6 +400,13 @@ void Draw::DrawCollision(TerrainGroup* terrainGroup, int flags)
 		auto x = GetVertice(face->i0, mesh, &mesh->m_position);
 		auto y = GetVertice(face->i1, mesh, &mesh->m_position);
 		auto z = GetVertice(face->i2, mesh, &mesh->m_position);
+
+#ifdef TR8
+		if (m_cull && (!player || (player->position - &x) > kCollisionFar))
+		{
+			continue;
+		}
+#endif
 
 		// Draw the face
 		auto color = flags & kEnemyCollision ? RGBA(255, 0, 255, 10) : RGBA(0, 255, 0, 10);
