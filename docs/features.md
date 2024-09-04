@@ -123,6 +123,12 @@ This window allows you to see the current event (script) variables for a level.
 
 ![](https://github.com/TheIndra55/TRAE-menu-hook/assets/15322107/27ffc85e-85e5-4b9e-aa49-cd3a920a7ec7)
 
+## Material editor
+
+The material editor is used to edit material parameters in real-time. This feature is intended for modders and only exists in Underworld.
+
+![](https://github.com/user-attachments/assets/30f5b263-c27b-42f4-9647-a76ac5d72de2)
+
 ## Draw
 
 The draw menu can be used to enable various of debug drawing such as drawing of the collision mesh or signals.
