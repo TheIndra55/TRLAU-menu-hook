@@ -11,6 +11,7 @@
 #include "file/FileSystem.h"
 #include "modules/Log.h"
 #include "game/Camera.h"
+#include "util/Controls.h"
 
 void MainMenu::OnDraw()
 {
@@ -116,15 +117,20 @@ void MainMenu::OnDraw()
 	}
 #endif
 
-#ifdef TR8
 	// Camera
 	if (ImGui::CollapsingHeader("Camera"))
 	{
 		auto camera = CAMERA_GetCamera();
 
+#ifdef TR8
 		ImGui::SliderFloat("Field of view", &camera->fov, 0.f, 3.f);
-	}
+#else
+		if (SliderProjection("Field of view", &camera->projDistance, 0.f, 3.f))
+		{
+			CAMERA_SetProjDistance(camera, camera->projDistance);
+		}
 #endif
+	}
 
 	ImGui::End();
 }

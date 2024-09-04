@@ -19,7 +19,14 @@ struct CameraCore
 	cdc::Vector3 viewVolumeNormal[5];
 
 	cdc::Euler rotation;
-	char pad2[128];
+
+	char pad1[52];
+
+	float projDistance;
+	float newProjDistance;
+	float projDistanceSpd;
+
+	char pad2[64];
 };
 
 struct Camera : CameraCore
@@ -45,7 +52,9 @@ struct Camera
 #endif
 
 Camera* CAMERA_GetCamera();
+
 void CAMERA_CalcPosition(cdc::Vector3* position, cdc::Vector3* base, cdc::Euler* rotation, float distance);
+void CAMERA_SetProjDistance(Camera* camera, float distance);
 
 #ifdef TR8
 void CAMERA_SetMode(int mode);

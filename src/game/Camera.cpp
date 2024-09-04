@@ -17,6 +17,13 @@ void CAMERA_CalcPosition(cdc::Vector3* position, cdc::Vector3* base, cdc::Euler*
 	Hooking::Call(addr, position, base, rotation, distance);
 }
 
+void CAMERA_SetProjDistance(Camera* camera, float distance)
+{
+	auto addr = GET_ADDRESS(0x48E540, 0x491FA0, 0x000000);
+
+	Hooking::Call(addr, camera, distance);
+}
+
 #ifdef TR8
 void CAMERA_SetMode(int mode)
 {
