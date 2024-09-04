@@ -13,7 +13,7 @@ jobs:
       with:
         submodules: true
 
-    - uses: microsoft/setup-msbuild@v1.1
+    - uses: microsoft/setup-msbuild@v2
     - uses: ilammy/msvc-dev-cmd@v1
 
     - name: Download premake5
@@ -40,7 +40,7 @@ jobs:
       with:
         submodules: true
     
-    - uses: microsoft/setup-msbuild@v1.1
+    - uses: microsoft/setup-msbuild@v2
     - uses: ilammy/msvc-dev-cmd@v1
 
     - name: Download premake5
@@ -67,21 +67,21 @@ jobs:
       run: MSBuild /p:Configuration=Release /p:Platform=TR8
 
     # upload
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: Legend
         path: |
           bin/TR7/Release/TR7-Menu-Hook.asi
           bin/TR7/Release/TR7-Menu-Hook.pdb
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: Anniversary
         path: |
           bin/TRAE/Release/TRAE-Menu-Hook.asi
           bin/TRAE/Release/TRAE-Menu-Hook.pdb
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: Underworld
         path: |

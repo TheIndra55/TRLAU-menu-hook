@@ -10,7 +10,7 @@ MaxShadowMap = 8192
 
 ## Heap size
 
-By default the game reserves 256 megabytes of heap memory to use, this patch allows you to increase the reserved memory.
+By default the game reserves 256 megabytes of heap memory to use, this patch allows you to increase this value.
 
 > [!WARNING]  
 > The operating system might refuse to reserve a large amount of memory when increasing this value.
