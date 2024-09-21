@@ -1,6 +1,8 @@
 #include <imgui.h>
 
 #include "Log.h"
+#include "Hook.h"
+#include "console/CommandManager.h"
 
 void Log::OnMenu()
 {
@@ -33,6 +35,16 @@ void Log::OnDraw()
 		}
 
 		ImGui::EndChild();
+
+		// Command input
+		if (ImGui::InputText("##Command", m_commandBuffer, sizeof(m_commandBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
+		{
+			// Execute the command
+			Hook::GetInstance().GetModule<CommandManager>()->Execute(m_commandBuffer);
+
+			strcpy_s(m_commandBuffer, "");
+		}
+
 		ImGui::End();
 	}
 }

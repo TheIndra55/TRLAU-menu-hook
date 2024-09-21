@@ -9,6 +9,7 @@
 #include "render/Font.h"
 #include "game/GameLoop.h"
 #include "render/DrawBatcher.h"
+#include "console/CommandManager.h"
 
 // Modules
 #include "modules/MainMenu.h"
@@ -128,6 +129,7 @@ void Hook::RegisterModules()
 {
 	// Register these first
 	RegisterModule<Log>();
+	RegisterModule<CommandManager>();
 	RegisterModule<Options>();
 
 	RegisterModule<MainMenu>();

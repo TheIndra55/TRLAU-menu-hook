@@ -9,6 +9,7 @@ class Log : public Module
 private:
 	bool m_show = true;
 	ImGuiTextBuffer m_buffer;
+	char m_commandBuffer[256] = "";
 
 public:
 	void OnMenu();
