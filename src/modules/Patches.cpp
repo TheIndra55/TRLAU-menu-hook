@@ -1,5 +1,6 @@
 #include <Hooking.Patterns.h>
 #include <MinHook.h>
+#include <thread>
 
 #include "Patches.h"
 #include "util/Hooking.h"
@@ -7,6 +8,7 @@
 #include "MainMenu.h"
 #include "patches/Reloc.h"
 #include "patches/ErrorHandler.h"
+#include "patches/Multicore.h"
 #include "game/Camera.h"
 
 // Instance of patches so we can get it in our hooks without calling GetModule<T> each call
@@ -91,6 +93,13 @@ static void __stdcall DeathState_Process(int player, int data)
 	}
 }
 
+static unsigned char CPUCount(unsigned int* TotAvailLogical, unsigned int* TotAvailCore, unsigned int* PhysicalNum)
+{
+	*TotAvailLogical = std::thread::hardware_concurrency();
+
+	return 0;
+}
+
 Patches::Patches()
 {
 	s_patches = this;
@@ -133,6 +142,12 @@ Patches::Patches()
 	{
 		PatchHeapSize();
 	}
+
+#ifdef TR8
+	// Fix cdcMultiCore breaking on high number of CPU cores
+	MH_CreateHook((void*)0x4A21D0, CPUCount, nullptr);
+	MH_CreateHook((void*)0x4A2680, cdc::JobChainImplWithThreads::StartSystem, (void**)&cdc::JobChainImplWithThreads::s_StartSystem);
+#endif
 
 #ifdef TR7
 	if (m_shadowMapSize.GetValue() > 0)
