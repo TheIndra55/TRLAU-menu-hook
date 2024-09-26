@@ -7,9 +7,9 @@ bool(*cdc::JobChainImplWithThreads::s_StartSystem)(int);
 
 bool cdc::JobChainImplWithThreads::StartSystem(int numThreads)
 {
-	if (numThreads > 32)
+	if (numThreads > 31)
 	{
-		numThreads = 32;
+		numThreads = 31;
 	}
 
 	Hook::GetInstance().GetModule<Log>()->WriteLine("cdc::JobChainImplWithThreads::StartSystem(%d)", numThreads);
