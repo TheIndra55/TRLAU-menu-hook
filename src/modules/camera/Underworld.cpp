@@ -35,7 +35,7 @@ void UnderworldCamera::ToggleMode()
 		// Set the camera position to the player position
 		auto camera = CAMERA_GetCamera();
 		camera->transform.col3 = Game::GetPlayerInstance()->position;
-		camera->fov = static_cast<float>(M_PI) / 2;
+		camera->fov = static_cast<float>(M_PI) / 4;
 
 		m_rotation = { static_cast<float>(M_PI) / -2.f, 0.f, 0.f };
 	}
