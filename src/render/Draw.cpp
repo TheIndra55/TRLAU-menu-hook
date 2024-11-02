@@ -36,6 +36,20 @@ void TRANS_TransToLineVertex(cdc::Vector3* vec, LINEVERTEX* v)
 }
 #endif
 
+void TRANS_InvertTransformf(cdc::Matrix* target, cdc::Matrix* source)
+{
+	auto addr = GET_ADDRESS(0x4031B0, 0x4031E0, 0x000000);
+
+	return Hooking::Call(addr, target, source);
+}
+
+void TRANS_SetTransformMatrixf(cdc::Matrix* m)
+{
+	auto addr = GET_ADDRESS(0x402B10, 0x402B40, 0x000000);
+
+	return Hooking::Call(addr, m);
+}
+
 void DRAW_DrawQuads(int flags, int tpage, DRAWVERTEX* verts, int numquads)
 {
 	auto addr = GET_ADDRESS(0x406720, 0x406D70, 0x5BFB20);

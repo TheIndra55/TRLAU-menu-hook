@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cdc/math/Vector.h"
+#include "cdc/math/Matrix.h"
 
 struct DRAWVERTEX
 {
@@ -37,6 +38,9 @@ void TRANS_RotTransPersVectorf(cdc::Vector3* srcvector, cdc::Vector3* dstvector)
 void TRANS_TransToDrawVertex(cdc::Vector3* vec, DRAWVERTEX* v);
 void TRANS_TransToLineVertex(cdc::Vector3* vec, LINEVERTEX* v);
 #endif
+
+void TRANS_SetTransformMatrixf(cdc::Matrix* m);
+void TRANS_InvertTransformf(cdc::Matrix* target, cdc::Matrix* source);
 
 void DRAW_DrawQuads(int flags, int tpage, DRAWVERTEX* verts, int numquads);
 void DRAW_DrawTriangles(int flags, int tpage, DRAWVERTEX* verts, int numtris);
