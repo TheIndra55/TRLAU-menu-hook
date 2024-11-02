@@ -10,7 +10,6 @@
 #include "instance/Enemy.h"
 #include "level/Markup.h"
 #include "level/Trigger.h"
-#include "game/Camera.h"
 
 #include "cdc/math/Math.h"
 
@@ -93,16 +92,6 @@ void Draw::OnFrame()
 	// Default font in Underworld is a bit too large
 #ifdef TR8
 	Font::SetScale(0.6f, 0.6f);
-#endif
-
-	// Set the correct transform in Legend for next generation graphics
-#if TR7
-	if (Game::IsInNextGenMode())
-	{
-		auto camera = CAMERA_GetCamera();
-
-		TRANS_SetTransformMatrixf(&camera->wcTransform2f);
-	}
 #endif
 
 	if (m_drawInstances || m_drawEnemyRouting)

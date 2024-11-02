@@ -10,6 +10,7 @@
 #include "patches/ErrorHandler.h"
 #include "patches/Multicore.h"
 #include "game/Camera.h"
+#include "render/Draw.h"
 
 // Instance of patches so we can get it in our hooks without calling GetModule<T> each call
 static Patches* s_patches;
@@ -46,6 +47,16 @@ static void GAMELOOP_HandleScreenWipes()
 	}
 
 	s_GAMELOOP_HandleScreenWipes();
+}
+
+static void TransToDrawVertexV4f(DRAWVERTEX* v, cdc::Vector3* vec)
+{
+	auto camera = CAMERA_GetCamera();
+	auto transform = Game::IsInNextGenMode() ? camera->wcTransform2f : camera->wcTransformf;
+
+	v->x = transform.col0.x * vec->x + transform.col1.x * vec->y + transform.col2.x * vec->z + transform.col3.x;
+	v->y = transform.col0.y * vec->x + transform.col1.y * vec->y + transform.col2.y * vec->z + transform.col3.y;
+	v->z = transform.col0.z * vec->x + transform.col1.z * vec->y + transform.col2.z * vec->z + transform.col3.z;
 }
 #endif
 
@@ -118,6 +129,8 @@ Patches::Patches()
 #ifdef TR7
 	// NOP the exception handler in Legend
 	Hooking::Nop((void*)0x401F53, 26);
+
+	MH_CreateHook((void*)0x402EF0, TransToDrawVertexV4f, nullptr);
 #endif
 
 	// Patches
