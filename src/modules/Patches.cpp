@@ -130,6 +130,7 @@ Patches::Patches()
 	// NOP the exception handler in Legend
 	Hooking::Nop((void*)0x401F53, 26);
 
+	// Fix issues with dynamic drawing when using next generation graphics
 	MH_CreateHook((void*)0x402EF0, TransToDrawVertexV4f, nullptr);
 #endif
 
