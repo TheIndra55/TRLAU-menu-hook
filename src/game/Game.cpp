@@ -21,7 +21,7 @@ STracker* Game::GetStreamTracker() noexcept
 void Game::SwitchPlayerCharacter() noexcept
 {
 #ifndef TR8
-	PLAYER_DebugSwitchPlayerCharacter()
+	PLAYER_DebugSwitchPlayerCharacter();
 #else
 	// Switch the player costume with costume index 12, this costume has an empty object id
 	// which allows us to fallback to the default behavior
@@ -31,7 +31,7 @@ void Game::SwitchPlayerCharacter() noexcept
 	NtUnlockableCostume_ScriptType::SwitchPlayerCostume(&costume);
 
 	// Post to birth the player weapons
-	INSTANCE_Post(Game::GetPlayerInstance(), 35, 1);
+	INSTANCE_Post(Game::GetPlayerInstance(), 35, 0);
 #endif
 }
 
