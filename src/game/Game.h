@@ -162,6 +162,18 @@ struct GameTracker
 
 	float timeDilation;
 };
+
+struct PlayerObjects
+{
+	__int16 numPlayerObjects;
+	__int16* playerObjectList;
+};
+
+struct GlobalInfo
+{
+	int field_0;
+	PlayerObjects* playerObjects;
+};
 #endif
 
 class Game
@@ -171,6 +183,8 @@ public:
 	static GameTracker* GetGameTracker() noexcept;
 	static STracker* GetStreamTracker() noexcept;
 
+	static void SwitchPlayerCharacter() noexcept;
+
 	static bool IsInNextGenMode() noexcept;
 };
 
@@ -179,7 +193,9 @@ bool GAMELOOP_IsWipeDone(int type);
 void GAMELOOP_SetScreenWipe(int type, int target, int time);
 
 void PLAYER_DebugSwitchPlayerCharacter();
+
 int OBTABLE_GetObjectID(char* name);
+char* OBTABLE_GetObjectName(int id);
 
 void LOAD_ObjectFileName(char* name, char* object, char* extension);
 void LOAD_UnitFileName(char* name, char* unit, char* extension);

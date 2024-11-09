@@ -48,6 +48,7 @@ void MainMenu::OnDraw()
 			// TODO fill up ammo
 			IncrHealth(data->oldData.HealthInitial);
 		}
+#endif
 
 		// Switch outfit
 		static char outfit[64] = "";
@@ -65,6 +66,7 @@ void MainMenu::OnDraw()
 			SwitchPlayerCharacter();
 		}
 
+#ifndef TR8
 		// Player flags
 		auto flags = (unsigned int*)GET_ADDRESS(0x1075B88, 0x7C7C78, 0x000000);
 
@@ -190,7 +192,7 @@ void MainMenu::SwitchPlayerCharacter(char* name) noexcept
 void MainMenu::OnFrame()
 {
 #ifndef TR8
-	// Shows the watermark in th main menu
+	// Shows the watermark in the main menu
 	auto mainState = *(int*)GET_ADDRESS(0x10E5868, 0x838838, 0xE7ED60);
 
 	if (mainState == MS_DISPLAY_MAIN_MENU && !m_noWatermark.GetValue())
@@ -208,7 +210,7 @@ void MainMenu::OnLoop()
 	if (m_switchPlayerNextFrame)
 	{
 		m_switchPlayerNextFrame = false;
-		PLAYER_DebugSwitchPlayerCharacter();
+		Game::SwitchPlayerCharacter();
 	}
 }
 
@@ -226,6 +228,12 @@ void MainMenu::OnInput(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	if (msg == WM_KEYUP && wParam == VK_F5)
 	{
 		Input::DisablePlayerControl(Input::IsPlayerControlEnabled());
+	}
+
+	// Switch player outfit
+	if (msg == WM_KEYUP && wParam == VK_F9)
+	{
+		m_switchPlayerNextFrame = true;
 	}
 
 	// Ragdoll death

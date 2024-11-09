@@ -43,5 +43,20 @@ struct ObjectTracker
 	__int16 objectStatus;
 };
 
+struct ObjectEntry
+{
+	char* name;
+	int trackerIndex;
+};
+
+struct ObjectList
+{
+	int numObjects;
+#ifdef TR8
+	int size;
+#endif
+	ObjectEntry object[1];
+};
+
 ObjectTracker* STREAM_GetObjectTrackerByName(char* name);
 bool STREAM_PollLoadQueue();

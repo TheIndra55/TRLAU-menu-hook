@@ -64,5 +64,8 @@ public:
 	bool IsNoMotionBlur() const noexcept { return m_noMotionBlur.GetValue(); }
 	bool IsNoCinematicBars() const noexcept { return m_noCinematicBars.GetValue(); }
 
+	// Needs to be public since we call it from a hook
+	void PatchPlayersList() const noexcept;
+
 	void OnInput(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 };

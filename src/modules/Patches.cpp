@@ -11,6 +11,7 @@
 #include "patches/Multicore.h"
 #include "game/Camera.h"
 #include "render/Draw.h"
+#include "file/FileSystem.h"
 
 // Instance of patches so we can get it in our hooks without calling GetModule<T> each call
 static Patches* s_patches;
@@ -90,12 +91,24 @@ static void __stdcall DeathState_Process(int player, int data)
 	}
 }
 
+#ifdef TR8
+static void(*s_MAIN_DoMainInit)();
+
 static unsigned char CPUCount(unsigned int* TotAvailLogical, unsigned int* TotAvailCore, unsigned int* PhysicalNum)
 {
 	*TotAvailLogical = std::thread::hardware_concurrency();
 
 	return 0;
 }
+
+static void MAIN_DoMainInit()
+{
+	s_MAIN_DoMainInit();
+
+	// Patch the player list once globalInfo has been loaded
+	s_patches->PatchPlayersList();
+}
+#endif
 
 Patches::Patches()
 {
@@ -144,6 +157,8 @@ Patches::Patches()
 	// Fix cdcMultiCore breaking on high number of CPU cores
 	MH_CreateHook((void*)0x4A21D0, CPUCount, nullptr);
 	MH_CreateHook((void*)0x4A2680, cdc::JobChainImplWithThreads::StartSystem, (void**)&cdc::JobChainImplWithThreads::s_StartSystem);
+
+	MH_CreateHook((void*)0x5DEF70, MAIN_DoMainInit, (void**)&s_MAIN_DoMainInit);
 #endif
 
 #ifdef TR7
@@ -188,6 +203,39 @@ void Patches::PatchShadowMap() const noexcept
 	auto match = hook::pattern("BF 00 04 00 00 3B C7 8B F1 BA 80 00 00 00").count(1);
 
 	Hooking::Patch(match.get_first(1), m_shadowMapSize.GetValue());
+}
+#endif
+
+#ifdef TR8
+// Iterates the player list from globalInfo and removes any player objects that don't actually exist
+// rather than using a hardcoded list this actually checks if it exists to account for mods
+void Patches::PatchPlayersList() const noexcept
+{
+	auto globalInfo = *(GlobalInfo**)0xE7EE50;
+	auto players = globalInfo->playerObjects;
+
+	auto fileSystem = GetFS();
+	char fileName[256];
+
+	for (int i = 0; i < players->numPlayerObjects; )
+	{
+		auto name = OBTABLE_GetObjectName(players->playerObjectList[i]);
+
+		LOAD_UnitFileName(fileName, name, "drm");
+
+		// Check if the object exist
+		if (!fileSystem->FileExists(fileName))
+		{
+			// If the file does not exist, remove it from the list
+			for (int j = i; j < players->numPlayerObjects - 1; j++) players->playerObjectList[j] = players->playerObjectList[j + 1];
+
+			players->numPlayerObjects--;
+		}
+		else
+		{
+			i++;
+		}
+	}
 }
 #endif
 

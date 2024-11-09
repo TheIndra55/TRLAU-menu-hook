@@ -1,6 +1,7 @@
 #include "Game.h"
 
 #include "util/Hooking.h"
+#include "game/NtUnlockableCostume.h"
 
 Instance* Game::GetPlayerInstance() noexcept
 {
@@ -15,6 +16,23 @@ GameTracker* Game::GetGameTracker() noexcept
 STracker* Game::GetStreamTracker() noexcept
 {
 	return (STracker*)GET_ADDRESS(0x11582F8, 0x8AE378, 0xDBAB40);
+}
+
+void Game::SwitchPlayerCharacter() noexcept
+{
+#ifndef TR8
+	PLAYER_DebugSwitchPlayerCharacter()
+#else
+	// Switch the player costume with costume index 12, this costume has an empty object id
+	// which allows us to fallback to the default behavior
+	NtUnlockableCostume costume;
+	costume.costumeIndex = 12;
+
+	NtUnlockableCostume_ScriptType::SwitchPlayerCostume(&costume);
+
+	// Post to birth the player weapons
+	INSTANCE_Post(Game::GetPlayerInstance(), 35, 1);
+#endif
 }
 
 bool Game::IsInNextGenMode() noexcept
@@ -55,6 +73,13 @@ int OBTABLE_GetObjectID(char* name)
 	auto addr = GET_ADDRESS(0x462590, 0x4660C0, 0x5BF770);
 
 	return Hooking::CallReturn<int>(addr, name);
+}
+
+char* OBTABLE_GetObjectName(int id)
+{
+	auto objectList = *(ObjectList**)GET_ADDRESS(0x000000, 0x000000, 0xDB94D0);
+
+	return objectList->object[id - 1].name;
 }
 
 void LOAD_ObjectFileName(char* name, char* object, char* extension)
