@@ -43,7 +43,11 @@ static void InitArchive()
 
 	// Create our hook file system and multi file system
 	auto fileSystem = CreateHookFileSystem();
-	auto multiFileSystem = new MultiFileSystem(GetFS(), fileSystem);
+	auto multiFileSystem = new MultiFileSystem();
+
+	// Add the hook and original file system
+	multiFileSystem->Add(fileSystem);
+	multiFileSystem->Add(GetFS());
 
 	// Overwrite the original file system with ours
 	*(cdc::FileSystem**)GET_ADDRESS(0x10E58BC, 0x83888C, 0x9CE278) = multiFileSystem;
