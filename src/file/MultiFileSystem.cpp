@@ -95,16 +95,26 @@ cdc::FileSystem::Status MultiFileSystem::GetStatus()
 
 void MultiFileSystem::Update()
 {
-	for (auto fileSystem : m_fileSystems)
+	//for (auto fileSystem : m_fileSystems)
+	//{
+	//	fileSystem->Update();
+	//}
+
+	if (!m_fileSystems.empty())
 	{
-		fileSystem->Update();
+		m_fileSystems[0]->Update();
 	}
 }
 
 void MultiFileSystem::Synchronize()
 {
-	for (auto fileSystem : m_fileSystems)
+	//for (auto fileSystem : m_fileSystems)
+	//{
+	//	fileSystem->Synchronize();
+	//}
+
+	if (!m_fileSystems.empty())
 	{
-		fileSystem->Synchronize();
+		m_fileSystems[0]->Synchronize();
 	}
 }
