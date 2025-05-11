@@ -13,6 +13,7 @@ The following keys can be used ingame.
 | <kbd>F3</kbd> | Freezes the games |
 | <kbd>F4</kbd> | Toggles the free camera mode |
 | <kbd>F5</kbd> | Toggles player control |
+| <kbd>F9</kbd> | Switch player outfit |
 | <kbd>F11</kbd> | Instant ragdoll death |
 
 ### Skew
