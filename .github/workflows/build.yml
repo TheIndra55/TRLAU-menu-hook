@@ -18,7 +18,7 @@ jobs:
 
     - name: Download premake5
       run: |
-        curl.exe -o premake5.zip -L https://github.com/premake/premake-core/releases/download/v5.0.0-beta2/premake-5.0.0-beta2-windows.zip
+        curl.exe -o premake5.zip -L https://github.com/premake/premake-core/releases/download/v5.0.0-beta7/premake-5.0.0-beta7-windows.zip
         tar -xf premake5.zip
 
     - name: Generate project files
@@ -45,13 +45,8 @@ jobs:
 
     - name: Download premake5
       run: |
-        curl.exe -o premake5.zip -L https://github.com/premake/premake-core/releases/download/v5.0.0-beta2/premake-5.0.0-beta2-windows.zip
+        curl.exe -o premake5.zip -L https://github.com/premake/premake-core/releases/download/v5.0.0-beta7/premake-5.0.0-beta7-windows.zip
         tar -xf premake5.zip
-
-    - name: Download libraries
-      run: |
-        curl -o lib.zip https://files.theindra.eu/files/lib.zip
-        tar -xf lib.zip
 
     - name: Generate project files
       run: .\premake5 vs2022
