@@ -37,7 +37,7 @@ void Materials::DrawMaterialEditor()
 
 	auto materials = (cdc::HashTable<unsigned int, MaterialEntry>*)0x8A6EBC;
 
-	for (int i = 0; i < materials->m_buckets.m_size; i++)
+	for (unsigned int i = 0; i < materials->m_buckets.m_size; i++)
 	{
 		auto node = materials->m_buckets.m_data[i];
 
