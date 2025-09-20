@@ -191,18 +191,21 @@ void MainMenu::SwitchPlayerCharacter(char* name) noexcept
 
 void MainMenu::OnFrame()
 {
-#ifndef TR8
 	// Shows the watermark in the main menu
 	auto mainState = *(int*)GET_ADDRESS(0x10E5868, 0x838838, 0xE7ED60);
 
-	if (mainState == MS_DISPLAY_MAIN_MENU && !m_noWatermark.GetValue())
+	if (mainState == MS_DISPLAY_MAIN_MENU && !m_noWatermark.GetValue()
+#ifdef TR8
+		// Menu state in TR8 so it doesn't show during the game intro
+		&& *(char*)0xFAE8DA == MainMenuScreen
+#endif
+		)
 	{
 		auto font = Font::GetMainFont();
 
 		font->SetCursor(5.f, 430.f);
 		font->Print("TRLAU-Menu-Hook");
 	}
-#endif
 }
 
 void MainMenu::OnLoop()

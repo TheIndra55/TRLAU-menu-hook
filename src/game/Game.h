@@ -32,6 +32,19 @@ enum MainState
 #endif
 };
 
+enum MenuState
+{
+	LegalScreens,
+	IntroMovie,
+	PressStartScreen,
+	MainMenuScreen,
+	StartingNewGame,
+	PlayExtrasMovie,
+	StartingAttractMode,
+	InAttractMode,
+	PlayNewGameMovie
+};
+
 struct WipeInfo
 {
 	float wipeCur;
