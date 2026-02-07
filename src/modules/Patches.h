@@ -57,6 +57,7 @@ private:
 	void RemoveIntro() const noexcept;
 	void PatchHeapSize() const noexcept;
 	void PatchShadowMap() const noexcept;
+	void PatchDrawableHelper() const noexcept;
 
 public:
 	Patches();

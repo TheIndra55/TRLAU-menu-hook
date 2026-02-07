@@ -9,6 +9,7 @@ files {
 includedirs {
     "vendor/minhook/include",
     "vendor/patterns",
+    "vendor/jitasm",
     "vendor/imgui",
     "vendor/imgui/backends"
 }

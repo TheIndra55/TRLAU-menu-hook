@@ -31,3 +31,9 @@ void Hooking::Patch(void* address, unsigned int data) noexcept
 
 	VirtualProtect(address, sizeof(data), oldProtect, &oldProtect);
 }
+
+void Hooking::Jump(void* address, void* location)
+{
+	Patch(address, { 0xE9 });
+	Patch((void*)((char*)address + 1), (uintptr_t)location - (uintptr_t)address - 5);
+}

@@ -42,6 +42,9 @@ public:
 
 	// Patches data at a memory region
 	static void Patch(void* address, unsigned int data) noexcept;
+
+	// Inserts a jump at a memory region
+	static void Jump(void* address, void* location);
 };
 
 #if TR7

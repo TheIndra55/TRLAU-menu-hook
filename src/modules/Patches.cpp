@@ -1,5 +1,6 @@
 #include <Hooking.Patterns.h>
 #include <MinHook.h>
+#include <jitasm.h>
 #include <thread>
 
 #include "Patches.h"
@@ -145,6 +146,9 @@ Patches::Patches()
 
 	// Fix issues with dynamic drawing when using next generation graphics
 	MH_CreateHook((void*)0x402EF0, TransToDrawVertexV4f, nullptr);
+
+	// Fix issue with some broken models in next generation graphics reading out of bounds
+	PatchDrawableHelper();
 #endif
 
 	// Patches
@@ -203,6 +207,35 @@ void Patches::PatchShadowMap() const noexcept
 	auto match = hook::pattern("BF 00 04 00 00 3B C7 8B F1 BA 80 00 00 00").count(1);
 
 	Hooking::Patch(match.get_first(1), m_shadowMapSize.GetValue());
+}
+
+void Patches::PatchDrawableHelper() const noexcept
+{
+	auto match = hook::pattern("05 ? ? ? ? 0F 28 08 0F 58 C1").count_hint(1);
+
+	if (match.empty())
+	{
+		return;
+	}
+
+	static struct : jitasm::Frontend
+	{
+		void InternalMain()
+		{
+			cmp(eax, 256 * 16);		// Check for overflow on pivots
+			jg("fail");
+			add(eax, 0x113F880);	// Original code
+
+			mov(edx, 0x5C136B);		// Jump to normal code
+			jmp(edx);
+
+			L("fail");
+			mov(edx, 0x5C1505);		// Jump to end of function
+			jmp(edx);
+		}
+	} stub;
+
+	Hooking::Jump(match.get_first(), stub.GetCode());
 }
 #endif
 

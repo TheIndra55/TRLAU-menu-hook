@@ -10,3 +10,6 @@
 [submodule "vendor/catch2"]
 	path = vendor/catch2
 	url = https://github.com/catchorg/Catch2
+[submodule "vendor/jitasm"]
+	path = vendor/jitasm
+	url = https://github.com/TombRaiderModding/jitasm.git
