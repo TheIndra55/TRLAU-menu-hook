@@ -42,7 +42,7 @@ void Materials::DrawMaterialEditor()
 		auto node = materials->m_buckets.m_data[i];
 
 		if (node)
-		{ 
+		{
 			auto id = node->m_data.first;
 			auto entry = &node->m_data.second;
 
