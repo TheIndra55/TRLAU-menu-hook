@@ -137,10 +137,10 @@ void Hook::RegisterModules()
 	RegisterModule<Patches>();
 	RegisterModule<FreeCamera>();
 	RegisterModule<Draw>();
+	RegisterModule<Frontend>();
 
 #ifndef TR8
 	RegisterModule<LevelModule>();
-	RegisterModule<Frontend>();
 	RegisterModule<Render>();
 	RegisterModule<Debug>();
 #else
