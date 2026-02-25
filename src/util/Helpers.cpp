@@ -1,6 +1,8 @@
 #include "Helpers.h"
 
 #include <charconv>
+#include <string>
+#include <sstream>
 
 int Helpers::StringToInt(const std::string& str, int defaultValue)
 {
@@ -23,4 +25,11 @@ int Helpers::StringToInt(const std::string& str, int defaultValue)
 	}
 
 	return value;
+}
+
+std::string Helpers::ToHex(size_t value)
+{
+	std::stringstream stream;
+	stream << std::hex << value;
+	return stream.str();
 }

@@ -8,6 +8,7 @@ namespace cdc
 
 	class NativeScriptType : RCObject
 	{
+	public:
 		const char* m_package;
 		const char* m_name;
 		int field_10;

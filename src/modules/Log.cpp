@@ -13,6 +13,11 @@ void Log::OnMenu()
 			Clear();
 		}
 
+		if (ImGui::MenuItem("Copy"))
+		{
+			ImGui::SetClipboardText(m_buffer.c_str());
+		}
+
 		ImGui::EndMenu();
 	}
 }

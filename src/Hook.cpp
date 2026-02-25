@@ -24,6 +24,7 @@
 #include "modules/Draw.h"
 #include "modules/Debug.h"
 #include "modules/Materials.h"
+#include "modules/ScriptDebug.h"
 #include "modules/camera/FreeCamera.h"
 
 #include "cdc/render/PCDeviceManager.h"
@@ -146,6 +147,7 @@ void Hook::RegisterModules()
 #else
 	RegisterModule<ScriptLog>();
 	RegisterModule<Materials>();
+	RegisterModule<ScriptDebug>();
 #endif
 }
 
