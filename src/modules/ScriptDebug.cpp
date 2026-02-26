@@ -36,7 +36,7 @@ class Dummy
 	virtual ~Dummy() = 0;
 };
 
-// Gets the RTII type name from the passed pointer
+// Gets the RTTI type name from the passed pointer
 static std::string GetTypeName(uintptr_t* ptr)
 {
 	if (ptr == nullptr)
@@ -146,13 +146,13 @@ void ScriptDebug::DrawScriptDebug(cdc::ScriptObject* object)
 	auto data = script->m_streamData;
 
 	ImGui::Text("%p", object);
-	ImGui::Text("%d states, %d enums, %d structs, %d members, %d start functions, %d prototypes, %d dependencies",
+	ImGui::Text("%d states, %d enums, %d structs, %d members, %d prototypes, %d functions, %d dependencies",
 		data->m_states.size(),
 		data->m_enums.size(),
 		data->m_structs.size(),
 		data->m_members.size(),
-		data->m_startFunctionList.size(),
 		data->m_prototypes.size(),
+		data->m_functions.size(),
 		data->m_dependencies.size());
 
 	if (ImGui::CollapsingHeader("Members"))
@@ -167,6 +167,36 @@ void ScriptDebug::DrawScriptDebug(cdc::ScriptObject* object)
 			ImGui::SameLine();
 
 			DrawDataMember(object, member);
+		}
+	}
+
+	if (ImGui::CollapsingHeader("Functions"))
+	{
+		for (unsigned int i = 0; i < data->m_functions.size(); i++)
+		{
+			auto func = &data->m_functions.m_data[i];
+			auto proto = func->m_prototype;
+
+			std::string args;
+			for (unsigned int j = 0; j < proto->m_args.size(); j++)
+			{
+				auto arg = &proto->m_args.m_data[j];
+
+				if (j > 0) args += ", ";
+				args += s_dataTypes[arg->m_type.m_type];
+			}
+
+			ImGui::PushID(i);
+
+			// INT sub_12(INT, INT, STRING)
+			ImGui::Text("%s sub_%02d(%s)", s_dataTypes[proto->m_retType.m_type], i, args.c_str());
+
+			if (ImGui::Button("Call"))
+			{
+				object->CallFunction(func, 0, nullptr, nullptr);
+			}
+
+			ImGui::PopID();
 		}
 	}
 }

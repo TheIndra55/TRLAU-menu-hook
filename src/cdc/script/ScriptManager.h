@@ -20,16 +20,9 @@ namespace cdc
 		int field_28;
 		int field_2C;
 		int field_30;
-		int field_34;
-		int field_38;
-		int field_3C;
-		int field_40;
+		HashSet<ScriptObject*> m_threads;
 		int field_44;
 		HashSet<ScriptObject*> m_objects;
-		int field_4C;
-		int field_50;
-		int field_54;
-		int field_58;
 		int field_5C;
 
 		static ScriptManager* GetInstance();

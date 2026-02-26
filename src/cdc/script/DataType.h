@@ -7,8 +7,6 @@ namespace cdc
 	class ScriptType;
 	class EnumDecl;
 	class StructDecl;
-	class StartFunctionInfo;
-	class Prototype;
 
 	class DataType
 	{

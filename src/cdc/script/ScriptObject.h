@@ -16,5 +16,7 @@ namespace cdc
 		char m_updatingSequences;
 		char field_19;
 		__int16 field_1A;
+
+		void CallFunction(Function* function, int numArgs, void* args, void* retVal);
 	};
 }

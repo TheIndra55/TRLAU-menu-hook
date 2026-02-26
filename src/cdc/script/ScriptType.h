@@ -8,6 +8,8 @@
 
 namespace cdc
 {
+	class StartFunctionInfo;
+
 	class DataMember
 	{
 	public:
@@ -15,6 +17,37 @@ namespace cdc
 		unsigned __int16 m_offset;
 		Symbol m_name;
 		int m_init;
+	};
+
+	class Prototype
+	{
+	public:
+		ScriptType* m_script;
+
+		unsigned __int8 m_flags;
+		unsigned __int8 m_callType;
+		unsigned __int16 m_vtIndex;
+
+		ScriptName m_name;
+		SArray<cdc::DataMember> m_args;
+		DataType m_retType;
+	};
+
+	class Function
+	{
+	public:
+		Prototype* m_prototype;
+
+		unsigned __int8 m_flags;
+		unsigned __int8 m_state;
+		unsigned __int16 m_size;
+		unsigned __int16 m_align;
+		unsigned __int16 m_stackSize;
+
+		SArray<DataMember> m_locals;
+		SArray<StartFunctionInfo> m_startFunctionList;
+		int field_14;
+		int field_18;
 	};
 
 	class ScriptTypeStreamData
@@ -36,7 +69,7 @@ namespace cdc
 		SArray<DataMember> m_members; // 2C
 		SArray<StartFunctionInfo> m_startFunctionList; // 30
 		SArray<Prototype> m_prototypes; // 34
-		int field_38; // 38
+		SArray<Function> m_functions; // 38
 		int field_3C; // 3C
 		int field_40; // 40
 		int field_44; // 44
