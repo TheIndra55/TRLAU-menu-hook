@@ -139,10 +139,10 @@ void Hook::RegisterModules()
 	RegisterModule<FreeCamera>();
 	RegisterModule<Draw>();
 	RegisterModule<Frontend>();
+	RegisterModule<Render>();
 
 #ifndef TR8
 	RegisterModule<LevelModule>();
-	RegisterModule<Render>();
 	RegisterModule<Debug>();
 #else
 	RegisterModule<ScriptLog>();
