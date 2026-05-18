@@ -140,6 +140,9 @@ Patches::Patches()
 	// NOP the original death wipe code in DeathState::Entry
 	Hooking::Nop((void*)GET_ADDRESS(0x55E188, 0x5584DC, 0x75AEDE), 5);
 
+	// Allow animated and scrolling textures on player objects
+	PatchAnimateScroll();
+
 #ifdef TR7
 	// NOP the exception handler in Legend
 	Hooking::Nop((void*)0x401F53, 26);
@@ -199,6 +202,13 @@ void Patches::PatchHeapSize() const noexcept
 
 	Hooking::Patch(match.get_first(1), size);
 	Hooking::Patch(match.get_first(19), size);
+}
+
+void Patches::PatchAnimateScroll() const noexcept
+{
+	auto match = hook::pattern("8A 86 A4 00 00 00 84 C0 78 14").count(1);
+
+	Hooking::Nop(match.get_first(), 10);
 }
 
 #ifdef TR7

@@ -58,6 +58,7 @@ private:
 	void PatchHeapSize() const noexcept;
 	void PatchShadowMap() const noexcept;
 	void PatchDrawableHelper() const noexcept;
+	void PatchAnimateScroll() const noexcept;
 
 public:
 	Patches();
