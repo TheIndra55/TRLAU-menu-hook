@@ -48,7 +48,7 @@ void Options::DrawOptions() noexcept
 #ifdef TRAE
 	if (ImGui::CollapsingHeader("Compatibility fixes"))
 	{
-		DrawCheckOption("NoAnimMirror", "Disable grapple animations mirror for TRA Legacy of Atlantis Outfit by Villain12");
+		DrawCheckOption("NoAnimMirror", "Disable mirrored grappling hook animations for TRA LoA Outfit by Villain12");
 	}
 #endif
 
