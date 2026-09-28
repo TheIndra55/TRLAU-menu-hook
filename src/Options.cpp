@@ -45,6 +45,13 @@ void Options::DrawOptions() noexcept
 		DrawSliderOption("SkewSpeed", "Vertical skew speed", 0.f, 1000.f);
 	}
 
+#ifdef TRAE
+	if (ImGui::CollapsingHeader("Compatibility fixes"))
+	{
+		DrawCheckOption("NoAnimMirror", "Disable grapple animations mirror for TRA Legacy of Atlantis Outfit by Villain12");
+	}
+#endif
+
 	ImGui::End();
 }
 

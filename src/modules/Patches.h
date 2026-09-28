@@ -48,6 +48,9 @@ private:
 	Option<IntroSkip> m_disableIntro{ "IntroSkip", SkipLegal };
 	Option<bool> m_noCinematicBars{ "NoCinematicBars", true };
 	Option<bool> m_noMotionBlur{ "NoMotionBlur", false };
+#ifdef TRAE
+	Option<bool> m_noAnimMirror{ "NoAnimMirror", false };
+#endif
 
 	Patch<unsigned int> m_heapSize{ "HeapSize", 0 };
 #ifdef TR7
@@ -65,6 +68,9 @@ public:
 
 	bool IsNoMotionBlur() const noexcept { return m_noMotionBlur.GetValue(); }
 	bool IsNoCinematicBars() const noexcept { return m_noCinematicBars.GetValue(); }
+#ifdef TRAE
+	bool IsNoAnimMirror() const noexcept { return m_noAnimMirror.GetValue(); }
+#endif
 
 	// Needs to be public since we call it from a hook
 	void PatchPlayersList() const noexcept;

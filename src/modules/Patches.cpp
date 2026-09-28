@@ -13,12 +13,14 @@
 #include "game/Camera.h"
 #include "render/Draw.h"
 #include "file/FileSystem.h"
+#include "modules/Log.h"
 
 // Instance of patches so we can get it in our hooks without calling GetModule<T> each call
 static Patches* s_patches;
 static MainMenu* s_menu;
 
 #ifndef TR8
+static Log* s_log;
 // Original functions
 static void(*s_RenderG2_MotionBlur)(int, int, int);
 static void(*s_GAMELOOP_HandleScreenWipes)();
@@ -111,12 +113,48 @@ static void MAIN_DoMainInit()
 }
 #endif
 
+// No animation mirror
+#ifdef TRAE
+void(__fastcall* AnimProcessor::s_SwapBones)(AnimProcessor* pthis) = nullptr;
+
+void __fastcall AnimProcessor::SwapBones(AnimProcessor* pthis)
+{
+	if (s_patches->IsNoAnimMirror())
+	{
+#ifdef _DEBUG
+		s_log->WriteLine("AnimProcessor::SwapBones() with animID 0x%X", pthis->mSection->mKeylist->mAnimID);
+#endif
+
+		switch (pthis->mSection->mKeylist->mAnimID)
+		{
+		case 0x51:  //GRAPPLE_QUICKGRAPPLE
+		case 0x16A: //ROPE_CLIMBDOWN
+		case 0x171: //ROPE_ENDPUMP
+		case 0x172: //ROPE_IDLEHANG
+		case 0x179: //ROPE_STARTPUMP
+		case 0x17F: //ROPE_TURNLEFT
+		case 0x180: //ROPE_TURNRIGHT
+		case 0x1BC: //WALLGRAPPLE_CLIMBUP
+#ifdef _DEBUG
+			s_log->WriteLine("	Skipping SwapBones() for animID 0x%X", pthis->mSection->mKeylist->mAnimID);
+#endif
+			return;
+		}
+	}
+
+	s_SwapBones(pthis);
+}
+#endif // TRAE
+
+
 Patches::Patches()
 {
 	s_patches = this;
 	s_menu = Hook::GetInstance().GetModule<MainMenu>().get();
 
 #ifndef TR8
+	s_log = Hook::GetInstance().GetModule<Log>().get();
+
 	if (m_disableIntro.GetValue() > Disabled)
 	{
 		RemoveIntro();
@@ -141,7 +179,9 @@ Patches::Patches()
 	Hooking::Nop((void*)GET_ADDRESS(0x55E188, 0x5584DC, 0x75AEDE), 5);
 
 	// Allow animated and scrolling textures on player objects
+#ifndef TR8
 	PatchAnimateScroll();
+#endif
 
 #ifdef TR7
 	// NOP the exception handler in Legend
@@ -174,6 +214,15 @@ Patches::Patches()
 		PatchShadowMap();
 	}
 #endif
+
+#ifdef TRAE
+	MH_STATUS status = MH_CreateHook((void*)0x4735C0, AnimProcessor::SwapBones, (void**)&AnimProcessor::s_SwapBones);
+#ifdef DEBUG
+	s_log->WriteLine("Hooking AnimProcessor::SwapBones() %s", MH_StatusToString(status));
+#endif // DEBUG
+
+#endif // TRAE
+
 
 	MH_EnableHook(MH_ALL_HOOKS);
 }
