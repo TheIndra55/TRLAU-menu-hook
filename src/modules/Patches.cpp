@@ -18,9 +18,9 @@
 // Instance of patches so we can get it in our hooks without calling GetModule<T> each call
 static Patches* s_patches;
 static MainMenu* s_menu;
+static Log* s_log;
 
 #ifndef TR8
-static Log* s_log;
 // Original functions
 static void(*s_RenderG2_MotionBlur)(int, int, int);
 static void(*s_GAMELOOP_HandleScreenWipes)();
@@ -115,9 +115,9 @@ static void MAIN_DoMainInit()
 
 // No animation mirror
 #ifdef TRAE
-void(__fastcall* AnimProcessor::s_SwapBones)(AnimProcessor* pthis) = nullptr;
+void(__fastcall* s_AnimProcessor_SwapBones)(AnimProcessor* pthis) = nullptr;
 
-void __fastcall AnimProcessor::SwapBones(AnimProcessor* pthis)
+void __fastcall AnimProcessor_SwapBones(AnimProcessor* pthis)
 {
 	if (s_patches->IsNoAnimMirror())
 	{
@@ -142,7 +142,7 @@ void __fastcall AnimProcessor::SwapBones(AnimProcessor* pthis)
 		}
 	}
 
-	s_SwapBones(pthis);
+	s_AnimProcessor_SwapBones(pthis);
 }
 #endif // TRAE
 
@@ -216,7 +216,7 @@ Patches::Patches()
 #endif
 
 #ifdef TRAE
-	MH_STATUS status = MH_CreateHook((void*)0x4735C0, AnimProcessor::SwapBones, (void**)&AnimProcessor::s_SwapBones);
+	MH_STATUS status = MH_CreateHook((void*)0x4735C0, AnimProcessor_SwapBones, (void**)&s_AnimProcessor_SwapBones);
 #ifdef DEBUG
 	s_log->WriteLine("Hooking AnimProcessor::SwapBones() %s", MH_StatusToString(status));
 #endif // DEBUG

@@ -168,11 +168,6 @@ public:
 
 	unsigned __int8 mSectionCount;
 	unsigned __int8 mSectionsAllocated;
-
-#ifdef TRAE
-	static void(__fastcall* s_SwapBones)(AnimProcessor* pthis);
-	static void __fastcall SwapBones(AnimProcessor* pthis);
-#endif
 };
 
 class AnimComponent;
