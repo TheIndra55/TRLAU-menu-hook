@@ -107,7 +107,7 @@ struct AnimFragment
 	__int16 mTimePerKey;
 	unsigned __int8 mSegmentCount;
 	unsigned __int8 mSectionCount;
-	int mSectionDataOffset[];
+	int mSectionDataOffset[1];
 };
 #endif
 

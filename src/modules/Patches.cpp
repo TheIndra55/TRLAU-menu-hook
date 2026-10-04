@@ -135,9 +135,6 @@ void __fastcall AnimProcessor_SwapBones(AnimProcessor* pthis)
 		case 0x17F: //ROPE_TURNLEFT
 		case 0x180: //ROPE_TURNRIGHT
 		case 0x1BC: //WALLGRAPPLE_CLIMBUP
-#ifdef _DEBUG
-			s_log->WriteLine("	Skipping SwapBones() for animID 0x%X", pthis->mSection->mKeylist->mAnimID);
-#endif
 			return;
 		}
 	}
@@ -151,10 +148,9 @@ Patches::Patches()
 {
 	s_patches = this;
 	s_menu = Hook::GetInstance().GetModule<MainMenu>().get();
-
-#ifndef TR8
 	s_log = Hook::GetInstance().GetModule<Log>().get();
 
+#ifndef TR8
 	if (m_disableIntro.GetValue() > Disabled)
 	{
 		RemoveIntro();
@@ -216,13 +212,8 @@ Patches::Patches()
 #endif
 
 #ifdef TRAE
-	MH_STATUS status = MH_CreateHook((void*)0x4735C0, AnimProcessor_SwapBones, (void**)&s_AnimProcessor_SwapBones);
-#ifdef DEBUG
-	s_log->WriteLine("Hooking AnimProcessor::SwapBones() %s", MH_StatusToString(status));
-#endif // DEBUG
-
-#endif // TRAE
-
+	MH_CreateHook((void*)0x4735C0, AnimProcessor_SwapBones, (void**)&s_AnimProcessor_SwapBones);
+#endif
 
 	MH_EnableHook(MH_ALL_HOOKS);
 }
