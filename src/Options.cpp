@@ -45,6 +45,13 @@ void Options::DrawOptions() noexcept
 		DrawSliderOption("SkewSpeed", "Vertical skew speed", 0.f, 1000.f);
 	}
 
+#ifdef TRAE
+	if (ImGui::CollapsingHeader("Compatibility fixes"))
+	{
+		DrawCheckOption("NoAnimMirror", "Disable mirrored grappling hook animations for TRA LoA Outfit by Villain12");
+	}
+#endif
+
 	ImGui::End();
 }
 
